@@ -1,59 +1,54 @@
-package com.amrit.futsal.entity;
+package com.amrit.futsal.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+public class FutsalDTO  {
 
-@Entity
-@Table(name="Futsal")
-public class Futsal extends AbstractEntity<Long>{
+    private Long id;
 
-
-    @Column
     private String futsalName;
 
-    @Column
-    private double latitude;
+    private String latitude;
 
-    @Column
-    private double longitude;
+    private String longitude;
 
-    @Column
     private String country;
 
-    @Column
     private String city;
 
-    @Column
     private String streetAddress;
 
-    @Column
-    private double rating;
+    private String rating;
 
-    @Column
     private Long vendorId;
 
-    public String getFustsalName() {
+    public String getFutsalName() {
         return futsalName;
     }
 
-    public void setFustsalName(String fustsalName) {
-        this.futsalName = fustsalName;
+    public void setFutsalName(String futsalName) {
+        this.futsalName = futsalName;
     }
 
-    public double getLatitude() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+        public String getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 
@@ -81,11 +76,11 @@ public class Futsal extends AbstractEntity<Long>{
         this.streetAddress = streetAddress;
     }
 
-    public double getRating() {
+    public String getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(String rating) {
         this.rating = rating;
     }
 

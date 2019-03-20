@@ -1,4 +1,4 @@
-package com.koshish.fustsalApi;
+package com.amrit.futsal;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

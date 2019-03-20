@@ -1,36 +1,35 @@
-package com.amrit.futsal.entity;
+package com.amrit.futsal.model;
 
 import com.amrit.futsal.model.enumconstant.PlayTimeStatus;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
-@Entity
-@Table(name = "PlayTime")
-public class PlayTime extends AbstractEntity<Long> {
+public class PlayTimeDTO{
 
-    @Column
+    private Long id;
+    
     private String startTime;
 
-    @Column
     private String EndTime;
 
-    @Column
     private PlayTimeStatus playTimeStatus;
 
-    @Column
-    private double price;
+    private Double price;
 
-    @ManyToOne
-    private FutsalGround futsalGround;
+    private Long futsalGround;
 
-    public double getPrice() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -58,11 +57,11 @@ public class PlayTime extends AbstractEntity<Long> {
         this.playTimeStatus = playTimeStatus;
     }
 
-    public FutsalGround getFutsalGround() {
+    public Long getFutsalGround() {
         return futsalGround;
     }
 
-    public void setFutsalGround(FutsalGround futsalGround) {
+    public void setFutsalGround(Long futsalGround) {
         this.futsalGround = futsalGround;
     }
 }

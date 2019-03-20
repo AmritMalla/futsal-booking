@@ -1,22 +1,22 @@
-package com.amrit.futsal.entity;
+package com.amrit.futsal.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+public class FutsalDetailDTO  {
 
-@Entity
-@Table(name = "FutsalDetail")
-public class FutsalDetail extends AbstractEntity<Long> {
+    private Long id;
 
-    @Column
     private String topic;
 
-    @Column
     private String description;
 
-    @ManyToOne
-    private Futsal futsal;
+    private String futsal;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getTopic() {
         return topic;
@@ -34,11 +34,11 @@ public class FutsalDetail extends AbstractEntity<Long> {
         this.description = description;
     }
 
-    public Futsal getFutsal() {
+    public String getFutsal() {
         return futsal;
     }
 
-    public void setFutsal(Futsal futsal) {
+    public void setFutsal(String futsal) {
         this.futsal = futsal;
     }
 }

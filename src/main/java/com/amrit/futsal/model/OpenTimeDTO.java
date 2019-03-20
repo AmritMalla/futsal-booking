@@ -1,33 +1,32 @@
-package com.amrit.futsal.entity;
+package com.amrit.futsal.model;
 
 import com.amrit.futsal.model.enumconstant.Day;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+public class OpenTimeDTO {
 
-@Entity
-@Table(name = "OpenTime")
-public class OpenTime extends AbstractEntity<Long> {
+    private Long id;
 
-    @Column
     private Day day;
 
-    @Column
     private String openTime;
 
-    @Column
     private String closeTime;
 
-    @ManyToOne
-    private FutsalGround futsalGround;
+    private Long futsalGround;
 
-    public FutsalGround getFutsalGround() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getFutsalGround() {
         return futsalGround;
     }
 
-    public void setFutsalGround(FutsalGround futsalGround) {
+    public void setFutsalGround(Long futsalGround) {
         this.futsalGround = futsalGround;
     }
 

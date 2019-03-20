@@ -3,6 +3,7 @@ package com.amrit.futsal.api;
 
 import com.amrit.futsal.domain.CustomResponse;
 import com.amrit.futsal.entity.Futsal;
+import com.amrit.futsal.repository.FutsalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,7 @@ import java.util.Map;
 public class FutsalController {
 
     @Autowired
-    private com.amrit.futsal.repository.FutsalRepository futsalRepository;
+    FutsalRepository futsalRepository;
 
 
     @GetMapping()

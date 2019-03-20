@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Vendor")
-public class Vendor {
+public class Vendor extends AbstractEntity<Long> {
 
     @Column
     private String firstName;

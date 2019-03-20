@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface FutsalRepository extends JpaRepository<Futsal,Integer> {
+
     @Override
     List<Futsal> findAll();
 
@@ -18,9 +19,8 @@ public interface FutsalRepository extends JpaRepository<Futsal,Integer> {
     @Override
     <S extends Futsal> S saveAndFlush(S s);
 
-
     @Override
-    Optional<Futsal> findById(Integer integer);
+    Optional<Futsal> findById(Integer id);
 
     @Override
     boolean existsById(Integer integer);
