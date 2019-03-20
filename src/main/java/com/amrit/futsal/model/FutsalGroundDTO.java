@@ -1,36 +1,40 @@
-package com.amrit.futsal.entity;
+package com.amrit.futsal.model;
 
 import com.amrit.futsal.model.enumconstant.FutsalGroundStatus;
 
-import javax.persistence.*;
+public class FutsalGroundDTO{
 
-@Entity
-@Table(name="FutsalGround")
-public class FutsalGround extends AbstractEntity<Long> {
+    private Long id;
 
-    @Column
-    private double length;
-    @Column
-    private double width;
-    @Column
+    private String length;
+
+    private String width;
+
     private String courtType;
 
-    @Column
     private FutsalGroundStatus futsalGroundStatus;
 
-    public double getLength() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getLength() {
         return length;
     }
 
-    public void setLength(double length) {
+    public void setLength(String length) {
         this.length = length;
     }
 
-    public double getWidth() {
+    public String getWidth() {
         return width;
     }
 
-    public void setWidth(double width) {
+    public void setWidth(String width) {
         this.width = width;
     }
 

@@ -1,39 +1,34 @@
-package com.amrit.futsal.entity;
+package com.amrit.futsal.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+public class UserDTO {
 
-@Entity
-@Table(name = "User")
-public class User extends AbstractEntity<Long> {
+    private Long id;
 
-    @Column
     private String username;
 
-    @Column
     private String email;
 
-    @Column
-    private String emailVerificationCode;
-
-    @Column
     private String mobileNumber;
 
-    @Column
     private String mobileVerificationCode;
 
-    @Column
     private String password;
 
-    @Column
+    private String emailVerificationCode;
+
     private String passwordResetCode;
 
-    @Column
     private Boolean emailValidated;
 
-    @Column
     private Boolean phoneNumberValidated;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;

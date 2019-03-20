@@ -1,37 +1,32 @@
-package com.amrit.futsal.entity;
+package com.amrit.futsal.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+public class VendorDTO {
 
-@Entity
-@Table(name = "Vendor")
-public class Vendor extends AbstractEntity<Long> {
+    private Long id;
 
-    @Column
     private String firstName;
 
-    @Column
     private String middleName;
 
-    @Column
     private String lastName;
 
-    @Column
     private String phoneNumber;
 
-    @Column
     private String city;
 
-    @Column
     private String addressline1;
 
-    @Column
     private String addressline2;
 
-    @OneToOne
-    private User user;
+    private Long user;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -89,12 +84,11 @@ public class Vendor extends AbstractEntity<Long> {
         this.addressline2 = addressline2;
     }
 
-
-    public User getUser() {
+    public Long getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(Long user) {
         this.user = user;
     }
 }
