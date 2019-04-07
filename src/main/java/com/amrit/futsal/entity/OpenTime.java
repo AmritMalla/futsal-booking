@@ -9,7 +9,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "OpenTime")
-public class OpenTime extends AbstractEntity<Long> {
+public class OpenTime extends AbstractEntity{
+
+    private static final long serialVersionUID = -4246526393439183183L;
 
     @Column
     private Day day;

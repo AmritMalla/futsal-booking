@@ -2,11 +2,15 @@ package com.amrit.futsal.entity;
 
 import com.amrit.futsal.model.enumconstant.FutsalGroundStatus;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Entity
-@Table(name="FutsalGround")
-public class FutsalGround extends AbstractEntity<Long> {
+@Table(name = "FutsalGround")
+public class FutsalGround extends AbstractEntity {
+
+    private static final long serialVersionUID = 46606914159524904L;
 
     @Column
     private double length;

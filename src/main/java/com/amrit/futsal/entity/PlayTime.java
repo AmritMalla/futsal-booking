@@ -9,8 +9,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "PlayTime")
-public class PlayTime extends AbstractEntity<Long> {
+public class PlayTime extends AbstractEntity {
 
+    private static final long serialVersionUID = -6095836447745131532L;
     @Column
     private String startTime;
 

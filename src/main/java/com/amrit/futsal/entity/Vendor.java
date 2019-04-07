@@ -7,7 +7,9 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Vendor")
-public class Vendor extends AbstractEntity<Long> {
+public class Vendor extends AbstractEntity {
+
+    private static final long serialVersionUID = 6662648172551163135L;
 
     @Column
     private String firstName;

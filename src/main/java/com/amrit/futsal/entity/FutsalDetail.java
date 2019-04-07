@@ -7,7 +7,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "FutsalDetail")
-public class FutsalDetail extends AbstractEntity<Long> {
+public class FutsalDetail extends AbstractEntity {
+
+
+    private static final long serialVersionUID = -5462788365600793391L;
 
     @Column
     private String topic;

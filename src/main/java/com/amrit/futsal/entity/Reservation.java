@@ -6,11 +6,12 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "Reservation")
-public class Reservation  extends AbstractEntity<Long> {
+public class Reservation  extends AbstractEntity {
 
+
+    private static final long serialVersionUID = -514294780861679580L;
     @OneToOne
     private PlayTime playTime;
-
 
     @ManyToOne
     private Customer customer;

@@ -6,7 +6,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "User")
-public class User extends AbstractEntity<Long> {
+public class User extends AbstractEntity {
 
     @Column
     private String username;
@@ -16,6 +16,9 @@ public class User extends AbstractEntity<Long> {
 
     @Column
     private String emailVerificationCode;
+
+    @Column
+    private Boolean emailValidated;
 
     @Column
     private String mobileNumber;
@@ -29,11 +32,25 @@ public class User extends AbstractEntity<Long> {
     @Column
     private String passwordResetCode;
 
-    @Column
-    private Boolean emailValidated;
+    public User() {
+    }
 
-    @Column
-    private Boolean phoneNumberValidated;
+    public User(Long id){
+        super.setId(id);
+    }
+
+    public User(String username, String email, String emailVerificationCode,
+                Boolean emailValidated, String mobileNumber, String mobileVerificationCode,
+                String password, String passwordResetCode) {
+        this.username = username;
+        this.email = email;
+        this.emailVerificationCode = emailVerificationCode;
+        this.emailValidated = emailValidated;
+        this.mobileNumber = mobileNumber;
+        this.mobileVerificationCode = mobileVerificationCode;
+        this.password = password;
+        this.passwordResetCode = passwordResetCode;
+    }
 
     public String getUsername() {
         return username;
@@ -99,11 +116,4 @@ public class User extends AbstractEntity<Long> {
         this.emailValidated = emailValidated;
     }
 
-    public Boolean getPhoneNumberValidated() {
-        return phoneNumberValidated;
-    }
-
-    public void setPhoneNumberValidated(Boolean phoneNumberValidated) {
-        this.phoneNumberValidated = phoneNumberValidated;
-    }
 }

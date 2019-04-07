@@ -5,9 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="Futsal")
-public class Futsal extends AbstractEntity<Long>{
+@Table(name = "Futsal")
+public class Futsal extends AbstractEntity {
 
+
+    private static final long serialVersionUID = -1125759616630773271L;
 
     @Column
     private String futsalName;

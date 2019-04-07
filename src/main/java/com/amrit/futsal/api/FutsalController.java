@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/futsalApp/futsal")
+@RequestMapping("api/futsalapp/futsal")
 public class FutsalController {
 
     @Autowired

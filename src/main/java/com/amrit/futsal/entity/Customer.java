@@ -7,8 +7,10 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "Customer")
-public class Customer extends AbstractEntity<Long> {
+public class Customer extends AbstractEntity {
 
+
+    private static final long serialVersionUID = -3509756279352152970L;
 
     @Column
     private String firstName;
@@ -30,7 +32,6 @@ public class Customer extends AbstractEntity<Long> {
 
     @Column
     private String addressline2;
-
 
     @OneToOne
     private User user;
