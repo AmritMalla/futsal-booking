@@ -1,16 +1,16 @@
 package com.amrit.futsal.model;
 
-import com.amrit.futsal.model.enumconstant.Day;
+import java.time.LocalDateTime;
 
 public class OpenTimeDTO {
 
     private Long id;
 
-    private Day day;
+    private LocalDateTime localDate;
 
-    private String openTime;
+    private String startTime;
 
-    private String closeTime;
+    private String endTime;
 
     private Long futsalGround;
 
@@ -30,27 +30,27 @@ public class OpenTimeDTO {
         this.futsalGround = futsalGround;
     }
 
-    public Day getDay() {
-        return day;
+    public LocalDateTime getLocalDateTime() {
+        return localDate;
     }
 
-    public void setDay(Day day) {
-        this.day = day;
+    public void setLocalDateTime(LocalDateTime localDate) {
+        this.localDate = localDate;
     }
 
-    public String getOpenTime() {
-        return openTime;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setOpenTime(String openTime) {
-        this.openTime = openTime;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
-    public String getCloseTime() {
-        return closeTime;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setCloseTime(String closeTime) {
-        this.closeTime = closeTime;
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }
