@@ -50,6 +50,7 @@ public class VendorController {
             if (vendorDTO == null) {
                 customResponse.setStatus(404);
                 customResponse.setMessage("Vendor with id :" + id + " not found");
+                return  customResponse;
             }
             map.put("vendor", vendorDTO);
             customResponse.setStatus(200);
@@ -64,14 +65,6 @@ public class VendorController {
         }
     }
 
-    //With pathvariable id to delete
-//    @DeleteMapping("/{id}")
-//    public void deleteVendor(@PathVariable("id") Long id){
-//        vendorService.deleteVendor(id);
-//    }
-
-
-    //With Parameters id to delete
     @DeleteMapping("")
     public void deleteVendor(@RequestParam("id") Long id) {
         vendorService.deleteVendor(id);

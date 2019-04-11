@@ -6,11 +6,13 @@ import com.amrit.futsal.model.VendorDTO;
 import com.amrit.futsal.repository.UserRepository;
 import com.amrit.futsal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+@Component
 public class VendorConverter {
 
     @Autowired

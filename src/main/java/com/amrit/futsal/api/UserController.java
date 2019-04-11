@@ -25,6 +25,7 @@ public class UserController {
             List<UserDTO> userDTOS = userService.getAll();
             if (userDTOS.size() == 0) {
                 customResponse.setStatus(404);
+                customResponse.setMessage("Success");
                 return customResponse;
             }
             map.put("users", userDTOS);
@@ -38,8 +39,6 @@ public class UserController {
             customResponse.setMessage(e.getMessage());
             return customResponse;
         }
-
-
     }
 
 
@@ -53,6 +52,7 @@ public class UserController {
             if (userDTO == null) {
                 customResponse.setStatus(404);
                 customResponse.setMessage("User with id :" + id + " not found");
+                return customResponse;
             }
             map.put("user", userDTO);
             customResponse.setStatus(200);
@@ -97,7 +97,6 @@ public class UserController {
             customResponse.setBody(map);
             return customResponse;
         }catch (Exception e){
-
             e.printStackTrace();
             customResponse.setStatus(500);
             customResponse.setMessage(e.getMessage());
@@ -107,6 +106,7 @@ public class UserController {
 
     @PutMapping("")
     public CustomResponse<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
+
         return userService.updateUser(userDTO);
     }
 
