@@ -1,11 +1,10 @@
 package com.amrit.futsal.entity;
 
-import com.amrit.futsal.model.enumconstant.Day;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "OpenTime")
@@ -14,13 +13,13 @@ public class OpenTime extends AbstractEntity{
     private static final long serialVersionUID = -4246526393439183183L;
 
     @Column
-    private Day day;
+    private LocalDateTime localDateTime;
 
     @Column
-    private String openTime;
+    private String startTime;
 
     @Column
-    private String closeTime;
+    private String endTime;
 
     @ManyToOne
     private FutsalGround futsalGround;
@@ -33,27 +32,27 @@ public class OpenTime extends AbstractEntity{
         this.futsalGround = futsalGround;
     }
 
-    public Day getDay() {
-        return day;
+    public LocalDateTime getLocalDateTime() {
+        return localDateTime;
     }
 
-    public void setDay(Day day) {
-        this.day = day;
+    public void setLocalDateTime(LocalDateTime day) {
+        this.localDateTime = localDateTime;
     }
 
-    public String getOpenTime() {
-        return openTime;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setOpenTime(String openTime) {
-        this.openTime = openTime;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 
-    public String getCloseTime() {
-        return closeTime;
+    public String getEndTime() {
+        return endTime;
     }
 
-    public void setCloseTime(String closeTime) {
-        this.closeTime = closeTime;
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
     }
 }
