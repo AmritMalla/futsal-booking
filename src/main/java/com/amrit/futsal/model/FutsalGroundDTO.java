@@ -6,9 +6,9 @@ public class FutsalGroundDTO{
 
     private Long id;
 
-    private String length;
+    private Double length;
 
-    private String width;
+    private Double width;
 
     private String courtType;
 
@@ -22,19 +22,19 @@ public class FutsalGroundDTO{
         this.id = id;
     }
 
-    public String getLength() {
+    public Double getLength() {
         return length;
     }
 
-    public void setLength(String length) {
+    public void setLength(Double length) {
         this.length = length;
     }
 
-    public String getWidth() {
+    public Double getWidth() {
         return width;
     }
 
-    public void setWidth(String width) {
+    public void setWidth(Double width) {
         this.width = width;
     }
 
