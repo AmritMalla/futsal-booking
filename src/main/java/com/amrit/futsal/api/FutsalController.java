@@ -27,6 +27,7 @@ public class FutsalController {
             List<FutsalDTO> futsals = futsalService.getAll();
             if (futsals.size() == 0) {
                 customResponse.setStatus(404);
+                customResponse.setMessage("No Content");
                 return customResponse;
             }
             map.put("futsals", futsals);
