@@ -8,22 +8,22 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface FutsalRepository extends JpaRepository<Futsal,Integer> {
+public interface FutsalRepository extends JpaRepository<Futsal,Long> {
 
     @Override
     List<Futsal> findAll();
 
     @Override
-    Futsal getOne(Integer integer);
+    Futsal getOne(Long id);
 
     @Override
     <S extends Futsal> S saveAndFlush(S s);
 
     @Override
-    Optional<Futsal> findById(Integer id);
+    Optional<Futsal> findById(Long id);
 
     @Override
-    boolean existsById(Integer integer);
+    boolean existsById(Long id);
 
     @Override
     void delete(Futsal futsal);

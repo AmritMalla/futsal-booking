@@ -6,9 +6,9 @@ public class FutsalDTO  {
 
     private String futsalName;
 
-    private String latitude;
+    private Double latitude;
 
-    private String longitude;
+    private Double longitude;
 
     private String country;
 
@@ -16,7 +16,7 @@ public class FutsalDTO  {
 
     private String streetAddress;
 
-    private String rating;
+    private Double rating;
 
     private Long vendorId;
 
@@ -36,19 +36,19 @@ public class FutsalDTO  {
         this.id = id;
     }
 
-        public String getLatitude() {
+        public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(String latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public String getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(String longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -76,11 +76,11 @@ public class FutsalDTO  {
         this.streetAddress = streetAddress;
     }
 
-    public String getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(String rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 

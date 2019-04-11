@@ -2,6 +2,7 @@ package com.amrit.futsal.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -15,10 +16,10 @@ public class Futsal extends AbstractEntity {
     private String futsalName;
 
     @Column
-    private double latitude;
+    private Double latitude;
 
     @Column
-    private double longitude;
+    private Double longitude;
 
     @Column
     private String country;
@@ -30,32 +31,32 @@ public class Futsal extends AbstractEntity {
     private String streetAddress;
 
     @Column
-    private double rating;
+    private Double rating;
 
-    @Column
-    private Long vendorId;
+    @ManyToOne
+    private Vendor vendor;
 
     public String getFustsalName() {
         return futsalName;
     }
 
-    public void setFustsalName(String fustsalName) {
-        this.futsalName = fustsalName;
+    public void setFutsalName(String futsalName) {
+        this.futsalName = futsalName;
     }
 
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public Double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
@@ -83,19 +84,19 @@ public class Futsal extends AbstractEntity {
         this.streetAddress = streetAddress;
     }
 
-    public double getRating() {
+    public Double getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
+    public void setRating(Double rating) {
         this.rating = rating;
     }
 
-    public Long getVendorId() {
-        return vendorId;
+    public Vendor getVendorId() {
+        return vendor;
     }
 
-    public void setVendorId(Long vendorId) {
-        this.vendorId = vendorId;
+    public void setVendorId(Vendor vendor) {
+        this.vendor = vendor;
     }
 }
