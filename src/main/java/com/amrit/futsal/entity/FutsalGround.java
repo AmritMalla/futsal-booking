@@ -13,28 +13,28 @@ public class FutsalGround extends AbstractEntity {
     private static final long serialVersionUID = 46606914159524904L;
 
     @Column
-    private double length;
+    private Double length;
     @Column
-    private double width;
+    private Double width;
     @Column
     private String courtType;
 
     @Column
     private FutsalGroundStatus futsalGroundStatus;
 
-    public double getLength() {
+    public Double getLength() {
         return length;
     }
 
-    public void setLength(double length) {
+    public void setLength(Double length) {
         this.length = length;
     }
 
-    public double getWidth() {
+    public Double getWidth() {
         return width;
     }
 
-    public void setWidth(double width) {
+    public void setWidth(Double width) {
         this.width = width;
     }
 

@@ -1,6 +1,7 @@
 package com.amrit.futsal.service.impl;
 
 import com.amrit.futsal.converter.UserConverter;
+import com.amrit.futsal.domain.CustomResponse;
 import com.amrit.futsal.entity.User;
 import com.amrit.futsal.model.UserDTO;
 import com.amrit.futsal.repository.UserRepository;
@@ -8,11 +9,11 @@ import com.amrit.futsal.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -32,14 +33,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findById(Long id) {
-//        User user = userRepository.findById(id).orElse(new User(0L));
+    public UserDTO getById(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()) {
             try {
                 throw new Exception("Id -" + id + " not found");
             } catch (Exception e) {
-               logger.info(e.toString());
+                logger.info(e.toString());
             }
             return null;
         }
@@ -54,14 +54,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserDTO> updateUser(UserDTO userDTO) {
-        Optional<User> optionalUser = userRepository.findById(userDTO.getId());
-        if(!optionalUser.isPresent()){
-            return ResponseEntity.notFound().build();
+    public CustomResponse<UserDTO> updateUser(UserDTO userDTO) {
+        CustomResponse customResponse = new CustomResponse();
+        try {
+
+            Map<String, Object> map = new HashMap<>();
+            Optional<User> optionalUser = userRepository.findById(userDTO.getId());
+
+            if (!optionalUser.isPresent()) {
+                customResponse.setStatus(404);
+                customResponse.setMessage("User with given id doesn't exist");
+                return customResponse;
+            }
+            User user = userConverter.convertToEntity(userDTO);
+            User save = userRepository.save(user);
+            map.put("user", userConverter.convertToDto(save));
+            customResponse.setStatus(200);
+            customResponse.setMessage("Successfully updated");
+            customResponse.setBody(map);
+            return customResponse;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            customResponse.setStatus(500);
+            customResponse.setMessage(e.getMessage());
+            return customResponse;
         }
-        User user = userConverter.convertToEntity(userDTO);
-        User save = userRepository.save(user);
-        return new ResponseEntity<>(userConverter.convertToDto(save), HttpStatus.NO_CONTENT);
     }
 
     @Override

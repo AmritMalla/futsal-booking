@@ -1,6 +1,5 @@
 package com.amrit.futsal.model;
 
-import com.amrit.futsal.entity.PlayTime;
 import com.amrit.futsal.model.enumconstant.ReservationStatus;
 
 
@@ -8,7 +7,7 @@ public class ReservationDTO {
 
     private Long id;
 
-    private PlayTime playTime;
+    private Long playTime;
 
     private Long customer;
 
@@ -25,11 +24,11 @@ public class ReservationDTO {
         this.id = id;
     }
 
-    public PlayTime getPlayTime() {
+    public Long getPlayTime() {
         return playTime;
     }
 
-    public void setPlayTime(PlayTime playTime) {
+    public void setPlayTime(Long playTime) {
         this.playTime = playTime;
     }
 

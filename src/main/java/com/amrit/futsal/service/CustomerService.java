@@ -1,18 +1,19 @@
 package com.amrit.futsal.service;
 
+import com.amrit.futsal.domain.CustomResponse;
 import com.amrit.futsal.model.CustomerDTO;
 
 import java.util.List;
 
 public interface CustomerService {
+
     List<CustomerDTO> getAll();
 
-    CustomerDTO findById(Long id);
+    CustomerDTO getById(Long id);
 
-    boolean saveCustomer(CustomerDTO customerDTO);
+    CustomerDTO createCustomer(CustomerDTO customerDTO);
 
-    boolean updateCustomer(CustomerDTO customerDTO);
+    CustomResponse<CustomerDTO> updateCustomer(CustomerDTO customerDTO);
 
-
-
+    void deleteCustomer(Long id);
 }

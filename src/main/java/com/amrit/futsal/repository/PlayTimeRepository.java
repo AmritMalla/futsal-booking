@@ -1,9 +1,11 @@
 package com.amrit.futsal.repository;
 
-import com.amrit.futsal.entity.FutsalDetail;
+import com.amrit.futsal.entity.PlayTime;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PlayTimeRepository extends JpaRepository<FutsalDetail,Long> {
+@Repository
+public interface PlayTimeRepository extends JpaRepository<PlayTime,Long> {
 
 
 }
