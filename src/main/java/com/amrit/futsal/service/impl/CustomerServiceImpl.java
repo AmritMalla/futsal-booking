@@ -34,7 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDTO getById(Long id) {
-//        Customer customer = customerRepository.findById(id).orElse(new Customer(0L));
+//        Customer customer = customerRepository.getById(id).orElse(new Customer(0L));
         Optional<Customer> optionalCustomer = customerRepository.findById(id);
         if (!optionalCustomer.isPresent()) {
             try {

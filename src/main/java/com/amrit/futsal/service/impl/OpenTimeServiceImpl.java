@@ -33,7 +33,7 @@ public class OpenTimeServiceImpl implements OpenTimeService {
     }
 
     @Override
-    public OpenTimeDTO findById(Long id) {
+    public OpenTimeDTO getById(Long id) {
         Optional<OpenTime> optionalOpenTime = openTimeRepository.findById(id);
         if (!optionalOpenTime.isPresent()) {
             try {

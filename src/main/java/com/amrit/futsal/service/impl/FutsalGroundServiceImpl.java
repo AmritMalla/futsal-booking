@@ -33,8 +33,7 @@ public class FutsalGroundServiceImpl implements FutsalGroundService {
     }
 
     @Override
-    public FutsalGroundDTO findById(Long id) {
-//        FutsalGround futsalGround = futsalGroundRepository.findById(id).orElse(new FutsalGround(0L));
+    public FutsalGroundDTO getById(Long id) {
         Optional<FutsalGround> optionalFutsalGround = futsalGroundRepository.findById(id);
         if (!optionalFutsalGround.isPresent()) {
             try {

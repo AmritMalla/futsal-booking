@@ -48,7 +48,7 @@ public class OpenTimeConverter {
         openTime.setEndTime(openTimeDTO.getEndTime());
         openTime.setLocalDateTime(openTimeDTO.getLocalDateTime());
         openTime.setFutsalGround(futsalGroundConverter.convertToEntity(
-                futsalGroundService.findById(openTime.getFutsalGround().getId())));
+                futsalGroundService.getById(openTime.getFutsalGround().getId())));
         return openTime;
 
     }

@@ -33,8 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findById(Long id) {
-//        User user = userRepository.findById(id).orElse(new User(0L));
+    public UserDTO getById(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (!optionalUser.isPresent()) {
             try {

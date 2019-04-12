@@ -34,7 +34,7 @@ public class FutsalDetailServiceImpl implements FutsalDetailService {
 
     @Override
     public FutsalDetailDTO getById(Long id) {
-//        FutsalDetail futsalDetail = futsalDetailRepository.findById(id).orElse(new FutsalDetail(0L));
+//        FutsalDetail futsalDetail = futsalDetailRepository.getById(id).orElse(new FutsalDetail(0L));
         Optional<FutsalDetail> optionalFutsalDetail = futsalDetailRepository.findById(id);
         if (!optionalFutsalDetail.isPresent()) {
             try {

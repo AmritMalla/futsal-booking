@@ -47,7 +47,7 @@ public class OpenTimeController {
         CustomResponse customResponse = new CustomResponse<>();
         try {
             Map<String, Object> map = new HashMap<>();
-            OpenTimeDTO openTimeDTO = openTimeService.findById(id);
+            OpenTimeDTO openTimeDTO = openTimeService.getById(id);
             if (openTimeDTO == null) {
                 customResponse.setStatus(404);
                 customResponse.setMessage("OpenTime with id :" + id + " not found");

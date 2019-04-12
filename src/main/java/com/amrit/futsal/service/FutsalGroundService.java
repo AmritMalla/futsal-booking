@@ -9,7 +9,7 @@ public interface FutsalGroundService {
 
     List<FutsalGroundDTO> getAll();
 
-    FutsalGroundDTO findById(Long id);
+    FutsalGroundDTO getById(Long id);
 
     FutsalGroundDTO saveFutsalGround(FutsalGroundDTO futsalGroundDTO);
 
