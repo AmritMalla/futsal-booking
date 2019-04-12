@@ -13,11 +13,11 @@ public class CustomerDTO {
 
     private String city;
 
-    private String addressline1;
+    private String addressLine1;
 
-    private String addressline2;
+    private String addressLine2;
 
-    private Long userId;
+    private Long user;
 
     public Long getId() {
         return id;
@@ -67,27 +67,27 @@ public class CustomerDTO {
         this.city = city;
     }
 
-    public String getAddressline1() {
-        return addressline1;
+    public String getAddressLine1() {
+        return addressLine1;
     }
 
-    public void setAddressline1(String addressline1) {
-        this.addressline1 = addressline1;
+    public void setAddressLine1(String addressLine1) {
+        this.addressLine1 = addressLine1;
     }
 
-    public String getAddressline2() {
-        return addressline2;
+    public String getAddressLine2() {
+        return addressLine2;
     }
 
-    public void setAddressline2(String addressline2) {
-        this.addressline2 = addressline2;
+    public void setAddressLine2(String addressLine2) {
+        this.addressLine2 = addressLine2;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(Long user) {
+        this.user = user;
     }
 }

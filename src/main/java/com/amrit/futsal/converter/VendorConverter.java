@@ -29,6 +29,7 @@ public class VendorConverter {
         vendorDTO.setId(vendor.getId());
         vendorDTO.setFirstName(vendor.getFirstName());
         vendorDTO.setMiddleName(vendor.getMiddleName());
+        vendorDTO.setLastName(vendor.getLastName());
         vendorDTO.setPhoneNumber(vendor.getPhoneNumber());
         vendorDTO.setCity(vendor.getCity());
         vendorDTO.setAddressline1(vendor.getAddressline1());
@@ -55,6 +56,7 @@ public class VendorConverter {
         vendor.setId(vendorDTO.getId());
         vendor.setFirstName(vendorDTO.getFirstName());
         vendor.setMiddleName(vendorDTO.getMiddleName());
+        vendor.setLastName(vendorDTO.getLastName());
         vendor.setCity(vendorDTO.getCity());
         vendor.setPhoneNumber(vendorDTO.getPhoneNumber());
         vendor.setAddressline1(vendorDTO.getAddressline1());
