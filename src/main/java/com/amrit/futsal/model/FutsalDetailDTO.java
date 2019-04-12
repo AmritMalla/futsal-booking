@@ -8,7 +8,7 @@ public class FutsalDetailDTO  {
 
     private String description;
 
-    private String futsal;
+    private Long futsal;
 
     public Long getId() {
         return id;
@@ -34,11 +34,11 @@ public class FutsalDetailDTO  {
         this.description = description;
     }
 
-    public String getFutsal() {
+    public Long getFutsal() {
         return futsal;
     }
 
-    public void setFutsal(String futsal) {
+    public void setFutsal(Long futsal) {
         this.futsal = futsal;
     }
 }
