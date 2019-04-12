@@ -51,7 +51,7 @@ public class PlayTimeConverter {
         playTime.setEndTime(playTimeDTO.getEndTime());
         playTime.setPlayTimeStatus(playTimeDTO.getPlayTimeStatus());
         playTime.setPrice(playTimeDTO.getPrice());
-        FutsalGround futsalGround = futsalGroundConverter.convertToEntity(futsalGroundService.findById(playTime.getFutsalGround().getId()));
+        FutsalGround futsalGround = futsalGroundConverter.convertToEntity(futsalGroundService.getById(playTime.getFutsalGround().getId()));
         playTime.setFutsalGround(futsalGround);
 
         return playTime;

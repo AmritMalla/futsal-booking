@@ -48,7 +48,7 @@ public class PlayTimeController {
         CustomResponse customResponse = new CustomResponse<>();
         try {
             Map<String, Object> map = new HashMap<>();
-            PlayTimeDTO playTimeDTO = playTimeService.findById(id);
+            PlayTimeDTO playTimeDTO = playTimeService.getById(id);
             if (playTimeDTO == null) {
                 customResponse.setStatus(404);
                 customResponse.setMessage("PlayTime with id :" + id + " not found");

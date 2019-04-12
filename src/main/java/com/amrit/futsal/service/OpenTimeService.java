@@ -8,7 +8,7 @@ import java.util.List;
 public interface OpenTimeService {
     List<OpenTimeDTO> getAll();
 
-    OpenTimeDTO findById(Long id);
+    OpenTimeDTO getById(Long id);
 
     OpenTimeDTO saveOpenTime(OpenTimeDTO openTimeDTO);
 

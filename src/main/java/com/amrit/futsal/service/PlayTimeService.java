@@ -9,7 +9,7 @@ public interface PlayTimeService {
 
     List<PlayTimeDTO> getAll();
 
-    PlayTimeDTO findById(Long id);
+    PlayTimeDTO getById(Long id);
 
     PlayTimeDTO savePlayTime(PlayTimeDTO playTimeDTO);
 

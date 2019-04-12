@@ -34,7 +34,6 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public VendorDTO getById(Long id) {
-//        Vendor vendor = vendorRepository.findById(id).orElse(new Vendor(0L));
         Optional<Vendor> optionalVendor = vendorRepository.findById(id);
         if (!optionalVendor.isPresent()) {
             try {

@@ -46,7 +46,7 @@ public class FutsalGroundController {
         CustomResponse customResponse = new CustomResponse<>();
         try {
             Map<String, Object> map = new HashMap<>();
-            FutsalGroundDTO futsalGroundDTO = futsalGroundService.findById(id);
+            FutsalGroundDTO futsalGroundDTO = futsalGroundService.getById(id);
             if (futsalGroundDTO == null) {
                 customResponse.setStatus(404);
                 customResponse.setMessage("FutsalGround with id :" + id + " not found");

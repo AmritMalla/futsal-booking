@@ -48,7 +48,7 @@ public class UserController {
         CustomResponse customResponse = new CustomResponse<>();
         try {
             Map<String, Object> map = new HashMap<>();
-            UserDTO userDTO = userService.findById(id);
+            UserDTO userDTO = userService.getById(id);
             if (userDTO == null) {
                 customResponse.setStatus(404);
                 customResponse.setMessage("User with id :" + id + " not found");

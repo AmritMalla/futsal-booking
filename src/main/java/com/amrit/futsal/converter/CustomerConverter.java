@@ -59,7 +59,7 @@ public class CustomerConverter {
         customer.setPhoneNumber(customerDTO.getPhoneNumber());
         customer.setAddressLine1(customerDTO.getAddressLine1());
         customer.setAddressLine2(customerDTO.getAddressLine2());
-        User user = userConverter.convertToEntity(userService.findById(customerDTO.getUser()));
+        User user = userConverter.convertToEntity(userService.getById(customerDTO.getUser()));
         customer.setUser(user);
         return customer;
     }

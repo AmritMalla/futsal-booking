@@ -63,8 +63,8 @@ public class ReservationConverter {
             reservation.setId(reservationDTO.getId());
         }
         reservation.setReservationStatus(reservationDTO.getReservationStatus());
-        PlayTime playTime = playTimeConverter.convertToEntity(playTimeService.findById(reservationDTO.getPlayTime()));
-        FutsalGround futsalGround = futsalGroundConverter.convertToEntity(futsalGroundService.findById(reservationDTO.getFutsalGround()));
+        PlayTime playTime = playTimeConverter.convertToEntity(playTimeService.getById(reservationDTO.getPlayTime()));
+        FutsalGround futsalGround = futsalGroundConverter.convertToEntity(futsalGroundService.getById(reservationDTO.getFutsalGround()));
         Customer customer = customerConverter.convertToEntity(customerService.getById(reservationDTO.getCustomer()));
         reservation.setPlayTime(playTime);
         reservation.setFutsalGround(futsalGround);

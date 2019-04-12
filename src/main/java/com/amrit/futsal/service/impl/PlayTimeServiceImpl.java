@@ -33,7 +33,7 @@ public class PlayTimeServiceImpl implements PlayTimeService {
     }
 
     @Override
-    public PlayTimeDTO findById(Long id) {
+    public PlayTimeDTO getById(Long id) {
         Optional<PlayTime> optionalPlayTime = playTimeRepository.findById(id);
         if (!optionalPlayTime.isPresent()) {
             try {

@@ -61,7 +61,7 @@ public class VendorConverter {
         vendor.setPhoneNumber(vendorDTO.getPhoneNumber());
         vendor.setAddressline1(vendorDTO.getAddressline1());
         vendor.setAddressline2(vendorDTO.getAddressline2());
-        User user = userConverter.convertToEntity(userService.findById(vendorDTO.getUser()));
+        User user = userConverter.convertToEntity(userService.getById(vendorDTO.getUser()));
         vendor.setUser(user);
         return vendor;
     }
