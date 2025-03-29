@@ -1,37 +1,39 @@
 package com.amrit.futsal.entity;
+
 import lombok.*;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
+@Table(name = "time_slots")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+public class TimeSlot {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @Column(name = "slot_id")
+    private Long slotId;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "ground_id", nullable = false)
+    private FutsalGround ground;
 
-    @Column(name = "email", nullable = false)
-    private String email;
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime;
 
-    @Column(name = "phone_number")
-    private String phoneNumber;
+    @Column(name = "price", nullable = false)
+    private Double price;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;
+    @Column(name = "status", nullable = false)
+    private Status status;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -49,7 +51,7 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public enum Role {
-        FUTSAL_COMPANY, CUSTOMER
+    public enum Status {
+        AVAILABLE, BOOKED, UNAVAILABLE
     }
 }

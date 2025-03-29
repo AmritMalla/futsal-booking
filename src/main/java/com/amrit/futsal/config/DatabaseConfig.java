@@ -1,8 +1,5 @@
 package com.amrit.futsal.config;
 
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-
 /*@EnableJpaRepositories --> Spring will scan for repositories to add the Spring Application Context
  JpaRepositories extend:
 	 org.springframework.data.repository.interface
@@ -29,9 +26,9 @@ Enabling Transaction Management
 It registers the necessary Spring components that powers annotation-driven transaction management such as
 TransactionInterceptor or Aspect J based advice
 */
-@EnableJpaRepositories("com.amrit.futsal.repository")
-@EnableTransactionManagement
-public class DatabaseConfig {
-
-
-}
+//@EnableJpaRepositories("com.amrit.futsal.repository")
+//@EnableTransactionManagement
+//public class DatabaseConfig {
+//
+//
+//}

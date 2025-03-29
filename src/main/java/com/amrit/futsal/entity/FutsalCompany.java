@@ -6,30 +6,36 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "futsal_grounds")
+@Table(name = "futsal_companies")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FutsalGround {
+public class FutsalCompany {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ground_id")
-    private Long groundId;
+    @Column(name = "futsal_id")
+    private Long futsalId;
 
-    @ManyToOne
-    @JoinColumn(name = "futsal_id", nullable = false)
-    private FutsalCompany futsalCompany;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "ground_name", nullable = false)
-    private String groundName;
+    @Column(name = "company_name", nullable = false)
+    private String companyName;
 
-    @Column(name = "image_url")
-    private String imageUrl;
+    @Column(name = "address", nullable = false)
+    private String address;
 
-    @Column(name = "capacity")
-    private Integer capacity;
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "banner_image_url")
+    private String bannerImageUrl;
+
+    @Column(name = "rating")
+    private Double rating;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

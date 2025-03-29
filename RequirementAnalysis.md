@@ -1,5 +1,5 @@
-To design the database for your multi-tenant futsal booking project, let's outline the required entities, their relationships, and key features. Below is a comprehensive design:
 
+Futsal Project Design 
 ---
 
 ### **Entities and Relationships**
@@ -160,17 +160,5 @@ CREATE TABLE Futsal_Grounds (
 3. **Security**:
     - Encrypt sensitive data and use parameterized queries to avoid SQL injection.
 
-This schema provides flexibility, scalability, and maintainability for your futsal booking platform. Let me know if you need further refinements or feature integration!
-
-
-
-# FutsalAPI
-
--- Future Scope 
-
-Futsal is a team player game, so if you want to play futsal but you can't 
-create/manage whole futsal team, then you should be able to register 
-and play with other futsal member. 
-
-
+This schema provides flexibility, scalability, and maintainability for your futsal booking platform. 
 

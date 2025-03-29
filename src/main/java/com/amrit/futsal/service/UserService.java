@@ -1,19 +1,35 @@
 package com.amrit.futsal.service;
 
-import com.amrit.futsal.domain.CustomResponse;
-import com.amrit.futsal.model.UserDTO;
+import com.amrit.futsal.entity.User;
+import com.amrit.futsal.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
-public interface UserService {
-    List<UserDTO> getAll();
+@Service
+public class UserService {
 
-    UserDTO getById(Long id);
+    private final UserRepository userRepository;
 
-    UserDTO saveUser(UserDTO userDTO);
+    @Autowired
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-    CustomResponse<UserDTO> updateUser(UserDTO userDTO);
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
 
-    void deleteUser(Long id);
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId);
+    }
 
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public void deleteUser(Long userId) {
+        userRepository.deleteById(userId);
+    }
 }
