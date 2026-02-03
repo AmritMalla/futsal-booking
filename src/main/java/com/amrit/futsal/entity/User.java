@@ -3,6 +3,7 @@ import lombok.*;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = "email")})
@@ -13,9 +14,9 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
+    private UUID id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -23,10 +24,10 @@ public class User {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
-    @Column(name = "phone_number")
+    @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -36,20 +37,12 @@ public class User {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public enum Role {
-        FUTSAL_COMPANY, CUSTOMER
+        ADMIN, OWNER, USER
     }
 }

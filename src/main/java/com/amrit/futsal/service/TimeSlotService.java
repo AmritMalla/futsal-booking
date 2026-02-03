@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class TimeSlotService {
@@ -23,34 +24,36 @@ public class TimeSlotService {
         return timeSlotRepository.save(timeSlot);
     }
 
-    public Optional<TimeSlot> getTimeSlotById(Long slotId) {
+    public Optional<TimeSlot> getTimeSlotById(UUID slotId) {
         return timeSlotRepository.findById(slotId);
     }
 
-    public List<TimeSlot> getTimeSlotsByGroundId(Long groundId) {
-        return timeSlotRepository.findByGround_GroundId(groundId);
+    public List<TimeSlot> getTimeSlotsByGroundId(UUID groundId) {
+        return timeSlotRepository.findByGroundId(groundId);
+    }
+    
+    public List<TimeSlot> getAvailableTimeSlots(UUID groundId) {
+        return timeSlotRepository.findAvailableSlotsByGround(groundId);
+    }
+    
+    public List<TimeSlot> getTimeSlotsByDateRange(UUID groundId, LocalDateTime start, LocalDateTime end) {
+        return timeSlotRepository.findTimeSlotsByGroundAndDateRange(groundId, start, end);
     }
 
-    public List<TimeSlot> getAvailableTimeSlots() {
-        return timeSlotRepository.findByStatus(TimeSlot.Status.AVAILABLE);
+    public TimeSlot updateTimeSlot(TimeSlot timeSlot) {
+        return timeSlotRepository.save(timeSlot);
+    }
+    
+    public void markSlotAsBooked(UUID slotId) {
+        Optional<TimeSlot> timeSlotOpt = timeSlotRepository.findById(slotId);
+        if (timeSlotOpt.isPresent()) {
+            TimeSlot timeSlot = timeSlotOpt.get();
+            timeSlot.setIsBooked(true);
+            timeSlotRepository.save(timeSlot);
+        }
     }
 
-    public List<TimeSlot> getTimeSlotsWithinRange(LocalDateTime start, LocalDateTime end) {
-        return timeSlotRepository.findByStartTimeBetween(start, end);
-    }
-
-    public void deleteTimeSlot(Long slotId) {
+    public void deleteTimeSlot(UUID slotId) {
         timeSlotRepository.deleteById(slotId);
-    }
-
-    public List<TimeSlot> findTimeSlotsByGroundAndDate(Long groundId, LocalDateTime date){
-        // Calculate the start of the day
-        LocalDateTime startOfDay = date.toLocalDate().atStartOfDay();
-
-        // Calculate the end of the day
-        LocalDateTime endOfDay = date.toLocalDate().atTime(23, 59, 59, 999999999);
-
-        // Call the other method with calculated start and end
-        return timeSlotRepository.findTimeSlotsByGroundAndStartTimeBetween(groundId, startOfDay, endOfDay);
     }
 }

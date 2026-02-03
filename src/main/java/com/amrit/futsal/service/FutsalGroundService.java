@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class FutsalGroundService {
@@ -22,15 +23,27 @@ public class FutsalGroundService {
         return futsalGroundRepository.save(futsalGround);
     }
 
-    public Optional<FutsalGround> getFutsalGroundById(Long groundId) {
+    public Optional<FutsalGround> getFutsalGroundById(UUID groundId) {
         return futsalGroundRepository.findById(groundId);
     }
-
-    public List<FutsalGround> getFutsalGroundsByFutsalId(Long futsalId) {
-        return futsalGroundRepository.findByFutsalCompany_FutsalId(futsalId);
+    
+    public Optional<FutsalGround> getFutsalGroundByName(String name) {
+        return futsalGroundRepository.findByName(name);
     }
 
-    public void deleteFutsalGround(Long groundId) {
+    public List<FutsalGround> getFutsalGroundsByCompanyId(UUID companyId) {
+        return futsalGroundRepository.findByCompanyId(companyId);
+    }
+    
+    public List<FutsalGround> getFutsalGroundsBySurfaceType(String surfaceType) {
+        return futsalGroundRepository.findBySurfaceType(surfaceType);
+    }
+    
+    public List<FutsalGround> getAllFutsalGrounds() {
+        return futsalGroundRepository.findAll();
+    }
+
+    public void deleteFutsalGround(UUID groundId) {
         futsalGroundRepository.deleteById(groundId);
     }
 }

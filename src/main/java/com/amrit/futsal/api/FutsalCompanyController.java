@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/companies")
@@ -24,15 +25,33 @@ public class FutsalCompanyController {
         return ResponseEntity.ok(futsalCompanyService.createFutsalCompany(futsalCompany));
     }
 
+    @GetMapping("/{companyId}")
+    public ResponseEntity<FutsalCompany> getFutsalCompanyById(@PathVariable UUID companyId) {
+        return futsalCompanyService.getFutsalCompanyById(companyId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @GetMapping("/name/{name}")
+    public ResponseEntity<FutsalCompany> getFutsalCompanyByName(@PathVariable String name) {
+        return futsalCompanyService.getFutsalCompanyByName(name)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/owner/{ownerId}")
+    public ResponseEntity<List<FutsalCompany>> getFutsalCompaniesByOwnerId(@PathVariable UUID ownerId) {
+        return ResponseEntity.ok(futsalCompanyService.getFutsalCompaniesByOwnerId(ownerId));
+    }
+
     @GetMapping
     public ResponseEntity<List<FutsalCompany>> getAllFutsalCompanies() {
         return ResponseEntity.ok(futsalCompanyService.getAllFutsalCompanies());
     }
 
-    @GetMapping("/{futsalId}")
-    public ResponseEntity<FutsalCompany> getFutsalCompanyById(@PathVariable Long futsalId) {
-        return futsalCompanyService.getFutsalCompanyById(futsalId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @DeleteMapping("/{companyId}")
+    public ResponseEntity<Void> deleteFutsalCompany(@PathVariable UUID companyId) {
+        futsalCompanyService.deleteFutsalCompany(companyId);
+        return ResponseEntity.noContent().build();
     }
 }

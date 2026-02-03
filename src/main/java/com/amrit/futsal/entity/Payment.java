@@ -3,7 +3,8 @@ package com.amrit.futsal.entity;
 import lombok.*;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.UUID;
 
 @Entity
 @Table(name = "payments")
@@ -14,44 +15,29 @@ import java.time.LocalDateTime;
 public class Payment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "payment_id")
-    private Long paymentId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
+    private UUID id;
 
     @OneToOne
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "payment_method", nullable = false)
-    private PaymentMethod paymentMethod;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "amount", nullable = false)
-    private Double amount;
+    private BigDecimal amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_status", nullable = false)
+    private PaymentStatus paymentStatus;
 
     @Column(name = "transaction_id", unique = true)
     private String transactionId;
 
-    @Column(name = "payment_date", nullable = false)
-    private LocalDateTime paymentDate;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public enum PaymentMethod {
-        CREDIT_CARD, BANK_TRANSFER, PAYPAL
+    public enum PaymentStatus {
+        PENDING, SUCCESS, FAILED, REFUNDED
     }
 }

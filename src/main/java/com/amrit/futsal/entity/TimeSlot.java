@@ -4,6 +4,7 @@ import lombok.*;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "time_slots")
@@ -14,9 +15,9 @@ import java.time.LocalDateTime;
 public class TimeSlot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "slot_id")
-    private Long slotId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "ground_id", nullable = false)
@@ -28,30 +29,6 @@ public class TimeSlot {
     @Column(name = "end_time", nullable = false)
     private LocalDateTime endTime;
 
-    @Column(name = "price", nullable = false)
-    private Double price;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private Status status;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public enum Status {
-        AVAILABLE, BOOKED, UNAVAILABLE
-    }
+    @Column(name = "is_booked", nullable = false)
+    private Boolean isBooked = false;
 }

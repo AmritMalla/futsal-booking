@@ -3,7 +3,7 @@ package com.amrit.futsal.entity;
 import lombok.*;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "reviews")
@@ -14,37 +14,21 @@ import java.time.LocalDateTime;
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "review_id")
-    private Long reviewId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
+    private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private User customer;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
-    @JoinColumn(name = "futsal_id", nullable = false)
-    private FutsalCompany futsalCompany;
+    @JoinColumn(name = "ground_id", nullable = false)
+    private FutsalGround ground;
 
     @Column(name = "rating", nullable = false)
     private Integer rating;
 
     @Column(name = "review_text")
     private String reviewText;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

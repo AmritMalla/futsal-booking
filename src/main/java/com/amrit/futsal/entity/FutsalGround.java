@@ -3,7 +3,9 @@ package com.amrit.futsal.entity;
 import lombok.*;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "futsal_grounds")
@@ -14,36 +16,31 @@ import java.time.LocalDateTime;
 public class FutsalGround {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ground_id")
-    private Long groundId;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id")
+    private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "futsal_id", nullable = false)
-    private FutsalCompany futsalCompany;
+    @JoinColumn(name = "company_id", nullable = false)
+    private FutsalCompany company;
 
-    @Column(name = "ground_name", nullable = false)
-    private String groundName;
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
+
+    @Column(name = "surface_type")
+    private String surfaceType;
+
+    @Column(name = "price_per_hour", nullable = false)
+    private BigDecimal pricePerHour;
 
     @Column(name = "image_url")
     private String imageUrl;
 
-    @Column(name = "capacity")
-    private Integer capacity;
-
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
     }
 }

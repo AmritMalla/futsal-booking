@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "futsal_companies")
+@Table(name = "reports")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class FutsalCompany {
+public class Report {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,17 +23,19 @@ public class FutsalCompany {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "report_type", nullable = false)
+    private ReportType reportType;
 
-    @Column(name = "location", nullable = false)
-    private String location;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "generated_at", updatable = false)
+    private LocalDateTime generatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.generatedAt = LocalDateTime.now();
+    }
+
+    public enum ReportType {
+        REVENUE, BOOKINGS, CUSTOMERS
     }
 }

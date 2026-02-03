@@ -1,0 +1,1194 @@
+{
+  "info": {
+    "_postman_id": "b8e6f1a5-d872-4c73-85b0-f69b5932d49e",
+    "name": "Futsal Booking System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for testing the Futsal Booking System API"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8090",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"phoneNumber\": \"1234567890\",\n    \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Admin User\",\n    \"email\": \"admin@example.com\",\n    \"password\": \"admin123\",\n    \"phoneNumber\": \"9876543210\",\n    \"role\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register Owner",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Futsal Owner\",\n    \"email\": \"owner@example.com\",\n    \"password\": \"owner123\",\n    \"phoneNumber\": \"5551234567\",\n    \"role\": \"OWNER\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = JSON.parse(responseBody);",
+                  "postman.setEnvironmentVariable(\"token\", jsonData.token);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin@example.com\",\n    \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin Operations",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Owners",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/owners",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "owners"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "customers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Companies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/companies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "companies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Grounds",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/grounds",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "grounds"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "users", "{{userId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "item": [
+        {
+          "name": "Get User By ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By Email",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/email?email=user@example.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "email"],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "user@example.com"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Users by Role",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/by-role?role=USER",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "by-role"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "USER"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Futsal Company Management",
+      "item": [
+        {
+          "name": "Create Futsal Company",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Premier Futsal\",\n    \"location\": \"123 Main Street, City\",\n    \"owner\": {\n        \"id\": \"{{ownerId}}\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/companies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "companies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Company by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/companies/{{companyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "companies", "{{companyId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Company by Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/companies/name/Premier Futsal",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "companies", "name", "Premier Futsal"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Companies by Owner",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/companies/owner/{{ownerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "companies", "owner", "{{ownerId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Companies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/companies",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "companies"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Futsal Ground Management",
+      "item": [
+        {
+          "name": "Create Futsal Ground",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Premier Ground 1\",\n    \"surfaceType\": \"Turf\",\n    \"pricePerHour\": 50.00,\n    \"imageUrl\": \"https://example.com/ground1.jpg\",\n    \"company\": {\n        \"id\": \"{{companyId}}\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/grounds",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "grounds"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ground by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/grounds/{{groundId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "grounds", "{{groundId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Ground by Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/grounds/name/Premier Ground 1",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "grounds", "name", "Premier Ground 1"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Grounds by Company",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/grounds/company/{{companyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "grounds", "company", "{{companyId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Grounds by Surface Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/grounds/surface/Turf",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "grounds", "surface", "Turf"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Time Slot Management",
+      "item": [
+        {
+          "name": "Create Time Slot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"startTime\": \"2025-04-01T14:00:00\",\n    \"endTime\": \"2025-04-01T15:00:00\",\n    \"isBooked\": false,\n    \"ground\": {\n        \"id\": \"{{groundId}}\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/slots",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "slots"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Time Slot by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/slots/{{slotId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "slots", "{{slotId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Time Slots by Ground",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/slots/ground/{{groundId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "slots", "ground", "{{groundId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Available Time Slots",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/slots/available/ground/{{groundId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "slots", "available", "ground", "{{groundId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Time Slots by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/slots/date-range?groundId={{groundId}}&start=2025-04-01T00:00:00&end=2025-04-01T23:59:59",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "slots", "date-range"],
+              "query": [
+                {
+                  "key": "groundId",
+                  "value": "{{groundId}}"
+                },
+                {
+                  "key": "start",
+                  "value": "2025-04-01T00:00:00"
+                },
+                {
+                  "key": "end",
+                  "value": "2025-04-01T23:59:59"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Slot as Booked",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/slots/{{slotId}}/book",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "slots", "{{slotId}}", "book"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Booking Management",
+      "item": [
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": {\n        \"id\": \"{{userId}}\"\n    },\n    \"ground\": {\n        \"id\": \"{{groundId}}\"\n    },\n    \"slot\": {\n        \"id\": \"{{slotId}}\"\n    },\n    \"bookingDate\": \"2025-04-01T14:00:00\",\n    \"status\": \"CONFIRMED\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "{{bookingId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bookings by User",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "user", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bookings by Ground",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/ground/{{groundId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "ground", "{{groundId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bookings by Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/status/CONFIRMED",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "status", "CONFIRMED"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Booking Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/bookings/{{bookingId}}/status?status=COMPLETED",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "bookings", "{{bookingId}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "COMPLETED"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payment Management",
+      "item": [
+        {
+          "name": "Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"booking\": {\n        \"id\": \"{{bookingId}}\"\n    },\n    \"user\": {\n        \"id\": \"{{userId}}\"\n    },\n    \"amount\": 50.00,\n    \"paymentStatus\": \"SUCCESS\",\n    \"transactionId\": \"TXN-12345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/{{paymentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "{{paymentId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payment by Transaction ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/transaction/TXN-12345",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "transaction", "TXN-12345"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payments by Booking ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/booking/{{bookingId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "booking", "{{bookingId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Payments by User ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "user", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Payment Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments/{{paymentId}}/status?status=SUCCESS",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments", "{{paymentId}}", "status"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "SUCCESS"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Review Management",
+      "item": [
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"user\": {\n        \"id\": \"{{userId}}\"\n    },\n    \"ground\": {\n        \"id\": \"{{groundId}}\"\n    },\n    \"rating\": 5,\n    \"reviewText\": \"Excellent ground with great facilities!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reviews"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Review by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reviews/{{reviewId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reviews", "{{reviewId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reviews by Ground ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reviews/ground/{{groundId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reviews", "ground", "{{groundId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reviews by User ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reviews/user/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reviews", "user", "{{userId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Average Rating for Ground",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reviews/ground/{{groundId}}/rating",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reviews", "ground", "{{groundId}}", "rating"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id\": \"{{reviewId}}\",\n    \"user\": {\n        \"id\": \"{{userId}}\"\n    },\n    \"ground\": {\n        \"id\": \"{{groundId}}\"\n    },\n    \"rating\": 4,\n    \"reviewText\": \"Updated review: Very good ground, but could use better lighting.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reviews/{{reviewId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reviews", "{{reviewId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Report Management",
+      "item": [
+        {
+          "name": "Generate Revenue Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/generate/revenue/{{ownerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "generate", "revenue", "{{ownerId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Bookings Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/generate/bookings/{{ownerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "generate", "bookings", "{{ownerId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Customers Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/generate/customers/{{ownerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "generate", "customers", "{{ownerId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Report by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/{{reportId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "{{reportId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reports by Owner ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/owner/{{ownerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "owner", "{{ownerId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reports by Type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/type/REVENUE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "type", "REVENUE"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Reports by Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/reports/date-range?start=2025-03-01T00:00:00&end=2025-03-31T23:59:59",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "reports", "date-range"],
+              "query": [
+                {
+                  "key": "start",
+                  "value": "2025-03-01T00:00:00"
+                },
+                {
+                  "key": "end",
+                  "value": "2025-03-31T23:59:59"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

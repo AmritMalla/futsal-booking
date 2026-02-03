@@ -8,20 +8,22 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
+public interface TimeSlotRepository extends JpaRepository<TimeSlot, UUID> {
 
-    List<TimeSlot> findByGround_GroundId(Long groundId); // Find slots by ground ID
-
-    List<TimeSlot> findByStatus(TimeSlot.Status status); // Find slots by status
-
-    List<TimeSlot> findByStartTimeBetween(LocalDateTime start, LocalDateTime end); // Find slots within a time range
-
-    @Query("SELECT t FROM TimeSlot t WHERE t.ground.groundId = :groundId AND t.startTime BETWEEN :start AND :end")
-    List<TimeSlot> findTimeSlotsByGroundAndStartTimeBetween(@Param("groundId") Long groundId,
-                                                            @Param("start") LocalDateTime start,
-                                                            @Param("end") LocalDateTime end);
-
-
+    List<TimeSlot> findByGroundId(UUID groundId);
+    
+    List<TimeSlot> findByIsBooked(Boolean isBooked);
+    
+    List<TimeSlot> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
+    
+    @Query("SELECT t FROM TimeSlot t WHERE t.ground.id = :groundId AND t.startTime BETWEEN :start AND :end")
+    List<TimeSlot> findTimeSlotsByGroundAndDateRange(@Param("groundId") UUID groundId,
+                                                     @Param("start") LocalDateTime start,
+                                                     @Param("end") LocalDateTime end);
+    
+    @Query("SELECT t FROM TimeSlot t WHERE t.ground.id = :groundId AND t.isBooked = false")
+    List<TimeSlot> findAvailableSlotsByGround(@Param("groundId") UUID groundId);
 }

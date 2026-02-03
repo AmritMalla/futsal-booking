@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -23,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<User> getUserById(@PathVariable Long userId) {
+    public ResponseEntity<User> getUserById(@PathVariable UUID userId) {
         return userService.getUserById(userId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -34,5 +37,21 @@ public class UserController {
         return userService.getUserByEmail(email)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+    
+    @GetMapping("/by-role")
+    public ResponseEntity<List<User>> getUsersByRole(@RequestParam("role") User.Role role) {
+        return ResponseEntity.ok(userService.getUsersByRole(role));
+    }
+    
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.noContent().build();
     }
 }
