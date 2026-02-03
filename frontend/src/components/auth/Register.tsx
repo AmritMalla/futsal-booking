@@ -28,16 +28,25 @@ const Register: React.FC = () => {
     role: UserRole.USER,
   });
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
     const { name, value } = e.target;
+    const fieldName = name as string;
     setFormData((prev) => ({
       ...prev,
-      [name as string]: value,
+      [fieldName]: value,
     }));
+    if (fieldErrors[fieldName]) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next[fieldName];
+        return next;
+      });
+    }
   };
 
   const handleRoleChange = (e: SelectChangeEvent<UserRole>) => {
@@ -45,11 +54,19 @@ const Register: React.FC = () => {
       ...prev,
       role: e.target.value as UserRole,
     }));
+    if (fieldErrors.role) {
+      setFieldErrors((prev) => {
+        const next = { ...prev };
+        delete next.role;
+        return next;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setFieldErrors({});
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
@@ -74,7 +91,16 @@ const Register: React.FC = () => {
       });
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      const data = err.response?.data;
+      if (data?.errors && typeof data.errors === 'object') {
+        setFieldErrors(data.errors);
+        const messages = Object.entries(data.errors)
+          .map(([field, msg]) => `${field}: ${msg}`)
+          .join('. ');
+        setError(messages);
+      } else {
+        setError(data?.message || 'Registration failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -116,6 +142,8 @@ const Register: React.FC = () => {
               autoFocus
               value={formData.name}
               onChange={handleChange}
+              error={!!fieldErrors.name}
+              helperText={fieldErrors.name}
             />
             <TextField
               margin="normal"
@@ -127,6 +155,8 @@ const Register: React.FC = () => {
               autoComplete="email"
               value={formData.email}
               onChange={handleChange}
+              error={!!fieldErrors.email}
+              helperText={fieldErrors.email}
             />
             <TextField
               margin="normal"
@@ -137,8 +167,10 @@ const Register: React.FC = () => {
               autoComplete="tel"
               value={formData.phoneNumber}
               onChange={handleChange}
+              error={!!fieldErrors.phoneNumber}
+              helperText={fieldErrors.phoneNumber}
             />
-            <FormControl fullWidth margin="normal">
+            <FormControl fullWidth margin="normal" error={!!fieldErrors.role}>
               <InputLabel id="role-label">Register As</InputLabel>
               <Select
                 labelId="role-label"
@@ -151,6 +183,11 @@ const Register: React.FC = () => {
                 <MenuItem value={UserRole.USER}>User</MenuItem>
                 <MenuItem value={UserRole.OWNER}>Ground Owner</MenuItem>
               </Select>
+              {fieldErrors.role && (
+                <Typography variant="caption" color="error" sx={{ mt: 0.5, ml: 1.75 }}>
+                  {fieldErrors.role}
+                </Typography>
+              )}
             </FormControl>
             <TextField
               margin="normal"
@@ -163,6 +200,8 @@ const Register: React.FC = () => {
               autoComplete="new-password"
               value={formData.password}
               onChange={handleChange}
+              error={!!fieldErrors.password}
+              helperText={fieldErrors.password}
             />
             <TextField
               margin="normal"

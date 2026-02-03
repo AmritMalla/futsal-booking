@@ -90,9 +90,13 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
+        String message = errors.entrySet().stream()
+                .map(e -> e.getKey() + ": " + e.getValue())
+                .reduce("Validation failed", (a, b) -> a + "; " + b);
+
         ValidationErrorResponse response = new ValidationErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
-                "Validation failed",
+                message,
                 request.getDescription(false),
                 LocalDateTime.now(),
                 errors
