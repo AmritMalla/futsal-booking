@@ -20,7 +20,7 @@ public class TimeSlot {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "ground_id", nullable = false)
+    @JoinColumn(name = "ground_id", referencedColumnName = "id", nullable = false)
     private FutsalGround ground;
 
     @Column(name = "start_time", nullable = false)
@@ -31,4 +31,8 @@ public class TimeSlot {
 
     @Column(name = "is_booked", nullable = false)
     private Boolean isBooked = false;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
 }

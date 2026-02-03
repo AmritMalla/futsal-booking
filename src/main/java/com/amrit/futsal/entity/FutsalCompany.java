@@ -20,7 +20,7 @@ public class FutsalCompany {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private User owner;
 
     @Column(name = "name", nullable = false, unique = true)

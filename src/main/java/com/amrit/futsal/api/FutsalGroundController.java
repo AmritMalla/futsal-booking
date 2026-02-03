@@ -1,13 +1,22 @@
 package com.amrit.futsal.api;
 
+import com.amrit.futsal.dto.FutsalGroundRequest;
+import com.amrit.futsal.dto.FutsalGroundResponse;
 import com.amrit.futsal.entity.FutsalGround;
+import com.amrit.futsal.exception.ResourceNotFoundException;
 import com.amrit.futsal.service.FutsalGroundService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/grounds")
@@ -21,37 +30,83 @@ public class FutsalGroundController {
     }
 
     @PostMapping
-    public ResponseEntity<FutsalGround> createFutsalGround(@RequestBody FutsalGround futsalGround) {
-        return ResponseEntity.ok(futsalGroundService.createFutsalGround(futsalGround));
+    public ResponseEntity<FutsalGroundResponse> createFutsalGround(
+            @Valid @RequestBody FutsalGroundRequest request) {
+        FutsalGround ground = futsalGroundService.createFutsalGround(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(FutsalGroundResponse.fromEntity(ground));
     }
 
     @GetMapping("/{groundId}")
-    public ResponseEntity<FutsalGround> getFutsalGroundById(@PathVariable UUID groundId) {
-        return futsalGroundService.getFutsalGroundById(groundId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<FutsalGroundResponse> getFutsalGroundById(@PathVariable UUID groundId) {
+        FutsalGround ground = futsalGroundService.getFutsalGroundById(groundId)
+                .orElseThrow(() -> new ResourceNotFoundException("FutsalGround", "id", groundId));
+        return ResponseEntity.ok(FutsalGroundResponse.fromEntity(ground));
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<FutsalGround> getFutsalGroundByName(@PathVariable String name) {
-        return futsalGroundService.getFutsalGroundByName(name)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<FutsalGroundResponse> getFutsalGroundByName(@PathVariable String name) {
+        FutsalGround ground = futsalGroundService.getFutsalGroundByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("FutsalGround", "name", name));
+        return ResponseEntity.ok(FutsalGroundResponse.fromEntity(ground));
     }
 
     @GetMapping("/company/{companyId}")
-    public ResponseEntity<List<FutsalGround>> getFutsalGroundsByCompanyId(@PathVariable UUID companyId) {
-        return ResponseEntity.ok(futsalGroundService.getFutsalGroundsByCompanyId(companyId));
+    public ResponseEntity<List<FutsalGroundResponse>> getFutsalGroundsByCompanyId(
+            @PathVariable UUID companyId) {
+        List<FutsalGroundResponse> grounds = futsalGroundService.getFutsalGroundsByCompanyId(companyId)
+                .stream()
+                .map(FutsalGroundResponse::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(grounds);
     }
 
     @GetMapping("/surface/{surfaceType}")
-    public ResponseEntity<List<FutsalGround>> getFutsalGroundsBySurfaceType(@PathVariable String surfaceType) {
-        return ResponseEntity.ok(futsalGroundService.getFutsalGroundsBySurfaceType(surfaceType));
+    public ResponseEntity<List<FutsalGroundResponse>> getFutsalGroundsBySurfaceType(
+            @PathVariable String surfaceType) {
+        List<FutsalGroundResponse> grounds = futsalGroundService.getFutsalGroundsBySurfaceType(surfaceType)
+                .stream()
+                .map(FutsalGroundResponse::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(grounds);
     }
 
     @GetMapping
-    public ResponseEntity<List<FutsalGround>> getAllFutsalGrounds() {
-        return ResponseEntity.ok(futsalGroundService.getAllFutsalGrounds());
+    public ResponseEntity<List<FutsalGroundResponse>> getAllFutsalGrounds() {
+        List<FutsalGroundResponse> grounds = futsalGroundService.getAllFutsalGrounds()
+                .stream()
+                .map(FutsalGroundResponse::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(grounds);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<FutsalGroundResponse>> searchGrounds(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String surfaceType,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice) {
+        List<FutsalGroundResponse> grounds = futsalGroundService
+                .searchGrounds(location, surfaceType, minPrice, maxPrice)
+                .stream()
+                .map(FutsalGroundResponse::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(grounds);
+    }
+
+    @PutMapping("/{groundId}")
+    public ResponseEntity<FutsalGroundResponse> updateFutsalGround(
+            @PathVariable UUID groundId,
+            @Valid @RequestBody FutsalGroundRequest request) {
+        FutsalGround ground = futsalGroundService.updateFutsalGround(groundId, request);
+        return ResponseEntity.ok(FutsalGroundResponse.fromEntity(ground));
+    }
+
+    @PostMapping(value = "/{groundId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<FutsalGroundResponse> uploadGroundImage(
+            @PathVariable UUID groundId,
+            @RequestParam("file") MultipartFile file) {
+        FutsalGround ground = futsalGroundService.updateGroundImage(groundId, file);
+        return ResponseEntity.ok(FutsalGroundResponse.fromEntity(ground));
     }
 
     @DeleteMapping("/{groundId}")

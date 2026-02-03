@@ -1,38 +1,38 @@
--- 1. Insert Users
-INSERT INTO users (user_id, name, email, password, phone_number, role, created_at, updated_at)
+-- 1. Insert Users (id, name, email, password_hash, phone_number, role, created_at)
+INSERT INTO users (id, name, email, password_hash, phone_number, role, created_at)
 VALUES
-(1, 'John Doe', 'john.doe@example.com', 'hashed_password_1', '1234567890', 'CUSTOMER', NOW(), NOW()),
-(2, 'Jane Smith', 'jane.smith@example.com', 'hashed_password_2', '0987654321', 'FUTSAL_COMPANY', NOW(), NOW());
+('a0000000-0000-0000-0000-000000000001', 'John Doe', 'john.doe@example.com', 'hashed_password_1', '1234567890', 'USER', NOW()),
+('a0000000-0000-0000-0000-000000000002', 'Jane Smith', 'jane.smith@example.com', 'hashed_password_2', '0987654321', 'OWNER', NOW());
 
--- 2. Insert Futsal Companies
-INSERT INTO futsal_companies (futsal_id, user_id, company_name, address, description, banner_image_url, rating, created_at, updated_at)
+-- 2. Insert Futsal Companies (id, owner_id, name, location, created_at)
+INSERT INTO futsal_companies (id, owner_id, name, location, created_at)
 VALUES
-(1, 2, 'Star Futsal', '123 Main Street', 'The best futsal ground in the city.', 'https://example.com/banner.jpg', 4.5, NOW(), NOW());
+('b0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000002', 'Star Futsal', '123 Main Street', NOW());
 
--- 3. Insert Futsal Grounds
-INSERT INTO futsal_grounds (ground_id, futsal_id, ground_name, image_url, capacity, created_at, updated_at)
+-- 3. Insert Futsal Grounds (id, company_id, name, surface_type, price_per_hour, image_url, created_at)
+INSERT INTO futsal_grounds (id, company_id, name, surface_type, price_per_hour, image_url, created_at)
 VALUES
-(1, 1, 'Main Arena', 'https://example.com/ground.jpg', 20, NOW(), NOW()),
-(2, 1, 'Secondary Arena', 'https://example.com/secondary.jpg', 15, NOW(), NOW());
+('c0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001', 'Main Arena', 'TURF', 50.00, 'https://example.com/ground.jpg', NOW()),
+('c0000000-0000-0000-0000-000000000002', 'b0000000-0000-0000-0000-000000000001', 'Secondary Arena', 'CONCRETE', 40.00, 'https://example.com/secondary.jpg', NOW());
 
--- 4. Insert Time Slots
-INSERT INTO time_slots (slot_id, ground_id, start_time, end_time, price, status, created_at, updated_at)
+-- 4. Insert Time Slots (id, ground_id, start_time, end_time, is_booked, version)
+INSERT INTO time_slots (id, ground_id, start_time, end_time, is_booked, version)
 VALUES
-(1, 1, '2024-11-23 10:00:00', '2024-11-23 11:00:00', 50.00, 'AVAILABLE', NOW(), NOW()),
-(2, 1, '2024-11-23 11:00:00', '2024-11-23 12:00:00', 50.00, 'BOOKED', NOW(), NOW()),
-(3, 2, '2024-11-23 10:00:00', '2024-11-23 11:00:00', 40.00, 'UNAVAILABLE', NOW(), NOW());
+('d0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', '2024-11-23 10:00:00', '2024-11-23 11:00:00', false, 0),
+('d0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000001', '2024-11-23 11:00:00', '2024-11-23 12:00:00', true, 0),
+('d0000000-0000-0000-0000-000000000003', 'c0000000-0000-0000-0000-000000000002', '2024-11-23 10:00:00', '2024-11-23 11:00:00', false, 0);
 
--- 5. Insert Bookings
-INSERT INTO bookings (booking_id, slot_id, customer_id, payment_status, booking_date, created_at, updated_at)
+-- 5. Insert Bookings (id, user_id, ground_id, slot_id, booking_date, status)
+INSERT INTO bookings (id, user_id, ground_id, slot_id, booking_date, status)
 VALUES
-(1, 2, 1, 'COMPLETED', '2024-11-23 09:00:00', NOW(), NOW());
+('e0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'd0000000-0000-0000-0000-000000000002', '2024-11-23 09:00:00', 'COMPLETED');
 
--- 6. Insert Payments
-INSERT INTO payments (payment_id, booking_id, payment_method, amount, transaction_id, payment_date, created_at, updated_at)
+-- 6. Insert Payments (id, booking_id, user_id, amount, payment_status, transaction_id)
+INSERT INTO payments (id, booking_id, user_id, amount, payment_status, transaction_id)
 VALUES
-(1, 1, 'CREDIT_CARD', 50.00, 'txn12345', '2024-11-23 09:05:00', NOW(), NOW());
+('f0000000-0000-0000-0000-000000000001', 'e0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 50.00, 'SUCCESS', 'txn12345');
 
--- 7. Insert Reviews
-INSERT INTO reviews (review_id, customer_id, futsal_id, rating, review_text, created_at, updated_at)
+-- 7. Insert Reviews (id, user_id, ground_id, rating, review_text, created_at)
+INSERT INTO reviews (id, user_id, ground_id, rating, review_text, created_at)
 VALUES
-(1, 1, 1, 5, 'Fantastic experience! Highly recommended.', NOW(), NOW());
+('90000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 5, 'Fantastic experience! Highly recommended.', NOW());

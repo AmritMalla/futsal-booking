@@ -20,12 +20,21 @@ public class Report {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", nullable = false)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
     private User owner;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "report_type", nullable = false)
     private ReportType reportType;
+
+    @Column(name = "report_data", columnDefinition = "TEXT")
+    private String reportData;
+
+    @Column(name = "start_date")
+    private LocalDateTime startDate;
+
+    @Column(name = "end_date")
+    private LocalDateTime endDate;
 
     @Column(name = "generated_at", updatable = false)
     private LocalDateTime generatedAt;

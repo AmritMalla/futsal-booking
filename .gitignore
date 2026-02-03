@@ -1,7 +1,33 @@
 HELP.md
+
+# -----------------------------------------------------------------------------
+# Backend (Java / Maven / Spring Boot)
+# -----------------------------------------------------------------------------
 /target/
+*.jar
+*.war
+*.ear
+*.class
+*.log
+/logs/
+*.log.*
 !.mvn/wrapper/maven-wrapper.jar
 .mvn
+
+### Build & run
+/target/
+/out/
+/build/
+
+### Sensitive / local config (keep .env.example)
+.env
+.env.local
+.env.*.local
+application-local.properties
+*-local.properties
+
+### Uploads & generated
+/uploads/
 
 ### STS ###
 .apt_generated
@@ -13,7 +39,7 @@ HELP.md
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -21,9 +47,52 @@ HELP.md
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/dist/
 /nbdist/
 /.nb-gradle/
-/build/
+
+### Eclipse ###
+.classpath
+.project
+.settings/
+
+### VS Code (Java)
+.vscode/settings.json
+.vscode/launch.json
+
+# -----------------------------------------------------------------------------
+# Frontend (Node / npm / React / Vite etc.)
+# -----------------------------------------------------------------------------
+/node_modules/
+frontend/node_modules/
+
+/npm-debug.log*
+/yarn-debug.log*
+/yarn-error.log*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+### Build output
+frontend/build/
+frontend/dist/
+frontend/.next/
+frontend/.nuxt/
+frontend/.output/
+
+### Cache & temp
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/.vite/
+.npm
+.eslintcache
+
+### Testing / coverage
+frontend/coverage/
+.nyc_output/
+
+### Optional: lockfiles (uncomment to ignore)
+# frontend/package-lock.json
+# frontend/yarn.lock
+# frontend/pnpm-lock.yaml
 
 .qodo

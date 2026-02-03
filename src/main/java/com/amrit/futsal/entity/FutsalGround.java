@@ -21,7 +21,7 @@ public class FutsalGround {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "company_id", nullable = false)
+    @JoinColumn(name = "company_id", referencedColumnName = "id", nullable = false)
     private FutsalCompany company;
 
     @Column(name = "name", nullable = false, unique = true)

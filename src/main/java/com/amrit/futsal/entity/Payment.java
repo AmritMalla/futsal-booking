@@ -20,11 +20,11 @@ public class Payment {
     private UUID id;
 
     @OneToOne
-    @JoinColumn(name = "booking_id", nullable = false)
+    @JoinColumn(name = "booking_id", referencedColumnName = "id", nullable = false)
     private Booking booking;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
     @Column(name = "amount", nullable = false)

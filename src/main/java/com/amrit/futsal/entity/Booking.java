@@ -23,15 +23,15 @@ public class Booking {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "ground_id", nullable = false)
+    @JoinColumn(name = "ground_id", referencedColumnName = "id", nullable = false)
     private FutsalGround ground;
 
     @ManyToOne
-    @JoinColumn(name = "slot_id", nullable = false)
+    @JoinColumn(name = "slot_id", referencedColumnName = "id", nullable = false)
     private TimeSlot slot;
 
     @Column(name = "booking_date", nullable = false)

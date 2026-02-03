@@ -1,11 +1,14 @@
 package com.amrit.futsal.api;
 
 import com.amrit.futsal.config.JwtTokenUtil;
+import com.amrit.futsal.dto.UserResponse;
 import com.amrit.futsal.entity.User;
+import com.amrit.futsal.exception.DuplicateResourceException;
 import com.amrit.futsal.model.LoginRequest;
 import com.amrit.futsal.model.LoginResponse;
 import com.amrit.futsal.model.RegisterRequest;
 import com.amrit.futsal.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,7 +39,7 @@ public class AuthController {
     private JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
@@ -51,10 +54,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest registerRequest) {
         // Check if email already exists
         if (userService.getUserByEmail(registerRequest.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Error: Email is already in use!");
+            throw new DuplicateResourceException("User", "email", registerRequest.getEmail());
         }
 
         // Create new user's account

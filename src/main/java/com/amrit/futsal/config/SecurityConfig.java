@@ -50,9 +50,20 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/users/register", "/api/v1/users/login", "/api-docs/**",
-                                "/swagger-ui/**", "/swagger-ui.html", "/actuator/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/auth/login",
+                                "/api/v1/auth/register",
+                                "/api/v1/users/register",
+                                "/api/v1/users/login",
+                                "/api/v1/files/**",
+                                "/api/v1/grounds/search",
+                                "/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/actuator/**"
+                        ).permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/reports/generate/**").hasAnyRole("OWNER", "ADMIN")
                         .anyRequest().authenticated()
                 );
 

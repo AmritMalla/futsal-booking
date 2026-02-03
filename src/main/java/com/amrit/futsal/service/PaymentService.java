@@ -1,8 +1,15 @@
 package com.amrit.futsal.service;
 
+import com.amrit.futsal.dto.PaymentRequest;
 import com.amrit.futsal.entity.Booking;
 import com.amrit.futsal.entity.Payment;
+import com.amrit.futsal.entity.User;
+import com.amrit.futsal.exception.BadRequestException;
+import com.amrit.futsal.exception.PaymentException;
+import com.amrit.futsal.exception.ResourceNotFoundException;
+import com.amrit.futsal.repository.BookingRepository;
 import com.amrit.futsal.repository.PaymentRepository;
+import com.amrit.futsal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,27 +22,60 @@ import java.util.UUID;
 public class PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final BookingService bookingService;
+    private final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public PaymentService(PaymentRepository paymentRepository, BookingService bookingService) {
+    public PaymentService(PaymentRepository paymentRepository,
+                          BookingRepository bookingRepository,
+                          UserRepository userRepository) {
         this.paymentRepository = paymentRepository;
-        this.bookingService = bookingService;
+        this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
     }
 
     @Transactional
-    public Payment processPayment(Payment payment) {
-        // Update booking status when payment is successful
-        if (payment.getPaymentStatus() == Payment.PaymentStatus.SUCCESS) {
-            bookingService.updateBookingStatus(payment.getBooking().getId(), Booking.BookingStatus.CONFIRMED);
+    public Payment processPayment(PaymentRequest request) {
+        Booking booking = bookingRepository.findById(request.getBookingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", request.getBookingId()));
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
+
+        // Check if booking already has a successful payment
+        List<Payment> existingPayments = paymentRepository.findByBookingId(booking.getId());
+        boolean hasSuccessfulPayment = existingPayments.stream()
+                .anyMatch(p -> p.getPaymentStatus() == Payment.PaymentStatus.SUCCESS);
+        if (hasSuccessfulPayment) {
+            throw new BadRequestException("This booking already has a successful payment");
         }
-        return paymentRepository.save(payment);
+
+        // Create payment
+        Payment payment = new Payment();
+        payment.setBooking(booking);
+        payment.setUser(user);
+        payment.setAmount(request.getAmount());
+        payment.setPaymentStatus(Payment.PaymentStatus.PENDING);
+        payment.setTransactionId(request.getTransactionId() != null
+                ? request.getTransactionId()
+                : generateTransactionId());
+
+        // Simulate payment processing (in production, integrate with payment gateway)
+        payment.setPaymentStatus(Payment.PaymentStatus.SUCCESS);
+
+        Payment savedPayment = paymentRepository.save(payment);
+
+        // Update booking status
+        booking.setStatus(Booking.BookingStatus.CONFIRMED);
+        bookingRepository.save(booking);
+
+        return savedPayment;
     }
 
     public Optional<Payment> getPaymentById(UUID paymentId) {
         return paymentRepository.findById(paymentId);
     }
-    
+
     public Optional<Payment> getPaymentByTransactionId(String transactionId) {
         return paymentRepository.findByTransactionId(transactionId);
     }
@@ -43,30 +83,59 @@ public class PaymentService {
     public List<Payment> getPaymentsByBookingId(UUID bookingId) {
         return paymentRepository.findByBookingId(bookingId);
     }
-    
+
     public List<Payment> getPaymentsByUserId(UUID userId) {
         return paymentRepository.findByUserId(userId);
     }
-    
+
     public List<Payment> getPaymentsByStatus(Payment.PaymentStatus status) {
         return paymentRepository.findByPaymentStatus(status);
     }
-    
+
+    @Transactional
     public Payment updatePaymentStatus(UUID paymentId, Payment.PaymentStatus status) {
-        Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
-        if (paymentOpt.isPresent()) {
-            Payment payment = paymentOpt.get();
-            payment.setPaymentStatus(status);
-            
-            // Update booking status based on payment status
-            if (status == Payment.PaymentStatus.SUCCESS) {
-                bookingService.updateBookingStatus(payment.getBooking().getId(), Booking.BookingStatus.CONFIRMED);
-            } else if (status == Payment.PaymentStatus.FAILED) {
-                bookingService.updateBookingStatus(payment.getBooking().getId(), Booking.BookingStatus.CANCELLED);
-            }
-            
-            return paymentRepository.save(payment);
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
+
+        payment.setPaymentStatus(status);
+
+        // Update booking status based on payment status
+        Booking booking = payment.getBooking();
+        if (status == Payment.PaymentStatus.SUCCESS) {
+            booking.setStatus(Booking.BookingStatus.CONFIRMED);
+        } else if (status == Payment.PaymentStatus.FAILED) {
+            booking.setStatus(Booking.BookingStatus.CANCELLED);
         }
-        return null;
+        bookingRepository.save(booking);
+
+        return paymentRepository.save(payment);
+    }
+
+    @Transactional
+    public Payment refundPayment(UUID paymentId) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
+
+        if (payment.getPaymentStatus() != Payment.PaymentStatus.SUCCESS) {
+            throw new PaymentException("Only successful payments can be refunded");
+        }
+
+        // Simulate refund processing (in production, integrate with payment gateway)
+        payment.setPaymentStatus(Payment.PaymentStatus.REFUNDED);
+
+        // Cancel the associated booking
+        Booking booking = payment.getBooking();
+        booking.setStatus(Booking.BookingStatus.CANCELLED);
+
+        // Free up the time slot
+        booking.getSlot().setIsBooked(false);
+
+        bookingRepository.save(booking);
+
+        return paymentRepository.save(payment);
+    }
+
+    private String generateTransactionId() {
+        return "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }
