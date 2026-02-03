@@ -5,7 +5,10 @@
       "Bash(./mvnw compile:*)",
       "Bash(where:*)",
       "Bash(dir:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "WebFetch(domain:mir-s3-cdn-cf.behance.net)",
+      "WebFetch(domain:dribbble.com)",
+      "WebFetch(domain:vbfutsal.com)"
     ]
   }
 }

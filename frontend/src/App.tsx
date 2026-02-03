@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
+import theme from './theme/theme';
 import Layout from './components/layout/Layout';
 import PrivateRoute from './components/auth/PrivateRoute';
 import Home from './pages/Home';
@@ -15,21 +16,9 @@ import PaymentForm from './components/payment/PaymentForm';
 import PaymentHistory from './components/payment/PaymentHistory';
 import OwnerDashboard from './components/dashboard/OwnerDashboard';
 import ManageGrounds from './components/dashboard/ManageGrounds';
+import ManageTimeSlots from './components/dashboard/ManageTimeSlots';
+import AdminDashboard from './components/admin/AdminDashboard';
 import { UserRole } from './types';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#667eea',
-    },
-    secondary: {
-      main: '#764ba2',
-    },
-  },
-  typography: {
-    fontFamily: 'Roboto, Arial, sans-serif',
-  },
-});
 
 function App() {
   return (
@@ -94,6 +83,24 @@ function App() {
                 element={
                   <PrivateRoute requiredRole={UserRole.OWNER}>
                     <ManageGrounds />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/owner/grounds/:groundId/slots"
+                element={
+                  <PrivateRoute requiredRole={UserRole.OWNER}>
+                    <ManageTimeSlots />
+                  </PrivateRoute>
+                }
+              />
+
+              {/* Protected Routes - Admin */}
+              <Route
+                path="/admin/dashboard"
+                element={
+                  <PrivateRoute requiredRole={UserRole.ADMIN}>
+                    <AdminDashboard />
                   </PrivateRoute>
                 }
               />
