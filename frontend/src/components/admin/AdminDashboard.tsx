@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Grid,
@@ -30,6 +31,7 @@ import {
   alpha,
   Avatar,
   Tooltip,
+  Rating,
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
@@ -42,10 +44,17 @@ import {
   Store as StoreIcon,
   Refresh as RefreshIcon,
   Warning as WarningIcon,
+  Schedule as ScheduleIcon,
+  Payment as PaymentIcon,
+  RateReview as ReviewIcon,
+  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 import { User, FutsalGround, UserRole } from '../../types';
-import { adminService, FutsalCompany, AdminStats } from '../../services/adminService';
+import { adminService } from '../../services/adminService';
+import { AdminStats, FutsalCompany } from '../../types/admin';
 import { colors } from '../../theme/theme';
+import { StatCard } from './common';
+import { RevenueChart, BookingTrendsChart } from './analytics';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -69,6 +78,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -78,6 +88,8 @@ const AdminDashboard: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [companies, setCompanies] = useState<FutsalCompany[]>([]);
   const [grounds, setGrounds] = useState<FutsalGround[]>([]);
+  const [revenueAnalytics, setRevenueAnalytics] = useState<any>(null);
+  const [bookingAnalytics, setBookingAnalytics] = useState<any>(null);
 
   // Search states
   const [userSearch, setUserSearch] = useState('');
@@ -101,25 +113,21 @@ const AdminDashboard: React.FC = () => {
       setLoading(true);
       setError('');
 
-      const [usersData, companiesData, groundsData] = await Promise.all([
+      const [statsData, usersData, companiesData, groundsData, revenueData, bookingData] = await Promise.all([
+        adminService.getAdminStats(),
         adminService.getAllUsers(),
         adminService.getAllCompanies(),
         adminService.getAllGrounds(),
+        adminService.getRevenueAnalytics().catch(() => null),
+        adminService.getBookingAnalytics().catch(() => null),
       ]);
 
+      setStats(statsData);
       setUsers(usersData);
       setCompanies(companiesData);
       setGrounds(groundsData);
-
-      // Calculate stats
-      setStats({
-        totalUsers: usersData.length,
-        totalOwners: usersData.filter(u => u.role === UserRole.OWNER).length,
-        totalCustomers: usersData.filter(u => u.role === UserRole.USER).length,
-        totalCompanies: companiesData.length,
-        totalGrounds: groundsData.length,
-        totalBookings: 0,
-      });
+      setRevenueAnalytics(revenueData);
+      setBookingAnalytics(bookingData);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load data');
     } finally {
@@ -216,83 +224,94 @@ const AdminDashboard: React.FC = () => {
         </Alert>
       )}
 
+      {/* Analytics Charts */}
+      {(revenueAnalytics || bookingAnalytics) && (
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          {revenueAnalytics && (
+            <Grid item xs={12} md={6}>
+              <RevenueChart data={revenueAnalytics} />
+            </Grid>
+          )}
+          {bookingAnalytics && (
+            <Grid item xs={12} md={6}>
+              <BookingTrendsChart data={bookingAnalytics} />
+            </Grid>
+          )}
+        </Grid>
+      )}
+
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ bgcolor: alpha(colors.primary.main, 0.1) }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography color="text.secondary" variant="body2" gutterBottom>
-                    Total Users
-                  </Typography>
-                  <Typography variant="h4" fontWeight={700} color="primary">
-                    {stats?.totalUsers || 0}
-                  </Typography>
-                </Box>
-                <Avatar sx={{ bgcolor: colors.primary.main, width: 56, height: 56 }}>
-                  <PeopleIcon />
-                </Avatar>
-              </Box>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Total Users"
+            value={stats?.totalUsers || 0}
+            icon={<PeopleIcon />}
+            color="primary"
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ bgcolor: alpha(colors.secondary.main, 0.1) }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography color="text.secondary" variant="body2" gutterBottom>
-                    Ground Owners
-                  </Typography>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: colors.secondary.main }}>
-                    {stats?.totalOwners || 0}
-                  </Typography>
-                </Box>
-                <Avatar sx={{ bgcolor: colors.secondary.main, width: 56, height: 56 }}>
-                  <StoreIcon />
-                </Avatar>
-              </Box>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Total Bookings"
+            value={stats?.totalBookings || 0}
+            icon={<EventIcon />}
+            color="success"
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ bgcolor: alpha(colors.accent.blue, 0.1) }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography color="text.secondary" variant="body2" gutterBottom>
-                    Companies
-                  </Typography>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: colors.accent.blue }}>
-                    {stats?.totalCompanies || 0}
-                  </Typography>
-                </Box>
-                <Avatar sx={{ bgcolor: colors.accent.blue, width: 56, height: 56 }}>
-                  <BusinessIcon />
-                </Avatar>
-              </Box>
-            </CardContent>
-          </Card>
+          <StatCard
+            title="Total Revenue"
+            value={`NPR ${stats?.totalRevenue?.toLocaleString() || 0}`}
+            icon={<TrendingUpIcon />}
+            color="info"
+          />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          <Card sx={{ bgcolor: alpha(colors.accent.teal, 0.1) }}>
-            <CardContent>
-              <Box display="flex" alignItems="center" justifyContent="space-between">
-                <Box>
-                  <Typography color="text.secondary" variant="body2" gutterBottom>
-                    Grounds
-                  </Typography>
-                  <Typography variant="h4" fontWeight={700} sx={{ color: colors.accent.teal }}>
-                    {stats?.totalGrounds || 0}
-                  </Typography>
-                </Box>
-                <Avatar sx={{ bgcolor: colors.accent.teal, width: 56, height: 56 }}>
-                  <StadiumIcon />
-                </Avatar>
+          <StatCard
+            title="Average Rating"
+            value={
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <Typography variant="h4" component="span" fontWeight="bold">
+                  {stats?.averageRating?.toFixed(1) || '0.0'}
+                </Typography>
+                <Rating value={stats?.averageRating || 0} readOnly size="small" />
               </Box>
-            </CardContent>
-          </Card>
+            }
+            icon={<ReviewIcon />}
+            color="warning"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Companies"
+            value={stats?.totalCompanies || 0}
+            icon={<BusinessIcon />}
+            color="secondary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Futsal Grounds"
+            value={stats?.totalGrounds || 0}
+            icon={<StadiumIcon />}
+            color="info"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Time Slots"
+            value={stats?.totalTimeSlots || 0}
+            icon={<ScheduleIcon />}
+            color="primary"
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard
+            title="Total Reviews"
+            value={stats?.totalReviews || 0}
+            icon={<ReviewIcon />}
+            color="warning"
+          />
         </Grid>
       </Grid>
 
@@ -301,6 +320,8 @@ const AdminDashboard: React.FC = () => {
         <Tabs
           value={tabValue}
           onChange={(_, newValue) => setTabValue(newValue)}
+          variant="scrollable"
+          scrollButtons="auto"
           sx={{ borderBottom: 1, borderColor: 'divider', px: 2 }}
         >
           <Tab
@@ -317,6 +338,26 @@ const AdminDashboard: React.FC = () => {
             icon={<StadiumIcon />}
             iconPosition="start"
             label="Grounds"
+          />
+          <Tab
+            icon={<ScheduleIcon />}
+            iconPosition="start"
+            label="Time Slots"
+          />
+          <Tab
+            icon={<EventIcon />}
+            iconPosition="start"
+            label="Bookings"
+          />
+          <Tab
+            icon={<PaymentIcon />}
+            iconPosition="start"
+            label="Payments"
+          />
+          <Tab
+            icon={<ReviewIcon />}
+            iconPosition="start"
+            label="Reviews"
           />
         </Tabs>
 
@@ -547,6 +588,235 @@ const AdminDashboard: React.FC = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+          </Box>
+        </TabPanel>
+
+        {/* Time Slots Tab */}
+        <TabPanel value={tabValue} index={3}>
+          <Box sx={{ px: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Total Time Slots
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="primary">
+                      {stats?.totalTimeSlots || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Available Slots
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="success.main">
+                      {/* Calculate from actual data if needed */}
+                      -
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Booked Slots
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="error.main">
+                      {/* Calculate from actual data if needed */}
+                      -
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Manage all time slots across futsal grounds. Use the dedicated Time Slots page for full CRUD operations.
+            </Alert>
+            <Box display="flex" justifyContent="center" py={3}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/admin/timeslots')}
+              >
+                Go to Time Slots Management
+              </Button>
+            </Box>
+          </Box>
+        </TabPanel>
+
+        {/* Bookings Tab */}
+        <TabPanel value={tabValue} index={4}>
+          <Box sx={{ px: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={3}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Total Bookings
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold">
+                      {stats?.totalBookings || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Confirmed
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="success.main">
+                      {stats?.confirmedBookings || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Completed
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="primary">
+                      {stats?.completedBookings || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={3}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Cancelled
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="error.main">
+                      {stats?.cancelledBookings || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+            <Alert severity="info" sx={{ mb: 2 }}>
+              View and manage all bookings. Use the dedicated Bookings page for detailed management and status updates.
+            </Alert>
+            <Box display="flex" justifyContent="center" py={3}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/admin/bookings')}
+              >
+                Go to Bookings Management
+              </Button>
+            </Box>
+          </Box>
+        </TabPanel>
+
+        {/* Payments Tab */}
+        <TabPanel value={tabValue} index={5}>
+          <Box sx={{ px: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Total Revenue
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="primary">
+                      NPR {stats?.totalRevenue?.toLocaleString() || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Success Revenue
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="success.main">
+                      NPR {stats?.successRevenue?.toLocaleString() || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Pending Revenue
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="warning.main">
+                      NPR {stats?.pendingRevenue?.toLocaleString() || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Monitor all payment transactions and revenue. Use the dedicated Payments page for detailed transaction management.
+            </Alert>
+            <Box display="flex" justifyContent="center" py={3}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/admin/payments')}
+              >
+                Go to Payments Management
+              </Button>
+            </Box>
+          </Box>
+        </TabPanel>
+
+        {/* Reviews Tab */}
+        <TabPanel value={tabValue} index={6}>
+          <Box sx={{ px: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={6}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Total Reviews
+                    </Typography>
+                    <Typography variant="h4" fontWeight="bold" color="primary">
+                      {stats?.totalReviews || 0}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="body2" color="text.secondary">
+                      Average Rating
+                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="h4" fontWeight="bold" color="warning.main">
+                        {stats?.averageRating?.toFixed(1) || '0.0'}
+                      </Typography>
+                      <Rating value={stats?.averageRating || 0} readOnly />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </Grid>
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Manage customer reviews and ratings. Use the dedicated Reviews page for detailed review management.
+            </Alert>
+            <Box display="flex" justifyContent="center" py={3}>
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => navigate('/admin/reviews')}
+              >
+                Go to Reviews Management
+              </Button>
+            </Box>
           </Box>
         </TabPanel>
       </Paper>

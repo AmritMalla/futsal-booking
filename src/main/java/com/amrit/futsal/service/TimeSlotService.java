@@ -40,6 +40,10 @@ public class TimeSlotService {
         return timeSlotRepository.findTimeSlotsByGroundAndDateRange(groundId, start, end);
     }
 
+    public List<TimeSlot> getAllTimeSlots() {
+        return timeSlotRepository.findAll();
+    }
+
     public TimeSlot updateTimeSlot(TimeSlot timeSlot) {
         return timeSlotRepository.save(timeSlot);
     }

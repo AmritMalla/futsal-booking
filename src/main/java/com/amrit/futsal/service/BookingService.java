@@ -99,6 +99,51 @@ public class BookingService {
         return bookingRepository.findByBookingDateBetween(startDate, endDate);
     }
 
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
+    @Transactional
+    public Booking updateBooking(UUID bookingId, BookingRequest request) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
+
+        // Fetch updated references if IDs have changed
+        if (request.getUserId() != null && !booking.getUser().getId().equals(request.getUserId())) {
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
+            booking.setUser(user);
+        }
+
+        if (request.getGroundId() != null && !booking.getGround().getId().equals(request.getGroundId())) {
+            FutsalGround ground = groundRepository.findById(request.getGroundId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Ground", "id", request.getGroundId()));
+            booking.setGround(ground);
+        }
+
+        if (request.getSlotId() != null && !booking.getSlot().getId().equals(request.getSlotId())) {
+            TimeSlot newSlot = timeSlotRepository.findById(request.getSlotId())
+                    .orElseThrow(() -> new ResourceNotFoundException("TimeSlot", "id", request.getSlotId()));
+
+            if (newSlot.getIsBooked()) {
+                throw new SlotNotAvailableException("The selected time slot is already booked");
+            }
+
+            // Free up old slot
+            TimeSlot oldSlot = booking.getSlot();
+            oldSlot.setIsBooked(false);
+            timeSlotRepository.save(oldSlot);
+
+            // Mark new slot as booked
+            newSlot.setIsBooked(true);
+            timeSlotRepository.save(newSlot);
+
+            booking.setSlot(newSlot);
+        }
+
+        return bookingRepository.save(booking);
+    }
+
     @Transactional
     public Booking updateBookingStatus(UUID bookingId, Booking.BookingStatus status) {
         Booking booking = bookingRepository.findById(bookingId)

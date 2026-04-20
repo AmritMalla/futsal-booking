@@ -1,5 +1,5 @@
 import apiClient from './api';
-import { FutsalGround, FutsalGroundRequest, GroundSearchParams, FileUploadResponse } from '../types';
+import { FutsalGround, FutsalGroundRequest, GroundSearchParams } from '../types';
 
 export const groundService = {
   async getAllGrounds(): Promise<FutsalGround[]> {

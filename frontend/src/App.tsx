@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
 import theme from './theme/theme';
@@ -17,7 +17,13 @@ import PaymentHistory from './components/payment/PaymentHistory';
 import OwnerDashboard from './components/dashboard/OwnerDashboard';
 import ManageGrounds from './components/dashboard/ManageGrounds';
 import ManageTimeSlots from './components/dashboard/ManageTimeSlots';
+import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
+import { AnalyticsOverview } from './components/admin/analytics';
+import { TimeSlotList } from './components/admin/timeslots';
+import { BookingList } from './components/admin/bookings';
+import { PaymentList } from './components/admin/payments';
+import { ReviewList } from './components/admin/reviews';
 import { UserRole } from './types';
 
 function App() {
@@ -97,13 +103,21 @@ function App() {
 
               {/* Protected Routes - Admin */}
               <Route
-                path="/admin/dashboard"
+                path="/admin"
                 element={
                   <PrivateRoute requiredRole={UserRole.ADMIN}>
-                    <AdminDashboard />
+                    <AdminLayout />
                   </PrivateRoute>
                 }
-              />
+              >
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="analytics" element={<AnalyticsOverview />} />
+                <Route path="timeslots" element={<TimeSlotList />} />
+                <Route path="bookings" element={<BookingList />} />
+                <Route path="payments" element={<PaymentList />} />
+                <Route path="reviews" element={<ReviewList />} />
+              </Route>
 
               {/* 404 Not Found */}
               <Route

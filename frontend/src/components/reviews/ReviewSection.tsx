@@ -29,7 +29,7 @@ import { Review, ReviewRequest } from '../../types';
 import { reviewService } from '../../services/reviewService';
 import { useAuth } from '../../contexts/AuthContext';
 import { colors } from '../../theme/theme';
-import { format } from 'date-fns';
+import dayjs from 'dayjs';
 
 interface ReviewSectionProps {
   groundId: string;
@@ -295,7 +295,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ groundId, groundName }) =
                     </Box>
                     <Rating value={review.rating} readOnly size="small" />
                     <Typography variant="body2" color="text.secondary">
-                      {format(new Date(review.createdAt), 'MMM d, yyyy')}
+                      {dayjs(review.createdAt).format('MMM D, YYYY')}
                     </Typography>
                   </Box>
                 </Box>

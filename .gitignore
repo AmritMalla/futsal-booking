@@ -59,6 +59,9 @@ application-local.properties
 .vscode/settings.json
 .vscode/launch.json
 
+### Claude / Cursor (IDE local settings)
+.claude/
+
 # -----------------------------------------------------------------------------
 # Frontend (Node / npm / React / Vite etc.)
 # -----------------------------------------------------------------------------

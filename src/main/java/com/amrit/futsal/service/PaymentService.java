@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -90,6 +92,42 @@ public class PaymentService {
 
     public List<Payment> getPaymentsByStatus(Payment.PaymentStatus status) {
         return paymentRepository.findByPaymentStatus(status);
+    }
+
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
+    }
+
+    @Transactional
+    public Payment updatePayment(UUID paymentId, PaymentRequest request) {
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
+
+        if (request.getAmount() != null) {
+            payment.setAmount(request.getAmount());
+        }
+
+        if (request.getTransactionId() != null) {
+            payment.setTransactionId(request.getTransactionId());
+        }
+
+        return paymentRepository.save(payment);
+    }
+
+    public BigDecimal calculateTotalRevenue() {
+        BigDecimal total = paymentRepository.sumTotalAmount();
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
+    public BigDecimal calculateRevenueByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
+        return paymentRepository.findAll().stream()
+                .filter(p -> {
+                    LocalDateTime bookingDate = p.getBooking().getBookingDate();
+                    return !bookingDate.isBefore(startDate) && !bookingDate.isAfter(endDate) &&
+                            p.getPaymentStatus() == Payment.PaymentStatus.SUCCESS;
+                })
+                .map(Payment::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     @Transactional

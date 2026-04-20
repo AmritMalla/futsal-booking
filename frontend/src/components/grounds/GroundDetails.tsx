@@ -31,7 +31,7 @@ import { reviewService } from '../../services/reviewService';
 import { useAuth } from '../../contexts/AuthContext';
 import { colors } from '../../theme/theme';
 import ReviewSection from '../reviews/ReviewSection';
-import { format } from 'date-fns';
+import dayjs from 'dayjs';
 
 const facilities = [
   { icon: <Wc />, name: 'Changing Rooms' },
@@ -257,7 +257,7 @@ const GroundDetails: React.FC = () => {
                 />
                 <Chip
                   icon={<CalendarMonth sx={{ color: `${colors.text.secondary} !important` }} />}
-                  label={`Added ${format(new Date(ground.createdAt), 'MMM yyyy')}`}
+                  label={`Added ${dayjs(ground.createdAt).format('MMM YYYY')}`}
                   variant="outlined"
                   sx={{
                     borderColor: alpha(colors.neutral.white, 0.1),

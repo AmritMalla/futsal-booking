@@ -36,7 +36,7 @@ import { TimeSlot } from '../../types';
 import { slotService } from '../../services/slotService';
 import { groundService } from '../../services/groundService';
 import { colors } from '../../theme/theme';
-import { format, addDays, startOfDay, isSameDay } from 'date-fns';
+import dayjs from 'dayjs';
 
 const ManageTimeSlots: React.FC = () => {
   const { groundId } = useParams<{ groundId: string }>();
@@ -47,17 +47,17 @@ const ManageTimeSlots: React.FC = () => {
   const [success, setSuccess] = useState('');
   const [groundName, setGroundName] = useState('');
   const [slots, setSlots] = useState<TimeSlot[]>([]);
-  const [selectedDate, setSelectedDate] = useState(startOfDay(new Date()));
+  const [selectedDate, setSelectedDate] = useState(dayjs().startOf('day'));
 
   // Create slots dialog
   const [createDialog, setCreateDialog] = useState(false);
-  const [createDate, setCreateDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [createDate, setCreateDate] = useState(dayjs().format('YYYY-MM-DD'));
   const [startHour, setStartHour] = useState(6);
   const [endHour, setEndHour] = useState(22);
   const [creating, setCreating] = useState(false);
 
   // Available dates (next 7 days)
-  const availableDates = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i));
+  const availableDates = Array.from({ length: 7 }, (_, i) => dayjs().add(i, 'day'));
 
   useEffect(() => {
     if (groundId) {
@@ -87,7 +87,7 @@ const ManageTimeSlots: React.FC = () => {
       const allSlots = await slotService.getTimeSlotsByGround(groundId!);
       // Filter slots for selected date
       const filteredSlots = allSlots.filter(slot =>
-        isSameDay(new Date(slot.startTime), selectedDate)
+        dayjs(slot.startTime).isSame(selectedDate, 'day')
       );
       // Sort by start time
       filteredSlots.sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
@@ -104,14 +104,14 @@ const ManageTimeSlots: React.FC = () => {
       setCreating(true);
       setError('');
 
-      const date = new Date(createDate);
-      await slotService.createDailySlots(groundId!, date, startHour, endHour);
+      const date = dayjs(createDate);
+      await slotService.createDailySlots(groundId!, date.toDate(), startHour, endHour);
 
-      setSuccess(`Created ${endHour - startHour} time slots for ${format(date, 'MMM d, yyyy')}`);
+      setSuccess(`Created ${endHour - startHour} time slots for ${date.format('MMM D, YYYY')}`);
       setCreateDialog(false);
 
       // If created slots are for selected date, refresh
-      if (isSameDay(date, selectedDate)) {
+      if (date.isSame(selectedDate, 'day')) {
         fetchSlots();
       }
     } catch (err: any) {
@@ -213,16 +213,16 @@ const ManageTimeSlots: React.FC = () => {
           {availableDates.map((date) => (
             <Button
               key={date.toISOString()}
-              variant={isSameDay(date, selectedDate) ? 'contained' : 'outlined'}
-              onClick={() => setSelectedDate(startOfDay(date))}
+              variant={date.isSame(selectedDate, 'day') ? 'contained' : 'outlined'}
+              onClick={() => setSelectedDate(date.startOf('day'))}
               sx={{ minWidth: 100 }}
             >
               <Box textAlign="center">
                 <Typography variant="caption" display="block">
-                  {format(date, 'EEE')}
+                  {date.format('ddd')}
                 </Typography>
                 <Typography variant="body2" fontWeight={600}>
-                  {format(date, 'MMM d')}
+                  {date.format('MMM D')}
                 </Typography>
               </Box>
             </Button>
@@ -234,7 +234,7 @@ const ManageTimeSlots: React.FC = () => {
       <Paper sx={{ p: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h6">
-            Time Slots for {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+            Time Slots for {selectedDate.format('dddd, MMMM D, YYYY')}
           </Typography>
           <Box display="flex" gap={2}>
             <Chip
@@ -264,7 +264,7 @@ const ManageTimeSlots: React.FC = () => {
               variant="contained"
               startIcon={<AddIcon />}
               onClick={() => {
-                setCreateDate(format(selectedDate, 'yyyy-MM-dd'));
+                setCreateDate(selectedDate.format('YYYY-MM-DD'));
                 setCreateDialog(true);
               }}
               sx={{ mt: 2 }}
@@ -291,10 +291,10 @@ const ManageTimeSlots: React.FC = () => {
                     }}
                   >
                     <Typography variant="h6" fontWeight={600} sx={{ color: statusColor }}>
-                      {format(new Date(slot.startTime), 'HH:mm')}
+                      {dayjs(slot.startTime).format('HH:mm')}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      to {format(new Date(slot.endTime), 'HH:mm')}
+                      to {dayjs(slot.endTime).format('HH:mm')}
                     </Typography>
                     <Chip
                       label={status.charAt(0).toUpperCase() + status.slice(1)}
