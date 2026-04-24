@@ -3,6 +3,9 @@ package com.amrit.futsal.api;
 import com.amrit.futsal.entity.FutsalCompany;
 import com.amrit.futsal.service.FutsalCompanyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +48,8 @@ public class FutsalCompanyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FutsalCompany>> getAllFutsalCompanies() {
-        return ResponseEntity.ok(futsalCompanyService.getAllFutsalCompanies());
+    public ResponseEntity<Page<FutsalCompany>> getAllFutsalCompanies(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(futsalCompanyService.getAllFutsalCompanies(pageable));
     }
 
     @DeleteMapping("/{companyId}")
