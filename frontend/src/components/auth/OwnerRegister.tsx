@@ -17,14 +17,14 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { UserRole } from '../../types';
 
-const Register: React.FC = () => {
+const OwnerRegister: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
     phoneNumber: '',
-    role: UserRole.USER,
+    role: UserRole.OWNER,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -41,22 +41,20 @@ const Register: React.FC = () => {
     event.preventDefault();
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const fieldName = name as string;
     setFormData((prev) => ({
       ...prev,
-      [fieldName]: value,
+      [name]: value,
     }));
-    if (fieldErrors[fieldName]) {
+    if (fieldErrors[name]) {
       setFieldErrors((prev) => {
         const next = { ...prev };
-        delete next[fieldName];
+        delete next[name];
         return next;
       });
     }
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +82,7 @@ const Register: React.FC = () => {
         phoneNumber: formData.phoneNumber,
         role: formData.role,
       });
-      showToast('Account created successfully.');
+      showToast('Owner account created successfully. Welcome aboard!');
       navigate('/');
     } catch (err: any) {
       const data = err.response?.data;
@@ -113,11 +111,11 @@ const Register: React.FC = () => {
         }}
       >
         <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
-          <Typography component="h1" variant="h5" align="center" gutterBottom>
-            Sign Up
+          <Typography component="h1" variant="h5" align="center" gutterBottom sx={{ fontWeight: 700 }}>
+            List Your Futsal
           </Typography>
           <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 3 }}>
-            Create your account
+            Create an owner account to start managing your grounds
           </Typography>
 
           {error && (
@@ -132,7 +130,7 @@ const Register: React.FC = () => {
               required
               fullWidth
               id="name"
-              label="Full Name"
+              label="Company or Owner Name"
               name="name"
               autoComplete="name"
               autoFocus
@@ -146,7 +144,7 @@ const Register: React.FC = () => {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Business Email"
               name="email"
               autoComplete="email"
               value={formData.email}
@@ -158,7 +156,7 @@ const Register: React.FC = () => {
               margin="normal"
               fullWidth
               id="phoneNumber"
-              label="Phone Number"
+              label="Contact Number"
               name="phoneNumber"
               autoComplete="tel"
               value={formData.phoneNumber}
@@ -226,19 +224,17 @@ const Register: React.FC = () => {
               sx={{ mt: 3, mb: 2 }}
               disabled={loading}
             >
-              {loading ? 'Creating Account...' : 'Sign Up'}
+              {loading ? 'Creating Account...' : 'Register as Owner'}
             </Button>
-            
-            <Box sx={{ textAlign: 'center', mb: 2 }}>
-              <Typography variant="body2" sx={{ color: 'text.secondary', display: 'inline' }}>
-                Are you an owner? {' '}
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Just looking to book?
               </Typography>
-              <Link component={RouterLink} to="/register/owner" variant="body2" sx={{ fontWeight: 600 }}>
-                List your futsal here
+              <Link component={RouterLink} to="/register" variant="body2" sx={{ fontWeight: 600 }}>
+                Sign Up as a Player
               </Link>
             </Box>
-
-            <Box sx={{ textAlign: 'center' }}>
+            <Box sx={{ textAlign: 'center', mt: 1 }}>
               <Link component={RouterLink} to="/login" variant="body2">
                 Already have an account? Sign In
               </Link>
@@ -250,4 +246,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register;
+export default OwnerRegister;

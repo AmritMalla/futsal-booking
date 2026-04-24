@@ -60,13 +60,18 @@ public class AuthController {
             throw new DuplicateResourceException("User", "email", registerRequest.getEmail());
         }
 
+        // Security: Prevent registering as ADMIN
+        if (registerRequest.getRole() == User.Role.ADMIN) {
+            return ResponseEntity.badRequest().body("Cannot register as an administrator.");
+        }
+
         // Create new user's account
         User user = new User();
         user.setName(registerRequest.getName());
         user.setEmail(registerRequest.getEmail());
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
         user.setPhoneNumber(registerRequest.getPhoneNumber());
-        user.setRole(registerRequest.getRole());
+        user.setRole(registerRequest.getRole() != null ? registerRequest.getRole() : User.Role.USER);
 
         User savedUser = userService.createUser(user);
         

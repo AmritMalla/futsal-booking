@@ -9,6 +9,7 @@ import PrivateRoute from './components/auth/PrivateRoute';
 import Home from './pages/Home';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
+import OwnerRegister from './components/auth/OwnerRegister';
 import GroundList from './components/grounds/GroundList';
 import GroundDetails from './components/grounds/GroundDetails';
 import CreateBooking from './components/booking/CreateBooking';
@@ -42,9 +43,17 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/register/owner" element={<OwnerRegister />} />
               <Route path="/grounds" element={<GroundList />} />
               <Route path="/grounds/:id" element={<GroundDetails />} />
-              <Route path="/matches" element={<OpenMatchesPage />} />
+              <Route
+                path="/matches"
+                element={
+                  <PrivateRoute>
+                    <OpenMatchesPage />
+                  </PrivateRoute>
+                }
+              />
 
               {/* Protected Routes - User */}
               <Route

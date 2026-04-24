@@ -167,7 +167,7 @@ const Footer: React.FC = () => {
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {[
-                { label: 'List Your Ground', path: '/register' },
+                { label: 'List Your Ground', path: '/register/owner' },
                 { label: 'Owner Dashboard', path: '/owner/dashboard' },
                 { label: 'Manage Bookings', path: '/owner/dashboard' },
                 { label: 'Support', path: '/' },

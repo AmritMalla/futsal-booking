@@ -3,8 +3,9 @@ import { FutsalGround, FutsalGroundRequest, GroundSearchParams } from '../types'
 
 export const groundService = {
   async getAllGrounds(): Promise<FutsalGround[]> {
-    const response = await apiClient.get<FutsalGround[]>('/grounds');
-    return response.data;
+    const response = await apiClient.get<any>('/grounds');
+    // Handle both raw array and Spring Data Page object
+    return Array.isArray(response.data) ? response.data : (response.data.content || []);
   },
 
   async getGroundById(id: string): Promise<FutsalGround> {

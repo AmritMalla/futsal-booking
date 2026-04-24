@@ -452,16 +452,18 @@ const Home: React.FC = () => {
                 >
                   Browse Open Matches
                 </Button>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate(isAuthenticated ? '/my-bookings' : '/login')}
-                  sx={{
-                    borderColor: colors.primary.main,
-                    color: colors.primary.main,
-                  }}
-                >
-                  {isAuthenticated ? 'Publish a Booking' : 'Sign In to Host'}
-                </Button>
+                {isAuthenticated && (
+                  <Button
+                    variant="outlined"
+                    onClick={() => navigate('/my-bookings')}
+                    sx={{
+                      borderColor: colors.primary.main,
+                      color: colors.primary.main,
+                    }}
+                  >
+                    Publish a Booking
+                  </Button>
+                )}
               </Stack>
             </Grid>
 

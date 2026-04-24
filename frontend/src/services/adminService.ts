@@ -49,8 +49,8 @@ export const adminService = {
   // ==================== User Management ====================
 
   async getAllUsers(): Promise<User[]> {
-    const response = await apiClient.get<User[]>('/admin/users');
-    return response.data;
+    const response = await apiClient.get<any>('/admin/users');
+    return Array.isArray(response.data) ? response.data : (response.data.content || []);
   },
 
   async getUserById(userId: string): Promise<User> {
@@ -92,8 +92,8 @@ export const adminService = {
   // ==================== Company Management ====================
 
   async getAllCompanies(): Promise<FutsalCompany[]> {
-    const response = await apiClient.get<FutsalCompany[]>('/admin/companies');
-    return response.data;
+    const response = await apiClient.get<any>('/admin/companies');
+    return Array.isArray(response.data) ? response.data : (response.data.content || []);
   },
 
   async getCompanyById(companyId: string): Promise<FutsalCompany> {
@@ -118,8 +118,8 @@ export const adminService = {
   // ==================== Ground Management ====================
 
   async getAllGrounds(): Promise<FutsalGround[]> {
-    const response = await apiClient.get<FutsalGround[]>('/admin/grounds');
-    return response.data;
+    const response = await apiClient.get<any>('/admin/grounds');
+    return Array.isArray(response.data) ? response.data : (response.data.content || []);
   },
 
   async getGroundById(groundId: string): Promise<FutsalGround> {

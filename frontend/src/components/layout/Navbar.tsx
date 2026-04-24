@@ -168,9 +168,11 @@ const Navbar: React.FC = () => {
             <Button sx={navLinkStyle('/grounds')} onClick={() => navigate('/grounds')}>
               Grounds
             </Button>
-            <Button sx={navLinkStyle('/matches')} onClick={() => navigate('/matches')}>
-              Find Games
-            </Button>
+            {isAuthenticated && (
+              <Button sx={navLinkStyle('/matches')} onClick={() => navigate('/matches')}>
+                Find Games
+              </Button>
+            )}
 
             {isAuthenticated && (
               <Button sx={navLinkStyle('/my-bookings')} onClick={() => navigate('/my-bookings')}>
@@ -434,15 +436,17 @@ const Navbar: React.FC = () => {
                 <Typography variant="body2" fontWeight={600}>Browse Grounds</Typography>
               </MenuItem>
 
-              <MenuItem
-                onClick={() => handleNavigate('/matches')}
-                sx={{ py: 1.5, '&:hover': { bgcolor: alpha(colors.primary.main, 0.1) } }}
-              >
-                <ListItemIcon>
-                  <GroupIcon fontSize="small" sx={{ color: colors.primary.main }} />
-                </ListItemIcon>
-                <Typography variant="body2" fontWeight={600}>Find Games</Typography>
-              </MenuItem>
+              {isAuthenticated && (
+                <MenuItem
+                  onClick={() => handleNavigate('/matches')}
+                  sx={{ py: 1.5, '&:hover': { bgcolor: alpha(colors.primary.main, 0.1) } }}
+                >
+                  <ListItemIcon>
+                    <GroupIcon fontSize="small" sx={{ color: colors.primary.main }} />
+                  </ListItemIcon>
+                  <Typography variant="body2" fontWeight={600}>Find Games</Typography>
+                </MenuItem>
+              )}
 
               {isAuthenticated ? (
                 <>
