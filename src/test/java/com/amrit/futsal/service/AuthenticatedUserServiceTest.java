@@ -4,10 +4,15 @@ import com.amrit.futsal.entity.Booking;
 import com.amrit.futsal.entity.FutsalCompany;
 import com.amrit.futsal.entity.FutsalGround;
 import com.amrit.futsal.entity.Payment;
+import com.amrit.futsal.entity.Review;
+import com.amrit.futsal.entity.TimeSlot;
 import com.amrit.futsal.entity.User;
 import com.amrit.futsal.repository.BookingRepository;
+import com.amrit.futsal.repository.FutsalCompanyRepository;
 import com.amrit.futsal.repository.FutsalGroundRepository;
 import com.amrit.futsal.repository.PaymentRepository;
+import com.amrit.futsal.repository.ReviewRepository;
+import com.amrit.futsal.repository.TimeSlotRepository;
 import com.amrit.futsal.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,7 +46,16 @@ class AuthenticatedUserServiceTest {
     private PaymentRepository paymentRepository;
 
     @Mock
+    private FutsalCompanyRepository companyRepository;
+
+    @Mock
     private FutsalGroundRepository groundRepository;
+
+    @Mock
+    private TimeSlotRepository timeSlotRepository;
+
+    @Mock
+    private ReviewRepository reviewRepository;
 
     private AuthenticatedUserService authenticatedUserService;
 
@@ -51,7 +65,10 @@ class AuthenticatedUserServiceTest {
                 userRepository,
                 bookingRepository,
                 paymentRepository,
-                groundRepository
+                companyRepository,
+                groundRepository,
+                timeSlotRepository,
+                reviewRepository
         );
     }
 
@@ -95,6 +112,40 @@ class AuthenticatedUserServiceTest {
     }
 
     @Test
+    void requireCompanyOwnerOrAdminRejectsDifferentOwner() {
+        User owner = buildUser(User.Role.OWNER);
+        User anotherOwner = buildUser(User.Role.OWNER);
+        FutsalCompany company = new FutsalCompany();
+        company.setId(UUID.randomUUID());
+        company.setOwner(owner);
+
+        authenticateAs(anotherOwner);
+        when(userRepository.findByEmail(anotherOwner.getEmail())).thenReturn(Optional.of(anotherOwner));
+        when(companyRepository.findById(company.getId())).thenReturn(Optional.of(company));
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> authenticatedUserService.requireCompanyOwnerOrAdmin(company.getId())
+        );
+    }
+
+    @Test
+    void requireGroundOwnerOrAdminRejectsDifferentOwner() {
+        User owner = buildUser(User.Role.OWNER);
+        User anotherOwner = buildUser(User.Role.OWNER);
+        FutsalGround ground = buildGround(owner);
+
+        authenticateAs(anotherOwner);
+        when(userRepository.findByEmail(anotherOwner.getEmail())).thenReturn(Optional.of(anotherOwner));
+        when(groundRepository.findById(ground.getId())).thenReturn(Optional.of(ground));
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> authenticatedUserService.requireGroundOwnerOrAdmin(ground.getId())
+        );
+    }
+
+    @Test
     void requirePaymentAccessRejectsUnrelatedUser() {
         User unrelatedUser = buildUser(User.Role.USER);
         User bookingUser = buildUser(User.Role.USER);
@@ -109,6 +160,39 @@ class AuthenticatedUserServiceTest {
                 AccessDeniedException.class,
                 () -> authenticatedUserService.requirePaymentAccess(payment.getId())
         );
+    }
+
+    @Test
+    void requireReviewOwnerOrAdminRejectsDifferentUser() {
+        User owner = buildUser(User.Role.USER);
+        User anotherUser = buildUser(User.Role.USER);
+        Review review = new Review();
+        review.setId(UUID.randomUUID());
+        review.setUser(owner);
+
+        authenticateAs(anotherUser);
+        when(userRepository.findByEmail(anotherUser.getEmail())).thenReturn(Optional.of(anotherUser));
+        when(reviewRepository.findById(review.getId())).thenReturn(Optional.of(review));
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> authenticatedUserService.requireReviewOwnerOrAdmin(review.getId())
+        );
+    }
+
+    @Test
+    void requireTimeSlotOwnerOrAdminAllowsGroundOwner() {
+        User owner = buildUser(User.Role.OWNER);
+        FutsalGround ground = buildGround(owner);
+        TimeSlot timeSlot = new TimeSlot();
+        timeSlot.setId(UUID.randomUUID());
+        timeSlot.setGround(ground);
+
+        authenticateAs(owner);
+        when(userRepository.findByEmail(owner.getEmail())).thenReturn(Optional.of(owner));
+        when(timeSlotRepository.findById(timeSlot.getId())).thenReturn(Optional.of(timeSlot));
+
+        assertDoesNotThrow(() -> authenticatedUserService.requireTimeSlotOwnerOrAdmin(timeSlot.getId()));
     }
 
     private void authenticateAs(User user) {
@@ -132,18 +216,24 @@ class AuthenticatedUserServiceTest {
     }
 
     private Booking buildBooking(User bookingUser, User owner) {
-        FutsalCompany company = new FutsalCompany();
-        company.setOwner(owner);
-
-        FutsalGround ground = new FutsalGround();
-        ground.setId(UUID.randomUUID());
-        ground.setCompany(company);
+        FutsalGround ground = buildGround(owner);
 
         Booking booking = new Booking();
         booking.setId(UUID.randomUUID());
         booking.setUser(bookingUser);
         booking.setGround(ground);
         return booking;
+    }
+
+    private FutsalGround buildGround(User owner) {
+        FutsalCompany company = new FutsalCompany();
+        company.setId(UUID.randomUUID());
+        company.setOwner(owner);
+
+        FutsalGround ground = new FutsalGround();
+        ground.setId(UUID.randomUUID());
+        ground.setCompany(company);
+        return ground;
     }
 
     private Payment buildPayment(User bookingUser, User owner) {

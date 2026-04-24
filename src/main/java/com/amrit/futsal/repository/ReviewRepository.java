@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -15,6 +16,8 @@ public interface ReviewRepository extends JpaRepository<Review, UUID> {
     List<Review> findByGroundId(UUID groundId);
     
     List<Review> findByUserId(UUID userId);
+
+    Optional<Review> findByUserIdAndGroundId(UUID userId, UUID groundId);
     
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.ground.id = :groundId")
     Double calculateAverageRatingForGround(@Param("groundId") UUID groundId);

@@ -245,14 +245,7 @@ public class AdminController {
 
     @PostMapping("/timeslots")
     public ResponseEntity<TimeSlotResponse> createTimeSlot(@RequestBody TimeSlotRequest request) {
-        TimeSlot slot = new TimeSlot();
-        slot.setGround(futsalGroundService.getFutsalGroundById(request.getGroundId())
-                .orElseThrow(() -> new IllegalArgumentException("Ground not found: " + request.getGroundId())));
-        slot.setStartTime(request.getStartTime());
-        slot.setEndTime(request.getEndTime());
-        slot.setIsBooked(false);
-
-        TimeSlot createdSlot = timeSlotService.createTimeSlot(slot);
+        TimeSlot createdSlot = timeSlotService.createTimeSlot(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(TimeSlotResponse.fromEntity(createdSlot));
     }
 
@@ -261,20 +254,7 @@ public class AdminController {
             @PathVariable UUID slotId,
             @RequestBody TimeSlotRequest request) {
         return timeSlotService.getTimeSlotById(slotId)
-                .map(slot -> {
-                    if (request.getGroundId() != null) {
-                        slot.setGround(futsalGroundService.getFutsalGroundById(request.getGroundId())
-                                .orElseThrow(() -> new IllegalArgumentException("Ground not found: " + request.getGroundId())));
-                    }
-                    if (request.getStartTime() != null) {
-                        slot.setStartTime(request.getStartTime());
-                    }
-                    if (request.getEndTime() != null) {
-                        slot.setEndTime(request.getEndTime());
-                    }
-                    TimeSlot updatedSlot = timeSlotService.updateTimeSlot(slot);
-                    return ResponseEntity.ok(TimeSlotResponse.fromEntity(updatedSlot));
-                })
+                .map(slot -> ResponseEntity.ok(TimeSlotResponse.fromEntity(timeSlotService.updateTimeSlot(slotId, request))))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -446,13 +426,7 @@ public class AdminController {
             @RequestBody ReviewRequest request) {
         return reviewService.getReviewById(reviewId)
                 .map(review -> {
-                    if (request.getRating() != null) {
-                        review.setRating(request.getRating());
-                    }
-                    if (request.getReviewText() != null) {
-                        review.setReviewText(request.getReviewText());
-                    }
-                    Review updatedReview = reviewService.updateReview(review);
+                    Review updatedReview = reviewService.updateReview(reviewId, request);
                     return ResponseEntity.ok(updatedReview);
                 })
                 .orElse(ResponseEntity.notFound().build());

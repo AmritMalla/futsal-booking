@@ -1,7 +1,6 @@
 package com.amrit.futsal.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class FutsalCompanyRequest {
 
-    @NotNull(message = "Owner ID is required")
     private UUID ownerId;
 
     @NotBlank(message = "Company name is required")

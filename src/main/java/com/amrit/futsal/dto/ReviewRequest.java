@@ -2,7 +2,6 @@ package com.amrit.futsal.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -16,9 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ReviewRequest {
 
-    @NotNull(message = "User ID is required")
-    private UUID userId;
-
     @NotNull(message = "Ground ID is required")
     private UUID groundId;
 
@@ -27,7 +23,6 @@ public class ReviewRequest {
     @Max(value = 5, message = "Rating must not exceed 5")
     private Integer rating;
 
-    @NotBlank(message = "Review text is required")
-    @Size(min = 10, max = 500, message = "Review must be between 10 and 500 characters")
+    @Size(max = 500, message = "Review must not exceed 500 characters")
     private String reviewText;
 }

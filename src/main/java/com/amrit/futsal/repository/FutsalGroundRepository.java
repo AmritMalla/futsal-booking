@@ -16,6 +16,8 @@ public interface FutsalGroundRepository extends JpaRepository<FutsalGround, UUID
 
     List<FutsalGround> findByCompanyId(UUID companyId);
 
+    List<FutsalGround> findByCompanyOwnerId(UUID ownerId);
+
     Optional<FutsalGround> findByName(String name);
 
     List<FutsalGround> findBySurfaceType(String surfaceType);

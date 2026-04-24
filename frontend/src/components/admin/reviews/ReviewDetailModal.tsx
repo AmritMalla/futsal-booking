@@ -44,7 +44,6 @@ const ReviewDetailModal: React.FC<ReviewDetailModalProps> = ({
 
     try {
       await adminService.updateReview(review.id, {
-        userId: review.userId,
         groundId: review.groundId,
         rating: formData.rating,
         reviewText: formData.reviewText,

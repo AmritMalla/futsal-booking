@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Container,
   Grid,
@@ -18,6 +18,7 @@ import {
   Stadium as StadiumIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import { companyService } from '../../services/companyService';
 import { reportService } from '../../services/reportService';
 import { groundService } from '../../services/groundService';
 import { RevenueReportData } from '../../types';
@@ -29,13 +30,7 @@ const OwnerDashboard: React.FC = () => {
   const [totalGrounds, setTotalGrounds] = useState(0);
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (user) {
-      fetchDashboardData();
-    }
-  }, [user]);
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -45,15 +40,23 @@ const OwnerDashboard: React.FC = () => {
       const report = await reportService.generateRevenueReport(user.id);
       setRevenueData(report.reportData as RevenueReportData);
 
-      // Fetch total grounds (assuming company ID is same as user ID for owners)
-      const grounds = await groundService.getGroundsByCompany(user.id);
-      setTotalGrounds(grounds.length);
+      const companies = await companyService.getMyCompanies();
+      const groundsByCompany = await Promise.all(
+        companies.map((company) => groundService.getGroundsByCompany(company.id))
+      );
+      setTotalGrounds(groundsByCompany.flat().length);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user, fetchDashboardData]);
 
   const handleGenerateReport = async (type: 'revenue' | 'bookings' | 'customers') => {
     if (!user) return;

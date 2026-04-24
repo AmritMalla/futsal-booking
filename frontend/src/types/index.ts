@@ -54,6 +54,15 @@ export interface LoginResponse {
   role: UserRole;
 }
 
+export interface FutsalCompany {
+  id: string;
+  ownerId: string;
+  ownerName: string;
+  name: string;
+  location: string;
+  createdAt: string;
+}
+
 // Futsal Ground Types
 export interface FutsalGround {
   id: string;
@@ -145,7 +154,6 @@ export interface Review {
 }
 
 export interface ReviewRequest {
-  userId: string;
   groundId: string;
   rating: number;
   reviewText?: string;

@@ -1,13 +1,19 @@
 package com.amrit.futsal.service;
 
 import com.amrit.futsal.entity.Booking;
+import com.amrit.futsal.entity.FutsalCompany;
 import com.amrit.futsal.entity.FutsalGround;
 import com.amrit.futsal.entity.Payment;
+import com.amrit.futsal.entity.Review;
+import com.amrit.futsal.entity.TimeSlot;
 import com.amrit.futsal.entity.User;
 import com.amrit.futsal.exception.ResourceNotFoundException;
 import com.amrit.futsal.repository.BookingRepository;
+import com.amrit.futsal.repository.FutsalCompanyRepository;
 import com.amrit.futsal.repository.FutsalGroundRepository;
 import com.amrit.futsal.repository.PaymentRepository;
+import com.amrit.futsal.repository.ReviewRepository;
+import com.amrit.futsal.repository.TimeSlotRepository;
 import com.amrit.futsal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,17 +30,26 @@ public class AuthenticatedUserService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final PaymentRepository paymentRepository;
+    private final FutsalCompanyRepository companyRepository;
     private final FutsalGroundRepository groundRepository;
+    private final TimeSlotRepository timeSlotRepository;
+    private final ReviewRepository reviewRepository;
 
     @Autowired
     public AuthenticatedUserService(UserRepository userRepository,
                                     BookingRepository bookingRepository,
                                     PaymentRepository paymentRepository,
-                                    FutsalGroundRepository groundRepository) {
+                                    FutsalCompanyRepository companyRepository,
+                                    FutsalGroundRepository groundRepository,
+                                    TimeSlotRepository timeSlotRepository,
+                                    ReviewRepository reviewRepository) {
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.paymentRepository = paymentRepository;
+        this.companyRepository = companyRepository;
         this.groundRepository = groundRepository;
+        this.timeSlotRepository = timeSlotRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     public User getCurrentUser() {
@@ -63,10 +78,27 @@ public class AuthenticatedUserService {
         }
     }
 
+    public void requireOwnerOrAdmin() {
+        User currentUser = getCurrentUser();
+        if (!isAdmin(currentUser) && currentUser.getRole() != User.Role.OWNER) {
+            throw new AccessDeniedException("Only owners or administrators can access this resource");
+        }
+    }
+
     public void requireCurrentUserOrAdmin(UUID userId) {
         User currentUser = getCurrentUser();
         if (!isAdmin(currentUser) && !currentUser.getId().equals(userId)) {
             throw new AccessDeniedException("You don't have permission to access this user");
+        }
+    }
+
+    public void requireCompanyOwnerOrAdmin(UUID companyId) {
+        User currentUser = getCurrentUser();
+        FutsalCompany company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("FutsalCompany", "id", companyId));
+
+        if (!isAdmin(currentUser) && !company.getOwner().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("You don't have permission to manage this company");
         }
     }
 
@@ -133,6 +165,27 @@ public class AuthenticatedUserService {
         if (!isAdmin(currentUser)
                 && !payment.getBooking().getGround().getCompany().getOwner().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You don't have permission to manage this payment");
+        }
+    }
+
+    public void requireReviewOwnerOrAdmin(UUID reviewId) {
+        User currentUser = getCurrentUser();
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ResourceNotFoundException("Review", "id", reviewId));
+
+        if (!isAdmin(currentUser) && !review.getUser().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("You don't have permission to modify this review");
+        }
+    }
+
+    public void requireTimeSlotOwnerOrAdmin(UUID slotId) {
+        User currentUser = getCurrentUser();
+        TimeSlot timeSlot = timeSlotRepository.findById(slotId)
+                .orElseThrow(() -> new ResourceNotFoundException("TimeSlot", "id", slotId));
+
+        if (!isAdmin(currentUser)
+                && !timeSlot.getGround().getCompany().getOwner().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("You don't have permission to manage this time slot");
         }
     }
 

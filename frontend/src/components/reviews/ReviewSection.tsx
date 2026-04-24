@@ -88,8 +88,8 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ groundId, groundName }) =
 
       if (editingReview) {
         // Update existing review
-        const updatedReview: Review = {
-          ...editingReview,
+        const updatedReview: ReviewRequest = {
+          groundId,
           rating,
           reviewText: reviewText || undefined,
         };
@@ -98,7 +98,6 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ groundId, groundName }) =
       } else {
         // Create new review
         const reviewData: ReviewRequest = {
-          userId: user.id,
           groundId,
           rating,
           reviewText: reviewText || undefined,

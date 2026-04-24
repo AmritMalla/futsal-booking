@@ -14,6 +14,15 @@ import java.util.UUID;
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, UUID> {
 
     List<TimeSlot> findByGroundId(UUID groundId);
+
+    boolean existsByGroundIdAndStartTimeAndEndTime(UUID groundId, LocalDateTime startTime, LocalDateTime endTime);
+
+    boolean existsByGroundIdAndStartTimeAndEndTimeAndIdNot(
+            UUID groundId,
+            LocalDateTime startTime,
+            LocalDateTime endTime,
+            UUID slotId
+    );
     
     List<TimeSlot> findByIsBooked(Boolean isBooked);
     

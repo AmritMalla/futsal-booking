@@ -1,7 +1,6 @@
 package com.amrit.futsal.repository;
 
 import com.amrit.futsal.entity.FutsalCompany;
-import com.amrit.futsal.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

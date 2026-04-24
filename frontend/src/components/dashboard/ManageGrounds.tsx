@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Container,
   Paper,
@@ -7,12 +7,6 @@ import {
   CircularProgress,
   Alert,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -41,14 +35,16 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { companyService } from '../../services/companyService';
 import { groundService } from '../../services/groundService';
-import { FutsalGround, FutsalGroundRequest } from '../../types';
+import { FutsalCompany, FutsalGround, FutsalGroundRequest } from '../../types';
 import { colors } from '../../theme/theme';
 
 const surfaceTypes = ['Turf', 'Grass', 'Indoor', 'Artificial'];
 
 const ManageGrounds: React.FC = () => {
   const [grounds, setGrounds] = useState<FutsalGround[]>([]);
+  const [companies, setCompanies] = useState<FutsalCompany[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -64,25 +60,35 @@ const ManageGrounds: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      fetchGrounds();
-    }
-  }, [user]);
-
-  const fetchGrounds = async () => {
+  const fetchGrounds = useCallback(async () => {
     if (!user) return;
 
     try {
       setLoading(true);
-      const data = await groundService.getGroundsByCompany(user.id);
-      setGrounds(data);
+      const ownedCompanies = await companyService.getMyCompanies();
+      setCompanies(ownedCompanies);
+
+      if (ownedCompanies.length === 0) {
+        setGrounds([]);
+        return;
+      }
+
+      const groundsByCompany = await Promise.all(
+        ownedCompanies.map((company) => groundService.getGroundsByCompany(company.id))
+      );
+      setGrounds(groundsByCompany.flat());
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load grounds');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchGrounds();
+    }
+  }, [user, fetchGrounds]);
 
   const handleOpenDialog = (ground?: FutsalGround) => {
     if (ground) {
@@ -97,7 +103,7 @@ const ManageGrounds: React.FC = () => {
     } else {
       setEditingGround(null);
       setFormData({
-        companyId: user?.id || '',
+        companyId: companies[0]?.id || '',
         name: '',
         surfaceType: '',
         pricePerHour: 0,
@@ -123,6 +129,10 @@ const ManageGrounds: React.FC = () => {
   const handleSubmit = async () => {
     try {
       setError('');
+      if (!formData.companyId) {
+        setError('Please select a company before creating a ground.');
+        return;
+      }
       if (editingGround) {
         await groundService.updateGround(editingGround.id, formData);
         setSuccess('Ground updated successfully!');
@@ -173,6 +183,7 @@ const ManageGrounds: React.FC = () => {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => handleOpenDialog()}
+          disabled={companies.length === 0}
           sx={{
             bgcolor: colors.secondary.main,
             '&:hover': { bgcolor: colors.secondary.dark },
@@ -192,6 +203,11 @@ const ManageGrounds: React.FC = () => {
           {success}
         </Alert>
       )}
+      {companies.length === 0 && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          No futsal company is assigned to your owner account yet. Create or assign a company before adding grounds.
+        </Alert>
+      )}
 
       {grounds.length === 0 ? (
         <Paper sx={{ p: 6, textAlign: 'center' }}>
@@ -206,6 +222,7 @@ const ManageGrounds: React.FC = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => handleOpenDialog()}
+            disabled={companies.length === 0}
           >
             Add Your First Ground
           </Button>
@@ -310,6 +327,22 @@ const ManageGrounds: React.FC = () => {
           {editingGround ? 'Edit Ground' : 'Add New Ground'}
         </DialogTitle>
         <DialogContent>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Company</InputLabel>
+            <Select
+              name="companyId"
+              value={formData.companyId}
+              label="Company"
+              onChange={handleChange as any}
+              disabled={!!editingGround || companies.length === 0}
+            >
+              {companies.map((company) => (
+                <MenuItem key={company.id} value={company.id}>
+                  {company.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             fullWidth
             margin="normal"
@@ -359,7 +392,7 @@ const ManageGrounds: React.FC = () => {
           <Button
             variant="contained"
             onClick={handleSubmit}
-            disabled={!formData.name || !formData.surfaceType || !formData.pricePerHour}
+            disabled={!formData.companyId || !formData.name || !formData.surfaceType || !formData.pricePerHour}
           >
             {editingGround ? 'Update' : 'Create'}
           </Button>

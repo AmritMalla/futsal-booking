@@ -29,12 +29,7 @@ export const slotService = {
     return response.data;
   },
 
-  async markSlotAsBooked(slotId: string): Promise<TimeSlot> {
-    const response = await apiClient.put<TimeSlot>(`/slots/${slotId}/book`);
-    return response.data;
-  },
-
-  async updateTimeSlot(id: string, data: TimeSlot): Promise<TimeSlot> {
+  async updateTimeSlot(id: string, data: TimeSlotRequest): Promise<TimeSlot> {
     const response = await apiClient.put<TimeSlot>(`/slots/${id}`, data);
     return response.data;
   },

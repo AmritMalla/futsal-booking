@@ -3,6 +3,7 @@ package com.amrit.futsal.service;
 import com.amrit.futsal.dto.FutsalGroundRequest;
 import com.amrit.futsal.entity.FutsalCompany;
 import com.amrit.futsal.entity.FutsalGround;
+import com.amrit.futsal.exception.BadRequestException;
 import com.amrit.futsal.exception.DuplicateResourceException;
 import com.amrit.futsal.exception.ResourceNotFoundException;
 import com.amrit.futsal.repository.FutsalCompanyRepository;
@@ -79,6 +80,10 @@ public class FutsalGroundService {
         return futsalGroundRepository.findByCompanyId(companyId);
     }
 
+    public List<FutsalGround> getFutsalGroundsByOwnerId(UUID ownerId) {
+        return futsalGroundRepository.findByCompanyOwnerId(ownerId);
+    }
+
     public List<FutsalGround> getFutsalGroundsBySurfaceType(String surfaceType) {
         return futsalGroundRepository.findBySurfaceType(surfaceType);
     }
@@ -109,6 +114,10 @@ public class FutsalGroundService {
     public FutsalGround updateFutsalGround(UUID groundId, FutsalGroundRequest request) {
         FutsalGround ground = futsalGroundRepository.findById(groundId)
                 .orElseThrow(() -> new ResourceNotFoundException("FutsalGround", "id", groundId));
+
+        if (!ground.getCompany().getId().equals(request.getCompanyId())) {
+            throw new BadRequestException("Changing a ground's company is not supported");
+        }
 
         // Check if new name already exists for a different ground
         if (!ground.getName().equals(request.getName())) {

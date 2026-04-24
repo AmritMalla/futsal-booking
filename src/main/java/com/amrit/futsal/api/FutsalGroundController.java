@@ -4,6 +4,7 @@ import com.amrit.futsal.dto.FutsalGroundRequest;
 import com.amrit.futsal.dto.FutsalGroundResponse;
 import com.amrit.futsal.entity.FutsalGround;
 import com.amrit.futsal.exception.ResourceNotFoundException;
+import com.amrit.futsal.service.AuthenticatedUserService;
 import com.amrit.futsal.service.FutsalGroundService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +27,19 @@ import java.util.stream.Collectors;
 public class FutsalGroundController {
 
     private final FutsalGroundService futsalGroundService;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Autowired
-    public FutsalGroundController(FutsalGroundService futsalGroundService) {
+    public FutsalGroundController(FutsalGroundService futsalGroundService,
+                                  AuthenticatedUserService authenticatedUserService) {
         this.futsalGroundService = futsalGroundService;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     @PostMapping
     public ResponseEntity<FutsalGroundResponse> createFutsalGround(
             @Valid @RequestBody FutsalGroundRequest request) {
+        authenticatedUserService.requireCompanyOwnerOrAdmin(request.getCompanyId());
         FutsalGround ground = futsalGroundService.createFutsalGround(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(FutsalGroundResponse.fromEntity(ground));
     }
@@ -98,6 +103,7 @@ public class FutsalGroundController {
     public ResponseEntity<FutsalGroundResponse> updateFutsalGround(
             @PathVariable UUID groundId,
             @Valid @RequestBody FutsalGroundRequest request) {
+        authenticatedUserService.requireGroundOwnerOrAdmin(groundId);
         FutsalGround ground = futsalGroundService.updateFutsalGround(groundId, request);
         return ResponseEntity.ok(FutsalGroundResponse.fromEntity(ground));
     }
@@ -106,12 +112,14 @@ public class FutsalGroundController {
     public ResponseEntity<FutsalGroundResponse> uploadGroundImage(
             @PathVariable UUID groundId,
             @RequestParam("file") MultipartFile file) {
+        authenticatedUserService.requireGroundOwnerOrAdmin(groundId);
         FutsalGround ground = futsalGroundService.updateGroundImage(groundId, file);
         return ResponseEntity.ok(FutsalGroundResponse.fromEntity(ground));
     }
 
     @DeleteMapping("/{groundId}")
     public ResponseEntity<Void> deleteFutsalGround(@PathVariable UUID groundId) {
+        authenticatedUserService.requireGroundOwnerOrAdmin(groundId);
         futsalGroundService.deleteFutsalGround(groundId);
         return ResponseEntity.noContent().build();
     }

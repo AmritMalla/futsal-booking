@@ -167,7 +167,6 @@ export interface PaymentRequest {
 }
 
 export interface ReviewRequest {
-  userId: string;
   groundId: string;
   rating: number;
   reviewText?: string;

@@ -27,7 +27,7 @@ export const reviewService = {
     return response.data;
   },
 
-  async updateReview(id: string, data: Review): Promise<Review> {
+  async updateReview(id: string, data: ReviewRequest): Promise<Review> {
     const response = await apiClient.put<Review>(`/reviews/${id}`, data);
     return response.data;
   },

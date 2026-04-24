@@ -3,6 +3,7 @@ package com.amrit.futsal.service;
 import com.amrit.futsal.dto.FutsalCompanyRequest;
 import com.amrit.futsal.entity.FutsalCompany;
 import com.amrit.futsal.entity.User;
+import com.amrit.futsal.exception.DuplicateResourceException;
 import com.amrit.futsal.repository.FutsalCompanyRepository;
 import com.amrit.futsal.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +31,28 @@ public class FutsalCompanyService {
 
     public FutsalCompany createFutsalCompany(FutsalCompanyRequest request) {
         log.info("Creating futsal company with name: {}", request.getName());
+        if (futsalCompanyRepository.findByName(request.getName()).isPresent()) {
+            throw new DuplicateResourceException("FutsalCompany", "name", request.getName());
+        }
+
         User owner = userRepository.findById(request.getOwnerId())
                 .orElseThrow(() -> {
                     log.error("Owner not found with ID: {}", request.getOwnerId());
                     return new IllegalArgumentException("Owner not found: " + request.getOwnerId());
                 });
+        FutsalCompany company = new FutsalCompany();
+        company.setOwner(owner);
+        company.setName(request.getName());
+        company.setLocation(request.getLocation());
+        return futsalCompanyRepository.save(company);
+    }
+
+    public FutsalCompany createFutsalCompany(User owner, FutsalCompanyRequest request) {
+        log.info("Creating futsal company with authenticated owner: {}", owner.getId());
+        if (futsalCompanyRepository.findByName(request.getName()).isPresent()) {
+            throw new DuplicateResourceException("FutsalCompany", "name", request.getName());
+        }
+
         FutsalCompany company = new FutsalCompany();
         company.setOwner(owner);
         company.setName(request.getName());
@@ -50,9 +68,26 @@ public class FutsalCompanyService {
     public FutsalCompany updateFutsalCompany(UUID companyId, FutsalCompanyRequest request) {
         FutsalCompany company = futsalCompanyRepository.findById(companyId)
                 .orElseThrow(() -> new IllegalArgumentException("Company not found: " + companyId));
+        if (!company.getName().equals(request.getName())
+                && futsalCompanyRepository.findByName(request.getName()).isPresent()) {
+            throw new DuplicateResourceException("FutsalCompany", "name", request.getName());
+        }
         User owner = userRepository.findById(request.getOwnerId())
                 .orElseThrow(() -> new IllegalArgumentException("Owner not found: " + request.getOwnerId()));
         company.setOwner(owner);
+        company.setName(request.getName());
+        company.setLocation(request.getLocation());
+        return futsalCompanyRepository.save(company);
+    }
+
+    public FutsalCompany updateOwnedFutsalCompany(UUID companyId, FutsalCompanyRequest request) {
+        FutsalCompany company = futsalCompanyRepository.findById(companyId)
+                .orElseThrow(() -> new IllegalArgumentException("Company not found: " + companyId));
+        if (!company.getName().equals(request.getName())
+                && futsalCompanyRepository.findByName(request.getName()).isPresent()) {
+            throw new DuplicateResourceException("FutsalCompany", "name", request.getName());
+        }
+
         company.setName(request.getName());
         company.setLocation(request.getLocation());
         return futsalCompanyRepository.save(company);
