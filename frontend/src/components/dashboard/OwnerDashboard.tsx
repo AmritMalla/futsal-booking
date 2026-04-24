@@ -18,6 +18,7 @@ import {
   Stadium as StadiumIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { companyService } from '../../services/companyService';
 import { reportService } from '../../services/reportService';
 import { groundService } from '../../services/groundService';
@@ -29,6 +30,7 @@ const OwnerDashboard: React.FC = () => {
   const [revenueData, setRevenueData] = useState<RevenueReportData | null>(null);
   const [totalGrounds, setTotalGrounds] = useState(0);
   const { user } = useAuth();
+  const { showToast } = useToast();
 
   const fetchDashboardData = useCallback(async () => {
     if (!user) return;
@@ -70,7 +72,7 @@ const OwnerDashboard: React.FC = () => {
       } else {
         await reportService.generateCustomersReport();
       }
-      alert(`${type.charAt(0).toUpperCase() + type.slice(1)} report generated successfully!`);
+      showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} report generated successfully.`, 'success');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to generate report');
     } finally {
@@ -172,6 +174,11 @@ const OwnerDashboard: React.FC = () => {
         <Typography variant="h6" gutterBottom>
           Generate Reports
         </Typography>
+        {totalGrounds === 0 && (
+          <Alert severity="info" sx={{ mb: 2 }}>
+            You do not have any grounds yet. Add a ground first to start generating meaningful reports.
+          </Alert>
+        )}
         <Box display="flex" gap={2} flexWrap="wrap">
           <Button
             variant="contained"
@@ -204,18 +211,24 @@ const OwnerDashboard: React.FC = () => {
           <Typography variant="h6" gutterBottom>
             Revenue by Ground
           </Typography>
-          <Grid container spacing={2}>
-            {Object.entries(revenueData.revenueByGround).map(([ground, revenue]) => (
-              <Grid item xs={12} sm={6} md={4} key={ground}>
-                <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
-                  <Typography variant="subtitle1">{ground}</Typography>
-                  <Typography variant="h6" color="primary">
-                    NPR {revenue.toFixed(2)}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
+          {Object.keys(revenueData.revenueByGround).length === 0 ? (
+            <Alert severity="info">
+              Revenue data will appear here once your grounds have completed bookings and payments.
+            </Alert>
+          ) : (
+            <Grid container spacing={2}>
+              {Object.entries(revenueData.revenueByGround).map(([ground, revenue]) => (
+                <Grid item xs={12} sm={6} md={4} key={ground}>
+                  <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 1 }}>
+                    <Typography variant="subtitle1">{ground}</Typography>
+                    <Typography variant="h6" color="primary">
+                      NPR {revenue.toFixed(2)}
+                    </Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Paper>
       )}
     </Container>

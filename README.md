@@ -1,6 +1,6 @@
 # Futsal Booking System
 
-A full-stack futsal booking platform built with Spring Boot and React for players, ground owners, and administrators. The project focuses on the complete booking lifecycle: ground discovery, slot reservation, payment tracking, reviews, owner operations, and admin analytics.
+A full-stack futsal booking platform built with Spring Boot and React for players, ground owners, and administrators. The project now covers the full booking lifecycle plus a standout social layer: players can publish confirmed bookings as open pickup games and let others discover and join them.
 
 This repository is being actively improved as a portfolio project. The current roadmap is documented in [docs/portfolio_improvement_roadmap.md](docs/portfolio_improvement_roadmap.md).
 
@@ -18,12 +18,16 @@ Booking a futsal ground is often fragmented across phone calls, chat messages, a
 - Customer, owner, and admin user journeys
 - Ground listing and detail views
 - Time-slot based booking flow
+- Open match / pickup game matchmaking
 - Payment records, payment history, and refund handling
 - Review system for grounds
 - Owner dashboards for managing grounds and slots
 - Admin dashboard with booking, payment, review, and analytics views
+- Hardened ownership and authorization checks across booking, payment, reviews, reports, grounds, slots, and files
+- Backend integration test coverage for auth, booking, payment, reviews, owner/admin access, analytics, reports, files, and open matches
 - Swagger/OpenAPI documentation
 - Dockerized backend + PostgreSQL local setup
+- CI workflow for backend tests and frontend production build
 
 ## Product Walkthrough
 
@@ -32,8 +36,9 @@ Booking a futsal ground is often fragmented across phone calls, chat messages, a
 1. A user browses available futsal grounds and opens a ground detail page.
 2. The user selects an available time slot and creates a booking.
 3. The user completes a payment flow and can later review booking/payment history.
-4. An owner manages grounds and time slots from the dashboard.
-5. An admin monitors overall platform activity from the admin console.
+4. A user can publish a confirmed booking as an open match so other players can join.
+5. An owner manages grounds and time slots from the dashboard.
+6. An admin monitors overall platform activity from the admin console.
 
 ### Roles
 
@@ -67,6 +72,7 @@ Booking a futsal ground is often fragmented across phone calls, chat messages, a
 - Backend API runs on `8090`
 - Frontend dev server runs on `3000`
 - PostgreSQL runs on `5432`
+- Planned production deployment target: AWS EKS
 
 ## Screens and Docs
 
@@ -75,6 +81,7 @@ Existing project assets:
 - Architecture diagram: [docs/uml_diagram.png](docs/uml_diagram.png)
 - UI/project image: [docs/img.png](docs/img.png)
 - API collection: [docs/futsal_test_postman.json](docs/futsal_test_postman.json)
+- AWS EKS deployment handoff: [docs/aws_eks_deployment_plan.md](docs/aws_eks_deployment_plan.md)
 - Frontend guide: [FRONTEND_GUIDE.md](FRONTEND_GUIDE.md)
 - Roadmap: [docs/portfolio_improvement_roadmap.md](docs/portfolio_improvement_roadmap.md)
 
@@ -225,23 +232,25 @@ A Postman collection is available at [docs/futsal_test_postman.json](docs/futsal
 - modular service/controller/repository backend organization
 - Docker support for backend + database
 - admin and owner workflows beyond basic CRUD
+- strong ownership enforcement instead of trusting client-submitted user IDs
+- meaningful automated coverage around the highest-risk business flows
+- a standout open-match feature that pushes the product beyond a basic booking app
 
 ### Current Limitations
 
 - payment processing is currently simulated rather than integrated with a real gateway
-- backend service-level and security tests are in place, but broader integration coverage is still being expanded
-- frontend production build succeeds, but there are still lint warnings to clean up
 - the project does not yet include a public deployment link
+- screenshot assets still need to be added to the README
+- Kubernetes manifests and the AWS EKS deployment pipeline are not implemented yet
 
 ### Current Improvement Focus
 
 The active roadmap prioritizes:
 
-1. completed portfolio packaging and documentation
-2. automated tests for core flows
-3. frontend quality cleanup
-4. CI/CD and deployment
-5. a standout feature such as team formation / join-a-game
+1. deployment and release readiness
+2. AWS EKS deployment pipeline
+3. portfolio screenshots and live demo documentation
+4. optional payment gateway integration
 
 ## Commands
 
@@ -264,7 +273,10 @@ If you use this project in your portfolio, the strongest discussion areas are:
 
 - designing a multi-role booking platform
 - modeling bookings, slots, payments, and reviews
+- adding a matchmaking layer on top of a traditional booking domain
 - securing APIs with JWT and role-based authorization
+- enforcing ownership rules server-side instead of trusting client input
+- building test coverage around business-critical and role-protected flows
 - building admin and owner workflows in addition to end-user flows
 - improving an existing project from feature-complete to portfolio-ready
 
@@ -274,8 +286,8 @@ This repository is currently being improved phase by phase. The active plan live
 
 - [docs/portfolio_improvement_roadmap.md](docs/portfolio_improvement_roadmap.md)
 
-The immediate focus is Phase 3:
+The immediate focus is Phase 5:
 
-- backend integration tests for auth and booking flows
-- stronger automated coverage around payments and role-protected endpoints
-- continued frontend cleanup after the core backend test foundation is in place
+- prepare AWS EKS deployment assets and pipeline
+- document production environment variables and deployment flow
+- add screenshots and, later, a public demo link

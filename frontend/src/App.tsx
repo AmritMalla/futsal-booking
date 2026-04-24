@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { AuthProvider } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import theme from './theme/theme';
 import Layout from './components/layout/Layout';
 import PrivateRoute from './components/auth/PrivateRoute';
@@ -25,6 +26,7 @@ import { TimeSlotList } from './components/admin/timeslots';
 import { BookingList } from './components/admin/bookings';
 import { PaymentList } from './components/admin/payments';
 import { ReviewList } from './components/admin/reviews';
+import NotFoundPage from './components/feedback/NotFoundPage';
 import { UserRole } from './types';
 
 function App() {
@@ -32,9 +34,10 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <AuthProvider>
-        <Router>
-          <Layout>
-            <Routes>
+        <ToastProvider>
+          <Router>
+            <Layout>
+              <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
@@ -122,18 +125,11 @@ function App() {
               </Route>
 
               {/* 404 Not Found */}
-              <Route
-                path="*"
-                element={
-                  <div style={{ padding: '2rem', textAlign: 'center' }}>
-                    <h1>404 - Page Not Found</h1>
-                    <p>The page you are looking for does not exist.</p>
-                  </div>
-                }
-              />
-            </Routes>
-          </Layout>
-        </Router>
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </Layout>
+          </Router>
+        </ToastProvider>
       </AuthProvider>
     </ThemeProvider>
   );

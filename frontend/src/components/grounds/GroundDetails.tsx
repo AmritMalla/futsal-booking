@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FutsalGround, OpenMatch } from '../../types';
+import { useToast } from '../../contexts/ToastContext';
 import { groundService } from '../../services/groundService';
 import { openMatchService } from '../../services/openMatchService';
 import { reviewService } from '../../services/reviewService';
@@ -52,6 +53,7 @@ const GroundDetails: React.FC = () => {
   const [matchError, setMatchError] = useState('');
   const [matchActionLoadingId, setMatchActionLoadingId] = useState<string | null>(null);
   const { isAuthenticated, user } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const fetchGround = useCallback(async (groundId: string) => {
@@ -99,6 +101,7 @@ const GroundDetails: React.FC = () => {
       setOpenMatches((currentMatches) =>
         currentMatches.map((match) => (match.id === matchId ? updated : match))
       );
+      showToast('Joined match successfully.', 'success');
     } catch (err: any) {
       setMatchError(err.response?.data?.message || 'Failed to join match');
     } finally {
@@ -113,6 +116,7 @@ const GroundDetails: React.FC = () => {
       setOpenMatches((currentMatches) =>
         currentMatches.map((match) => (match.id === matchId ? updated : match))
       );
+      showToast('Left match successfully.', 'info');
     } catch (err: any) {
       setMatchError(err.response?.data?.message || 'Failed to leave match');
     } finally {
@@ -125,6 +129,7 @@ const GroundDetails: React.FC = () => {
       setMatchActionLoadingId(matchId);
       await openMatchService.cancelOpenMatch(matchId);
       setOpenMatches((currentMatches) => currentMatches.filter((match) => match.id !== matchId));
+      showToast('Match cancelled.', 'success');
     } catch (err: any) {
       setMatchError(err.response?.data?.message || 'Failed to cancel match');
     } finally {
@@ -582,26 +587,26 @@ const GroundDetails: React.FC = () => {
                     boxShadow: `0 0 30px ${alpha(colors.primary.main, 0.5)}`,
                   },
                 }}
-                >
-                  Book Now
-                </Button>
+              >
+                Book Now
+              </Button>
 
-                <Button
-                  variant="outlined"
-                  size="large"
-                  fullWidth
-                  onClick={() => navigate('/matches')}
-                  sx={{
-                    mt: 2,
-                    py: 1.5,
-                    borderColor: alpha(colors.primary.main, 0.4),
-                    color: colors.primary.main,
-                    fontWeight: 700,
-                    letterSpacing: '0.08em',
-                  }}
-                >
-                  Browse Open Games
-                </Button>
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                onClick={() => navigate('/matches')}
+                sx={{
+                  mt: 2,
+                  py: 1.5,
+                  borderColor: alpha(colors.primary.main, 0.4),
+                  color: colors.primary.main,
+                  fontWeight: 700,
+                  letterSpacing: '0.08em',
+                }}
+              >
+                Browse Open Games
+              </Button>
 
               {!isAuthenticated && (
                 <Typography

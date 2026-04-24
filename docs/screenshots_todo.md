@@ -25,3 +25,9 @@ This checklist tracks the visual assets still needed to complete Phase 1 portfol
 - [ ] Add a screenshots section to the root `README.md`
 - [ ] Link each image with a short caption
 - [ ] Recheck the README after images are embedded
+
+## Current Priority
+
+- [ ] Capture the new open matches / pickup games page
+- [ ] Capture publishing an open match from `My Bookings`
+- [ ] Capture an open matches section on a ground details page

@@ -9,8 +9,9 @@ import {
   Link,
   Alert,
 } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useLocation, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,7 +19,12 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+  const { showToast } = useToast();
+  const location = useLocation();
   const navigate = useNavigate();
+  const locationState = location.state as { from?: string; reason?: string } | null;
+  const redirectTarget = locationState?.from || '/';
+  const redirectReason = locationState?.reason;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +33,8 @@ const Login: React.FC = () => {
 
     try {
       await login(email, password);
-      navigate('/');
+      showToast('Signed in successfully.');
+      navigate(redirectTarget);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
@@ -52,6 +59,12 @@ const Login: React.FC = () => {
           <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 3 }}>
             Welcome to Futsal Booking System
           </Typography>
+
+          {redirectReason === 'auth' && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Please sign in to continue.
+            </Alert>
+          )}
 
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>

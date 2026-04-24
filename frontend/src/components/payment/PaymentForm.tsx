@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { paymentService } from '../../services/paymentService';
 import { bookingService } from '../../services/bookingService';
 import { Booking } from '../../types';
@@ -25,6 +26,7 @@ const PaymentForm: React.FC = () => {
   const [success, setSuccess] = useState('');
   const [transactionId, setTransactionId] = useState('');
   const { user } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,6 +68,7 @@ const PaymentForm: React.FC = () => {
 
       await paymentService.createPayment(paymentData);
       setSuccess('Payment processed successfully!');
+      showToast('Payment processed successfully.', 'success');
 
       setTimeout(() => {
         navigate('/my-bookings');

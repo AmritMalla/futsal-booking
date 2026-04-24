@@ -1,8 +1,9 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserRole } from '../../types';
 import { Box, CircularProgress } from '@mui/material';
+import AccessDeniedPage from '../feedback/AccessDeniedPage';
 
 interface PrivateRouteProps {
   children: React.ReactElement;
@@ -11,6 +12,7 @@ interface PrivateRouteProps {
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, requiredRole }) => {
   const { isAuthenticated, user, isLoading } = useAuth();
+  const location = useLocation();
 
   if (isLoading) {
     return (
@@ -21,11 +23,11 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, requiredRole }) =
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location.pathname, reason: 'auth' }} />;
   }
 
   if (requiredRole && user?.role !== requiredRole && user?.role !== UserRole.ADMIN) {
-    return <Navigate to="/" replace />;
+    return <AccessDeniedPage />;
   }
 
   return children;

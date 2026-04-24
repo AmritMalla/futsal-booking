@@ -26,6 +26,7 @@ import {
   Divider,
 } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { bookingService } from '../../services/bookingService';
 import { openMatchService } from '../../services/openMatchService';
 import { Booking, BookingStatus, MatchSkillLevel, OpenMatch } from '../../types';
@@ -47,6 +48,7 @@ const MyBookings: React.FC = () => {
     notes: '',
   });
   const { user } = useAuth();
+  const { showToast } = useToast();
 
   const fetchBookings = useCallback(async () => {
     if (!user) return;
@@ -91,8 +93,10 @@ const MyBookings: React.FC = () => {
     try {
       await bookingService.cancelBooking(selectedBooking.id);
       setCancelDialogOpen(false);
+      setSelectedBooking(null);
       fetchBookings(); // Refresh the list
       fetchMyMatches();
+      showToast('Booking cancelled successfully.', 'success');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to cancel booking');
     }
@@ -127,6 +131,7 @@ const MyBookings: React.FC = () => {
       setMatchDialogOpen(false);
       setSelectedBooking(null);
       fetchMyMatches();
+      showToast('Open match published successfully.', 'success');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to publish open match');
     }
@@ -137,6 +142,7 @@ const MyBookings: React.FC = () => {
       setMatchActionLoadingId(matchId);
       await openMatchService.cancelOpenMatch(matchId);
       setMyMatches((currentMatches) => currentMatches.filter((match) => match.id !== matchId));
+      showToast('Open match closed.', 'success');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to cancel open match');
     } finally {
@@ -151,6 +157,7 @@ const MyBookings: React.FC = () => {
       setMyMatches((currentMatches) =>
         currentMatches.map((match) => (match.id === matchId ? updatedMatch : match))
       );
+      showToast('You left the open match.', 'info');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to leave open match');
     } finally {
@@ -180,7 +187,7 @@ const MyBookings: React.FC = () => {
   }
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" gutterBottom>
         My Bookings
       </Typography>
@@ -197,7 +204,7 @@ const MyBookings: React.FC = () => {
         </Paper>
       ) : (
         <>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
             <Table>
               <TableHead>
                 <TableRow>

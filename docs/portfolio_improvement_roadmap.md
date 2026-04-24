@@ -4,6 +4,17 @@
 
 Turn the futsal booking system into a portfolio project that feels credible to recruiters, easy to evaluate, and strong enough to discuss in interviews as a real product rather than a classroom CRUD app.
 
+## Current Status
+
+The roadmap has progressed substantially:
+
+- Phase 1 is complete except for attaching final screenshots to the README
+- Phase 2 is complete
+- Phase 3 is complete
+- Phase 4 is substantially complete for the current scope
+- Phase 6 is complete with the open-match / pickup-game workflow
+- Phase 5 is now the active focus, with AWS EKS planned as the deployment target
+
 This roadmap prioritizes the highest-impact work first:
 
 1. Make the project understandable and demoable
@@ -19,14 +30,12 @@ The project already has a strong base:
 - React + TypeScript frontend with customer, owner, and admin experiences
 - Existing docs, seeded resources, and a CI workflow
 
-The biggest gaps for portfolio use are:
+The biggest remaining gaps for portfolio use are:
 
-- The root project story is not presented clearly
-- Test coverage is minimal
-- Some security and ownership checks should be tightened
+- There is no public deployment yet
+- The AWS EKS deployment pipeline still needs to be implemented
+- The README still needs final screenshots and, later, a live demo URL
 - Payment flow is still simulated
-- CI and deployment story are incomplete
-- Frontend build passes, but with lint and hook warnings
 
 ## Prioritization Principles
 
@@ -150,6 +159,10 @@ Back up critical behavior with tests that prove the app is reliable.
 - Test suite covers the core user journey end to end
 - Regressions in booking and authorization logic are caught automatically
 
+### Status
+
+Completed. The backend now has broad integration coverage around auth, booking, payments, reviews, owner/admin access, analytics, reports, files, and open matches.
+
 ## Phase 4: Frontend Quality and Product Polish
 
 ### Objective
@@ -181,6 +194,10 @@ Make the app feel more intentional and less like a stitched-together feature set
 - The app feels stable during a live demo
 - UI states are handled cleanly even when APIs fail or data is missing
 
+### Status
+
+Largely complete for the current target. The frontend production build is clean, warnings were removed, and the new standout feature has visible product-level polish in the booking, ground, matches, and homepage flows.
+
 ## Phase 5: Engineering Maturity, CI/CD, and Deployment
 
 ### Objective
@@ -201,6 +218,8 @@ Show that the project is maintainable and deployable.
   - frontend
   - PostgreSQL
   - environment variables
+- Prepare AWS EKS deployment assets and pipeline
+- Push container images to Amazon ECR
 - Deploy the project publicly
 - Add health check and deployment URLs to the README
 - Consider adding a release checklist for demo readiness
@@ -209,12 +228,17 @@ Show that the project is maintainable and deployable.
 
 - Improved CI workflow
 - Repeatable deployment story
+- AWS EKS deployment plan and pipeline
 - Public demo URL
 
 ### Success Criteria
 
 - Every push gets meaningful automated validation
 - A reviewer can access a live version without local setup
+
+### Status
+
+Active phase. CI has improved, but deployment work is still open. The planned production target is AWS EKS.
 
 ## Phase 6: Standout Feature for Differentiation
 
@@ -243,6 +267,10 @@ Implement a team formation / join-a-game workflow:
 - The feature feels integrated into the booking domain
 - It adds a real social/product layer instead of just another admin screen
 
+### Status
+
+Completed. Users can now publish confirmed bookings as open matches, browse pickup games, and join or leave them from the public matches page and related booking/ground screens.
+
 ## Recommended Execution Order
 
 ### Must do before listing on your profile
@@ -253,12 +281,8 @@ Implement a team formation / join-a-game workflow:
 
 ### Strongly recommended next
 
-- Phase 4
 - Phase 5
-
-### Best differentiator after the foundation is solid
-
-- Phase 6
+- screenshot completion for the README
 
 ## First Working Sprint
 
@@ -302,11 +326,9 @@ The project is ready to feature prominently when:
 
 ## Immediate Next Step
 
-Start with Sprint 1 and treat it as the foundation:
+Move into deployment readiness:
 
-- documentation refresh
-- security and ownership cleanup
-- first real backend tests
-- frontend warning cleanup
-
-Once these are done, the project will already look significantly more professional even before major new features are added.
+- create AWS EKS deployment manifests or Helm charts
+- extend GitHub Actions to build, tag, and push images to Amazon ECR
+- deploy frontend and backend to EKS with managed PostgreSQL
+- attach screenshots and then add the live demo URL to the README

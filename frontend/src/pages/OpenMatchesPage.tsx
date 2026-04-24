@@ -12,12 +12,14 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import OpenMatchCard from '../components/matches/OpenMatchCard';
 import { openMatchService } from '../services/openMatchService';
 import { MatchSkillLevel, OpenMatch } from '../types';
 
 const OpenMatchesPage: React.FC = () => {
   const { isAuthenticated, user } = useAuth();
+  const { showToast } = useToast();
   const [matches, setMatches] = useState<OpenMatch[]>([]);
   const [error, setError] = useState('');
   const [skillFilter, setSkillFilter] = useState('');
@@ -60,6 +62,7 @@ const OpenMatchesPage: React.FC = () => {
       setActionLoadingId(matchId);
       const updated = await openMatchService.joinOpenMatch(matchId);
       setMatches((current) => current.map((match) => (match.id === matchId ? updated : match)));
+      showToast('Joined match successfully.', 'success');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to join match');
     } finally {
@@ -72,6 +75,7 @@ const OpenMatchesPage: React.FC = () => {
       setActionLoadingId(matchId);
       const updated = await openMatchService.leaveOpenMatch(matchId);
       setMatches((current) => current.map((match) => (match.id === matchId ? updated : match)));
+      showToast('Left match successfully.', 'info');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to leave match');
     } finally {
@@ -84,6 +88,7 @@ const OpenMatchesPage: React.FC = () => {
       setActionLoadingId(matchId);
       await openMatchService.cancelOpenMatch(matchId);
       setMatches((current) => current.filter((match) => match.id !== matchId));
+      showToast('Match cancelled.', 'success');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to cancel match');
     } finally {
@@ -92,7 +97,7 @@ const OpenMatchesPage: React.FC = () => {
   };
 
   return (
-    <Container sx={{ py: 6 }}>
+    <Container maxWidth="lg" sx={{ py: 6 }}>
       <Stack spacing={3}>
         <Box>
           <Typography variant="h3" fontWeight={700} gutterBottom>

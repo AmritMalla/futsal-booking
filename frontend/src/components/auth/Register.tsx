@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { UserRole } from '../../types';
 
 const Register: React.FC = () => {
@@ -31,6 +32,7 @@ const Register: React.FC = () => {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
@@ -89,6 +91,7 @@ const Register: React.FC = () => {
         phoneNumber: formData.phoneNumber,
         role: formData.role,
       });
+      showToast('Account created successfully.');
       navigate('/');
     } catch (err: any) {
       const data = err.response?.data;

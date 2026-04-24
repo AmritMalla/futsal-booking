@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { bookingService } from '../../services/bookingService';
 import { groundService } from '../../services/groundService';
 import { FutsalGround } from '../../types';
@@ -28,6 +29,7 @@ const CreateBooking: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { user } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -72,6 +74,7 @@ const CreateBooking: React.FC = () => {
 
       const booking = await bookingService.createBooking(bookingData);
       setSuccess('Booking created successfully!');
+      showToast('Booking created. Continue to payment.', 'success');
 
       // Navigate to payment page
       setTimeout(() => {

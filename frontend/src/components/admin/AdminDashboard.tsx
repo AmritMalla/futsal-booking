@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -48,6 +48,7 @@ import {
 } from '@mui/icons-material';
 import { User, FutsalGround, UserRole } from '../../types';
 import { adminService } from '../../services/adminService';
+import { useToast } from '../../contexts/ToastContext';
 import { AdminStats, FutsalCompany } from '../../types/admin';
 import { colors } from '../../theme/theme';
 import { StatCard } from './common';
@@ -100,12 +101,10 @@ const AdminDashboard: React.FC = () => {
     id: string;
     name: string;
   }>({ open: false, type: 'user', id: '', name: '' });
+  const { showToast } = useToast();
+  const hasLoadedRef = useRef(false);
 
-  useEffect(() => {
-    fetchAllData();
-  }, []);
-
-  const fetchAllData = async () => {
+  const fetchAllData = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -125,12 +124,20 @@ const AdminDashboard: React.FC = () => {
       setGrounds(groundsData);
       setRevenueAnalytics(revenueData);
       setBookingAnalytics(bookingData);
+      if (hasLoadedRef.current) {
+        showToast('Admin dashboard refreshed.', 'success');
+      }
+      hasLoadedRef.current = true;
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   const handleDelete = async () => {
     try {
@@ -149,6 +156,7 @@ const AdminDashboard: React.FC = () => {
 
       setDeleteDialog({ ...deleteDialog, open: false });
       fetchAllData(); // Refresh stats
+      showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`, 'success');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to delete');
     }
