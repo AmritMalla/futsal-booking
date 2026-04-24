@@ -245,14 +245,7 @@ public class AdminController {
 
     @PostMapping("/timeslots")
     public ResponseEntity<TimeSlotResponse> createTimeSlot(@RequestBody TimeSlotRequest request) {
-        TimeSlot slot = new TimeSlot();
-        slot.setGround(futsalGroundService.getFutsalGroundById(request.getGroundId())
-                .orElseThrow(() -> new IllegalArgumentException("Ground not found: " + request.getGroundId())));
-        slot.setStartTime(request.getStartTime());
-        slot.setEndTime(request.getEndTime());
-        slot.setIsBooked(false);
-
-        TimeSlot createdSlot = timeSlotService.createTimeSlot(slot);
+        TimeSlot createdSlot = timeSlotService.createTimeSlot(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(TimeSlotResponse.fromEntity(createdSlot));
     }
 
@@ -260,22 +253,8 @@ public class AdminController {
     public ResponseEntity<TimeSlotResponse> updateTimeSlot(
             @PathVariable UUID slotId,
             @RequestBody TimeSlotRequest request) {
-        return timeSlotService.getTimeSlotById(slotId)
-                .map(slot -> {
-                    if (request.getGroundId() != null) {
-                        slot.setGround(futsalGroundService.getFutsalGroundById(request.getGroundId())
-                                .orElseThrow(() -> new IllegalArgumentException("Ground not found: " + request.getGroundId())));
-                    }
-                    if (request.getStartTime() != null) {
-                        slot.setStartTime(request.getStartTime());
-                    }
-                    if (request.getEndTime() != null) {
-                        slot.setEndTime(request.getEndTime());
-                    }
-                    TimeSlot updatedSlot = timeSlotService.updateTimeSlot(slot);
-                    return ResponseEntity.ok(TimeSlotResponse.fromEntity(updatedSlot));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        TimeSlot updatedSlot = timeSlotService.updateTimeSlot(slotId, request);
+        return ResponseEntity.ok(TimeSlotResponse.fromEntity(updatedSlot));
     }
 
     @DeleteMapping("/timeslots/{slotId}")

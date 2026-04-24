@@ -1,9 +1,13 @@
 package com.amrit.futsal.api;
 
+import com.amrit.futsal.dto.TimeSlotRequest;
 import com.amrit.futsal.entity.TimeSlot;
+import com.amrit.futsal.dto.TimeSlotBulkRequest;
 import com.amrit.futsal.service.TimeSlotService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +27,13 @@ public class TimeSlotController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeSlot> createTimeSlot(@RequestBody TimeSlot timeSlot) {
-        return ResponseEntity.ok(timeSlotService.createTimeSlot(timeSlot));
+    public ResponseEntity<TimeSlot> createTimeSlot(@Valid @RequestBody TimeSlotRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(timeSlotService.createTimeSlot(request));
+    }
+
+    @PostMapping("/bulk")
+    public ResponseEntity<List<TimeSlot>> createBulkTimeSlots(@Valid @RequestBody TimeSlotBulkRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(timeSlotService.createBulkTimeSlots(request));
     }
 
     @GetMapping("/{slotId}")
@@ -61,11 +70,8 @@ public class TimeSlotController {
     }
     
     @PutMapping("/{slotId}")
-    public ResponseEntity<TimeSlot> updateTimeSlot(@PathVariable UUID slotId, @RequestBody TimeSlot timeSlot) {
-        if (!slotId.equals(timeSlot.getId())) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(timeSlotService.updateTimeSlot(timeSlot));
+    public ResponseEntity<TimeSlot> updateTimeSlot(@PathVariable UUID slotId, @Valid @RequestBody TimeSlotRequest request) {
+        return ResponseEntity.ok(timeSlotService.updateTimeSlot(slotId, request));
     }
 
     @DeleteMapping("/{slotId}")

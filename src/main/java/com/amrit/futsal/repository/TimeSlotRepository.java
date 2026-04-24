@@ -26,4 +26,9 @@ public interface TimeSlotRepository extends JpaRepository<TimeSlot, UUID> {
     
     @Query("SELECT t FROM TimeSlot t WHERE t.ground.id = :groundId AND t.isBooked = false")
     List<TimeSlot> findAvailableSlotsByGround(@Param("groundId") UUID groundId);
+
+    @Query("SELECT COUNT(t) FROM TimeSlot t WHERE t.ground.id = :groundId AND t.startTime < :endTime AND t.endTime > :startTime")
+    long countOverlappingSlots(@Param("groundId") UUID groundId,
+                               @Param("startTime") LocalDateTime startTime,
+                               @Param("endTime") LocalDateTime endTime);
 }
