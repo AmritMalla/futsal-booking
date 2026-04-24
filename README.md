@@ -229,8 +229,7 @@ A Postman collection is available at [docs/futsal_test_postman.json](docs/futsal
 ### Current Limitations
 
 - payment processing is currently simulated rather than integrated with a real gateway
-- automated test coverage is still minimal
-- some authorization and ownership checks need hardening
+- backend service-level and security tests are in place, but broader integration coverage is still being expanded
 - frontend production build succeeds, but there are still lint warnings to clean up
 - the project does not yet include a public deployment link
 
@@ -238,12 +237,11 @@ A Postman collection is available at [docs/futsal_test_postman.json](docs/futsal
 
 The active roadmap prioritizes:
 
-1. portfolio packaging and documentation
-2. security and authorization hardening
-3. automated tests for core flows
-4. frontend quality cleanup
-5. CI/CD and deployment
-6. a standout feature such as team formation / join-a-game
+1. completed portfolio packaging and documentation
+2. automated tests for core flows
+3. frontend quality cleanup
+4. CI/CD and deployment
+5. a standout feature such as team formation / join-a-game
 
 ## Commands
 
@@ -276,8 +274,8 @@ This repository is currently being improved phase by phase. The active plan live
 
 - [docs/portfolio_improvement_roadmap.md](docs/portfolio_improvement_roadmap.md)
 
-The immediate focus is Phase 1:
+The immediate focus is Phase 3:
 
-- README and project packaging
-- stronger demo/readability story
-- screenshots and polished documentation
+- backend integration tests for auth and booking flows
+- stronger automated coverage around payments and role-protected endpoints
+- continued frontend cleanup after the core backend test foundation is in place
