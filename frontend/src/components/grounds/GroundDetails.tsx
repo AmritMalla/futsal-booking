@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
+  AlertTitle,
   Container,
   Paper,
   Typography,
@@ -24,12 +25,14 @@ import {
   MedicalServices,
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FutsalGround } from '../../types';
+import { FutsalGround, OpenMatch } from '../../types';
 import { groundService } from '../../services/groundService';
+import { openMatchService } from '../../services/openMatchService';
 import { reviewService } from '../../services/reviewService';
 import { useAuth } from '../../contexts/AuthContext';
 import { colors } from '../../theme/theme';
 import ReviewSection from '../reviews/ReviewSection';
+import OpenMatchCard from '../matches/OpenMatchCard';
 import dayjs from 'dayjs';
 
 const facilities = [
@@ -45,17 +48,13 @@ const GroundDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [averageRating, setAverageRating] = useState(0);
-  const { isAuthenticated } = useAuth();
+  const [openMatches, setOpenMatches] = useState<OpenMatch[]>([]);
+  const [matchError, setMatchError] = useState('');
+  const [matchActionLoadingId, setMatchActionLoadingId] = useState<string | null>(null);
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (id) {
-      fetchGround(id);
-      fetchRating(id);
-    }
-  }, [id]);
-
-  const fetchGround = async (groundId: string) => {
+  const fetchGround = useCallback(async (groundId: string) => {
     try {
       setLoading(true);
       const data = await groundService.getGroundById(groundId);
@@ -65,14 +64,71 @@ const GroundDetails: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchRating = async (groundId: string) => {
+  const fetchRating = useCallback(async (groundId: string) => {
     try {
       const rating = await reviewService.getAverageRating(groundId);
       setAverageRating(rating);
     } catch (err) {
       console.error('Failed to fetch rating:', err);
+    }
+  }, []);
+
+  const fetchOpenMatches = useCallback(async (groundId: string) => {
+    try {
+      const matches = await openMatchService.getOpenMatchesByGround(groundId);
+      setOpenMatches(matches);
+    } catch (err: any) {
+      setMatchError(err.response?.data?.message || 'Failed to load open matches');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      fetchGround(id);
+      fetchRating(id);
+      fetchOpenMatches(id);
+    }
+  }, [fetchGround, fetchOpenMatches, fetchRating, id]);
+
+  const handleJoinMatch = async (matchId: string) => {
+    try {
+      setMatchActionLoadingId(matchId);
+      const updated = await openMatchService.joinOpenMatch(matchId);
+      setOpenMatches((currentMatches) =>
+        currentMatches.map((match) => (match.id === matchId ? updated : match))
+      );
+    } catch (err: any) {
+      setMatchError(err.response?.data?.message || 'Failed to join match');
+    } finally {
+      setMatchActionLoadingId(null);
+    }
+  };
+
+  const handleLeaveMatch = async (matchId: string) => {
+    try {
+      setMatchActionLoadingId(matchId);
+      const updated = await openMatchService.leaveOpenMatch(matchId);
+      setOpenMatches((currentMatches) =>
+        currentMatches.map((match) => (match.id === matchId ? updated : match))
+      );
+    } catch (err: any) {
+      setMatchError(err.response?.data?.message || 'Failed to leave match');
+    } finally {
+      setMatchActionLoadingId(null);
+    }
+  };
+
+  const handleCancelMatch = async (matchId: string) => {
+    try {
+      setMatchActionLoadingId(matchId);
+      await openMatchService.cancelOpenMatch(matchId);
+      setOpenMatches((currentMatches) => currentMatches.filter((match) => match.id !== matchId));
+    } catch (err: any) {
+      setMatchError(err.response?.data?.message || 'Failed to cancel match');
+    } finally {
+      setMatchActionLoadingId(null);
     }
   };
 
@@ -222,6 +278,59 @@ const GroundDetails: React.FC = () => {
           {/* Main Content */}
           <Grid item xs={12} md={8}>
             {/* Ground Info Card */}
+            <Paper
+              sx={{
+                p: 4,
+                mb: 4,
+                bgcolor: colors.background.card,
+                border: `1px solid ${alpha(colors.neutral.white, 0.05)}`,
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
+                  color: colors.text.primary,
+                  fontFamily: '"Oswald", sans-serif',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em',
+                  mb: 3,
+                }}
+              >
+                Open Matches
+              </Typography>
+
+              {matchError && (
+                <Alert severity="warning" sx={{ mb: 3 }} onClose={() => setMatchError('')}>
+                  {matchError}
+                </Alert>
+              )}
+
+              {openMatches.length === 0 ? (
+                <Alert severity="info" sx={{ mb: 2 }}>
+                  <AlertTitle>No open games yet</AlertTitle>
+                  Book this ground and publish your booking as an open match to invite other players.
+                </Alert>
+              ) : (
+                <Grid container spacing={2}>
+                  {openMatches.map((match) => (
+                    <Grid item xs={12} key={match.id}>
+                      <OpenMatchCard
+                        match={match}
+                        currentUserId={user?.id}
+                        isAuthenticated={isAuthenticated}
+                        onJoin={handleJoinMatch}
+                        onLeave={handleLeaveMatch}
+                        onCancel={handleCancelMatch}
+                        actionLoading={matchActionLoadingId === match.id}
+                        showGroundLink={false}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
+            </Paper>
+
             <Paper
               sx={{
                 p: 4,
@@ -473,9 +582,26 @@ const GroundDetails: React.FC = () => {
                     boxShadow: `0 0 30px ${alpha(colors.primary.main, 0.5)}`,
                   },
                 }}
-              >
-                Book Now
-              </Button>
+                >
+                  Book Now
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  size="large"
+                  fullWidth
+                  onClick={() => navigate('/matches')}
+                  sx={{
+                    mt: 2,
+                    py: 1.5,
+                    borderColor: alpha(colors.primary.main, 0.4),
+                    color: colors.primary.main,
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                  }}
+                >
+                  Browse Open Games
+                </Button>
 
               {!isAuthenticated && (
                 <Typography

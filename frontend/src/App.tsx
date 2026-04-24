@@ -17,6 +17,7 @@ import PaymentHistory from './components/payment/PaymentHistory';
 import OwnerDashboard from './components/dashboard/OwnerDashboard';
 import ManageGrounds from './components/dashboard/ManageGrounds';
 import ManageTimeSlots from './components/dashboard/ManageTimeSlots';
+import OpenMatchesPage from './pages/OpenMatchesPage';
 import AdminLayout from './components/admin/AdminLayout';
 import AdminDashboard from './components/admin/AdminDashboard';
 import { AnalyticsOverview } from './components/admin/analytics';
@@ -40,6 +41,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/grounds" element={<GroundList />} />
               <Route path="/grounds/:id" element={<GroundDetails />} />
+              <Route path="/matches" element={<OpenMatchesPage />} />
 
               {/* Protected Routes - User */}
               <Route

@@ -20,6 +20,7 @@ import {
   Dashboard as DashboardIcon,
   Stadium as StadiumIcon,
   Event as EventIcon,
+  Group as GroupIcon,
   Payment as PaymentIcon,
   Logout as LogoutIcon,
   AdminPanelSettings as AdminIcon,
@@ -166,6 +167,9 @@ const Navbar: React.FC = () => {
             </Button>
             <Button sx={navLinkStyle('/grounds')} onClick={() => navigate('/grounds')}>
               Grounds
+            </Button>
+            <Button sx={navLinkStyle('/matches')} onClick={() => navigate('/matches')}>
+              Find Games
             </Button>
 
             {isAuthenticated && (
@@ -428,6 +432,16 @@ const Navbar: React.FC = () => {
                   <StadiumIcon fontSize="small" sx={{ color: colors.primary.main }} />
                 </ListItemIcon>
                 <Typography variant="body2" fontWeight={600}>Browse Grounds</Typography>
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => handleNavigate('/matches')}
+                sx={{ py: 1.5, '&:hover': { bgcolor: alpha(colors.primary.main, 0.1) } }}
+              >
+                <ListItemIcon>
+                  <GroupIcon fontSize="small" sx={{ color: colors.primary.main }} />
+                </ListItemIcon>
+                <Typography variant="body2" fontWeight={600}>Find Games</Typography>
               </MenuItem>
 
               {isAuthenticated ? (

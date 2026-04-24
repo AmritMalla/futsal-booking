@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Alert,
   Container,
   Typography,
   Button,
@@ -11,6 +12,7 @@ import {
   Chip,
   Rating,
   Skeleton,
+  Stack,
   alpha,
 } from '@mui/material';
 import {
@@ -27,8 +29,10 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FutsalGround } from '../types';
+import { FutsalGround, OpenMatch } from '../types';
 import { groundService } from '../services/groundService';
+import { openMatchService } from '../services/openMatchService';
+import OpenMatchCard from '../components/matches/OpenMatchCard';
 import { colors } from '../theme/theme';
 
 // Stats data
@@ -65,12 +69,15 @@ const features = [
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [popularGrounds, setPopularGrounds] = useState<FutsalGround[]>([]);
+  const [featuredMatches, setFeaturedMatches] = useState<OpenMatch[]>([]);
   const [loading, setLoading] = useState(true);
+  const [matchesLoading, setMatchesLoading] = useState(true);
 
   useEffect(() => {
     fetchPopularGrounds();
+    fetchFeaturedMatches();
   }, []);
 
   const fetchPopularGrounds = async () => {
@@ -82,6 +89,42 @@ const Home: React.FC = () => {
       console.error('Failed to fetch grounds:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFeaturedMatches = async () => {
+    try {
+      setMatchesLoading(true);
+      const matches = await openMatchService.getOpenMatches();
+      setFeaturedMatches(matches.slice(0, 3));
+    } catch (error) {
+      console.error('Failed to fetch open matches:', error);
+    } finally {
+      setMatchesLoading(false);
+    }
+  };
+
+  const handleJoinFeaturedMatch = async (matchId: string) => {
+    try {
+      const updatedMatch = await openMatchService.joinOpenMatch(matchId);
+      setFeaturedMatches((currentMatches) =>
+        currentMatches.map((match) => (match.id === matchId ? updatedMatch : match))
+      );
+    } catch (error) {
+      console.error('Failed to join featured match:', error);
+      navigate('/matches');
+    }
+  };
+
+  const handleLeaveFeaturedMatch = async (matchId: string) => {
+    try {
+      const updatedMatch = await openMatchService.leaveOpenMatch(matchId);
+      setFeaturedMatches((currentMatches) =>
+        currentMatches.map((match) => (match.id === matchId ? updatedMatch : match))
+      );
+    } catch (error) {
+      console.error('Failed to leave featured match:', error);
+      navigate('/matches');
     }
   };
 
@@ -354,6 +397,113 @@ const Home: React.FC = () => {
               }}
             />
           </Box>
+        </Container>
+      </Box>
+
+      <Box sx={{ py: 12, bgcolor: colors.background.default }}>
+        <Container maxWidth="lg">
+          <Grid container spacing={5} alignItems="center">
+            <Grid item xs={12} md={4}>
+              <Typography
+                variant="overline"
+                sx={{
+                  color: colors.primary.main,
+                  fontWeight: 600,
+                  letterSpacing: '0.2em',
+                  mb: 2,
+                  display: 'block',
+                }}
+              >
+                Community Play
+              </Typography>
+              <Typography
+                variant="h2"
+                sx={{
+                  fontWeight: 700,
+                  color: colors.text.primary,
+                  mb: 2,
+                  fontFamily: '"Oswald", sans-serif',
+                }}
+              >
+                Open Matches
+              </Typography>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: colors.text.secondary,
+                  lineHeight: 1.8,
+                  mb: 4,
+                }}
+              >
+                Turn unused booking slots into pickup games. Hosts can publish a match, set the level,
+                and fill the squad faster. Players can discover games without organizing a full team first.
+              </Typography>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <Button
+                  variant="contained"
+                  onClick={() => navigate('/matches')}
+                  endIcon={<ArrowForward />}
+                  sx={{
+                    bgcolor: colors.primary.main,
+                    '&:hover': {
+                      bgcolor: colors.primary.light,
+                    },
+                  }}
+                >
+                  Browse Open Matches
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate(isAuthenticated ? '/my-bookings' : '/login')}
+                  sx={{
+                    borderColor: colors.primary.main,
+                    color: colors.primary.main,
+                  }}
+                >
+                  {isAuthenticated ? 'Publish a Booking' : 'Sign In to Host'}
+                </Button>
+              </Stack>
+            </Grid>
+
+            <Grid item xs={12} md={8}>
+              {matchesLoading ? (
+                <Grid container spacing={3}>
+                  {Array.from(new Array(3)).map((_, index) => (
+                    <Grid item xs={12} key={index}>
+                      <Card sx={{ bgcolor: colors.background.card }}>
+                        <CardContent>
+                          <Skeleton variant="text" height={36} sx={{ bgcolor: alpha(colors.neutral.white, 0.05) }} />
+                          <Skeleton variant="text" width="50%" sx={{ bgcolor: alpha(colors.neutral.white, 0.05) }} />
+                          <Skeleton
+                            variant="rounded"
+                            height={80}
+                            sx={{ mt: 2, bgcolor: alpha(colors.neutral.white, 0.05) }}
+                          />
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : featuredMatches.length === 0 ? (
+                <Alert severity="info" sx={{ bgcolor: colors.background.card }}>
+                  Open matches will appear here once a player publishes a booking as a pickup game.
+                </Alert>
+              ) : (
+                <Stack spacing={3}>
+                  {featuredMatches.map((match) => (
+                    <OpenMatchCard
+                      key={match.id}
+                      match={match}
+                      currentUserId={user?.id}
+                      isAuthenticated={isAuthenticated}
+                      onJoin={handleJoinFeaturedMatch}
+                      onLeave={handleLeaveFeaturedMatch}
+                    />
+                  ))}
+                </Stack>
+              )}
+            </Grid>
+          </Grid>
         </Container>
       </Box>
 
