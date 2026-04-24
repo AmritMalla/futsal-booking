@@ -3,6 +3,9 @@ package com.amrit.futsal.api;
 import com.amrit.futsal.entity.User;
 import com.amrit.futsal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,8 +43,8 @@ public class UserController {
     }
     
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<Page<User>> getAllUsers(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
     
     @GetMapping("/by-role")

@@ -4,8 +4,11 @@ import com.amrit.futsal.entity.User;
 import com.amrit.futsal.exception.DuplicateResourceException;
 import com.amrit.futsal.exception.ResourceNotFoundException;
 import com.amrit.futsal.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -27,13 +31,16 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        log.info("Creating user with email: {}", user.getEmail());
         return userRepository.save(user);
     }
 
     @Transactional
     public User createUserWithDetails(String name, String email, String password, String phoneNumber, User.Role role) {
+        log.info("Creating user with details for email: {}", email);
         // Check if email already exists
         if (userRepository.findByEmail(email).isPresent()) {
+            log.error("Duplicate resource exception: User with email {} already exists", email);
             throw new DuplicateResourceException("User with email " + email + " already exists");
         }
 
@@ -92,8 +99,8 @@ public class UserService {
         return userRepository.findByRole(role);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Page<User> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 
     public void deleteUser(UUID userId) {

@@ -5,6 +5,9 @@ import com.amrit.futsal.entity.*;
 import com.amrit.futsal.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -77,8 +80,8 @@ public class AdminController {
     // ==================== User Management ====================
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<Page<User>> getAllUsers(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(userService.getAllUsers(pageable));
     }
 
     @GetMapping("/owners")
@@ -140,8 +143,8 @@ public class AdminController {
     // ==================== Company Management ====================
 
     @GetMapping("/companies")
-    public ResponseEntity<List<FutsalCompany>> getAllCompanies() {
-        return ResponseEntity.ok(futsalCompanyService.getAllFutsalCompanies());
+    public ResponseEntity<Page<FutsalCompany>> getAllFutsalCompanies(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(futsalCompanyService.getAllFutsalCompanies(pageable));
     }
 
     @GetMapping("/companies/{companyId}")
@@ -174,8 +177,8 @@ public class AdminController {
     // ==================== Ground Management ====================
 
     @GetMapping("/grounds")
-    public ResponseEntity<List<FutsalGround>> getAllGrounds() {
-        return ResponseEntity.ok(futsalGroundService.getAllFutsalGrounds());
+    public ResponseEntity<Page<FutsalGround>> getAllFutsalGrounds(@PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(futsalGroundService.getAllFutsalGrounds(pageable));
     }
 
     @GetMapping("/grounds/{groundId}")

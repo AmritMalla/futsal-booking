@@ -1,14 +1,13 @@
-# Use an official OpenJDK runtime as the base image
-FROM openjdk:17-jdk-slim
-
-# Set the working directory in the container
+# Stage 1: Build the application using Maven
+FROM maven:3.9.5-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copy the Spring Boot application jar to the container
-COPY target/futsal-0.0.1-SNAPSHOT.jar app.jar
-
-# Expose the application port
+# Stage 2: Create a lightweight runtime image
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8090
-
-# Run the Spring Boot application
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -7,7 +7,10 @@ import com.amrit.futsal.exception.DuplicateResourceException;
 import com.amrit.futsal.exception.ResourceNotFoundException;
 import com.amrit.futsal.repository.FutsalCompanyRepository;
 import com.amrit.futsal.repository.FutsalGroundRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class FutsalGroundService {
 
@@ -35,13 +39,18 @@ public class FutsalGroundService {
 
     @Transactional
     public FutsalGround createFutsalGround(FutsalGroundRequest request) {
+        log.info("Creating futsal ground with name: {}", request.getName());
         // Check if ground name already exists
         if (futsalGroundRepository.findByName(request.getName()).isPresent()) {
+            log.error("Duplicate resource exception: FutsalGround with name {} already exists", request.getName());
             throw new DuplicateResourceException("FutsalGround", "name", request.getName());
         }
 
         FutsalCompany company = futsalCompanyRepository.findById(request.getCompanyId())
-                .orElseThrow(() -> new ResourceNotFoundException("FutsalCompany", "id", request.getCompanyId()));
+                .orElseThrow(() -> {
+                    log.error("FutsalCompany not found with ID: {}", request.getCompanyId());
+                    return new ResourceNotFoundException("FutsalCompany", "id", request.getCompanyId());
+                });
 
         FutsalGround ground = new FutsalGround();
         ground.setCompany(company);
@@ -54,6 +63,7 @@ public class FutsalGroundService {
     }
 
     public FutsalGround createFutsalGround(FutsalGround futsalGround) {
+        log.info("Creating futsal ground with name: {}", futsalGround.getName());
         return futsalGroundRepository.save(futsalGround);
     }
 
@@ -73,8 +83,8 @@ public class FutsalGroundService {
         return futsalGroundRepository.findBySurfaceType(surfaceType);
     }
 
-    public List<FutsalGround> getAllFutsalGrounds() {
-        return futsalGroundRepository.findAll();
+    public Page<FutsalGround> getAllFutsalGrounds(Pageable pageable) {
+        return futsalGroundRepository.findAll(pageable);
     }
 
     @Transactional
