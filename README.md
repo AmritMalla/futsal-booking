@@ -1,176 +1,283 @@
-To design the database for your multi-tenant futsal booking project, let's outline the required entities, their relationships, and key features. Below is a comprehensive design:
+# Futsal Booking System
 
----
+A full-stack futsal booking platform built with Spring Boot and React for players, ground owners, and administrators. The project focuses on the complete booking lifecycle: ground discovery, slot reservation, payment tracking, reviews, owner operations, and admin analytics.
 
-### **Entities and Relationships**
+This repository is being actively improved as a portfolio project. The current roadmap is documented in [docs/portfolio_improvement_roadmap.md](docs/portfolio_improvement_roadmap.md).
 
-#### 1. **Users**
-- Stores information about both futsal companies and customers (single table with roles).
-- **Columns**:
-    - `user_id` (PK, auto-incremented)
-    - `name`
-    - `email` (unique)
-    - `password` (hashed)
-    - `phone_number`
-    - `role` (ENUM: `futsal_company`, `customer`)
-    - `created_at`, `updated_at`
+## Why This Project
 
-#### 2. **Futsal Companies**
-- Contains futsal-specific information.
-- **Columns**:
-    - `futsal_id` (PK, auto-incremented)
-    - `user_id` (FK, links to `Users.user_id`)
-    - `company_name`
-    - `address`
-    - `description`
-    - `banner_image_url`
-    - `rating` (calculated based on customer reviews)
-    - `created_at`, `updated_at`
+Booking a futsal ground is often fragmented across phone calls, chat messages, and manual scheduling. This project turns that process into a structured platform where:
 
-#### 3. **Futsal Grounds**
-- Represents individual futsal grounds for a company.
-- **Columns**:
-    - `ground_id` (PK, auto-incremented)
-    - `futsal_id` (FK, links to `Futsal_Companies.futsal_id`)
-    - `ground_name`
-    - `image_url`
-    - `capacity` (optional)
-    - `created_at`, `updated_at`
+- players can discover grounds, review details, and book slots
+- owners can manage grounds, slots, bookings, and revenue-related workflows
+- admins can oversee bookings, payments, reviews, and platform analytics
 
-#### 4. **Time Slots**
-- Defines the available time slots for each futsal ground.
-- **Columns**:
-    - `slot_id` (PK, auto-incremented)
-    - `ground_id` (FK, links to `Futsal_Grounds.ground_id`)
-    - `start_time` (DATETIME)
-    - `end_time` (DATETIME)
-    - `price`
-    - `status` (ENUM: `available`, `booked`, `unavailable`)
-    - `created_at`, `updated_at`
+## Highlights
 
-#### 5. **Bookings**
-- Tracks bookings made by customers.
-- **Columns**:
-    - `booking_id` (PK, auto-incremented)
-    - `slot_id` (FK, links to `Time_Slots.slot_id`)
-    - `customer_id` (FK, links to `Users.user_id`)
-    - `payment_status` (ENUM: `pending`, `completed`, `failed`)
-    - `booking_date` (DATETIME)
-    - `created_at`, `updated_at`
+- JWT-based authentication with role-aware routes and APIs
+- Customer, owner, and admin user journeys
+- Ground listing and detail views
+- Time-slot based booking flow
+- Payment records, payment history, and refund handling
+- Review system for grounds
+- Owner dashboards for managing grounds and slots
+- Admin dashboard with booking, payment, review, and analytics views
+- Swagger/OpenAPI documentation
+- Dockerized backend + PostgreSQL local setup
 
-#### 6. **Payments**
-- Handles payment details for bookings.
-- **Columns**:
-    - `payment_id` (PK, auto-incremented)
-    - `booking_id` (FK, links to `Bookings.booking_id`)
-    - `payment_method` (ENUM: `credit_card`, `bank_transfer`, `paypal`)
-    - `amount`
-    - `transaction_id` (unique, external payment reference)
-    - `payment_date` (DATETIME)
-    - `created_at`, `updated_at`
+## Product Walkthrough
 
-#### 7. **Reviews**
-- Allows customers to leave feedback on futsal companies.
-- **Columns**:
-    - `review_id` (PK, auto-incremented)
-    - `customer_id` (FK, links to `Users.user_id`)
-    - `futsal_id` (FK, links to `Futsal_Companies.futsal_id`)
-    - `rating` (1-5 scale)
-    - `review_text`
-    - `created_at`, `updated_at`
+### Core User Flows
 
----
+1. A user browses available futsal grounds and opens a ground detail page.
+2. The user selects an available time slot and creates a booking.
+3. The user completes a payment flow and can later review booking/payment history.
+4. An owner manages grounds and time slots from the dashboard.
+5. An admin monitors overall platform activity from the admin console.
 
-### **Additional Features**
+### Roles
 
-1. **Multi-Tenant Separation**:
-    - Every `futsal_company` is scoped by its unique `user_id`, ensuring no cross-data leakage.
-    - Shared tables (`Users`, `Payments`) with role-based access for scalability.
+- `USER`: browses grounds, books slots, pays, and leaves reviews
+- `OWNER`: manages futsal companies, grounds, slots, and owner-side operations
+- `ADMIN`: monitors and manages platform-wide activity
 
-2. **Search and Filter**:
-    - You can implement search filters using `address`, `price`, and `rating` to make it user-friendly for customers.
+## Architecture
 
-3. **Indexes**:
-    - Create indexes on frequently queried columns, such as `email`, `futsal_id`, and `ground_id`, for faster lookups.
+### Backend
 
-4. **Audit Trails**:
-    - Use `created_at` and `updated_at` timestamps to track modifications for all records.
+- Spring Boot 3
+- Spring Security + JWT
+- Spring Data JPA / Hibernate
+- PostgreSQL
+- Spring Validation
+- Spring Mail
+- Springdoc OpenAPI
 
----
+### Frontend
 
-### **ER Diagram**
-This structure will have relationships such as:
-- `Users` (1-to-1) → `Futsal Companies`
-- `Futsal Companies` (1-to-many) → `Futsal Grounds`
-- `Futsal Grounds` (1-to-many) → `Time Slots`
-- `Time Slots` (1-to-1) → `Bookings`
-- `Bookings` (1-to-1) → `Payments`
-- `Futsal Companies` (1-to-many) ← `Reviews`
+- React 18
+- TypeScript
+- Material UI
+- React Router
+- Axios
+- Recharts
 
----
+### Deployment Shape
 
-### SQL Table Creation Scripts (Snippet)
+- Backend API runs on `8090`
+- Frontend dev server runs on `3000`
+- PostgreSQL runs on `5432`
 
-Here’s an example for a couple of tables:
+## Screens and Docs
 
-```sql
-CREATE TABLE Users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    phone_number VARCHAR(15),
-    role ENUM('futsal_company', 'customer') NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+Existing project assets:
 
-CREATE TABLE Futsal_Companies (
-    futsal_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    company_name VARCHAR(255) NOT NULL,
-    address TEXT,
-    description TEXT,
-    banner_image_url TEXT,
-    rating FLOAT DEFAULT 0.0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users(user_id)
-);
+- Architecture diagram: [docs/uml_diagram.png](docs/uml_diagram.png)
+- UI/project image: [docs/img.png](docs/img.png)
+- API collection: [docs/futsal_test_postman.json](docs/futsal_test_postman.json)
+- Frontend guide: [FRONTEND_GUIDE.md](FRONTEND_GUIDE.md)
+- Roadmap: [docs/portfolio_improvement_roadmap.md](docs/portfolio_improvement_roadmap.md)
 
-CREATE TABLE Futsal_Grounds (
-    ground_id INT AUTO_INCREMENT PRIMARY KEY,
-    futsal_id INT NOT NULL,
-    ground_name VARCHAR(255) NOT NULL,
-    image_url TEXT,
-    capacity INT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (futsal_id) REFERENCES Futsal_Companies(futsal_id)
-);
+## Repository Structure
+
+```text
+.
+|-- src/main/java/com/amrit/futsal      # Spring Boot backend
+|-- src/main/resources                  # application config + sample data
+|-- src/test/java                       # backend tests
+|-- frontend                            # React + TypeScript frontend
+|-- docs                                # diagrams, collection, planning docs
+|-- docker-compose.yml                  # backend + postgres local stack
+|-- Dockerfile                          # backend container image
 ```
 
----
+## Running Locally
 
-### Scaling Considerations
-1. **Horizontal Scalability**:
-    - Use database sharding to separate tenants if your data grows substantially.
-2. **Caching**:
-    - Use caching (e.g., Redis) for frequently accessed data like available slots.
-3. **Security**:
-    - Encrypt sensitive data and use parameterized queries to avoid SQL injection.
+### Prerequisites
 
-This schema provides flexibility, scalability, and maintainability for your futsal booking platform. Let me know if you need further refinements or feature integration!
+- Java 17
+- Maven or the included Maven wrapper
+- Node.js 18+ recommended for the frontend
+- PostgreSQL 15+ or Docker Desktop
 
+### Option 1: Run with Docker for the Backend Stack
 
+This starts the Spring Boot backend and PostgreSQL database.
 
-# FutsalAPI
+```bash
+docker-compose up --build
+```
 
--- Future Scope 
+Backend API:
 
-Futsal is a team player game, so if you want to play futsal but you can't 
-create/manage whole futsal team, then you should be able to register 
-and play with other futsal member. 
+```text
+http://localhost:8090
+```
 
+Swagger UI:
 
+```text
+http://localhost:8090/swagger-ui.html
+```
 
+### Option 2: Run Backend Manually
+
+1. Copy `.env.example` to `.env` and adjust values if needed.
+2. Make sure PostgreSQL is running and a database named `futsal_booking` exists.
+3. Start the backend:
+
+```bash
+./mvnw spring-boot:run
+```
+
+On Windows PowerShell:
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+Backend API:
+
+```text
+http://localhost:8090
+```
+
+Swagger UI:
+
+```text
+http://localhost:8090/swagger-ui.html
+```
+
+### Run the Frontend
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Frontend app:
+
+```text
+http://localhost:3000
+```
+
+The frontend is configured to talk to the backend on `http://localhost:8090`.
+
+## Environment Configuration
+
+The backend uses environment variables defined in [.env.example](.env.example).
+
+Important values:
+
+- `SERVER_PORT=8090`
+- `DATABASE_URL=jdbc:postgresql://localhost:5432/futsal_booking`
+- `DATABASE_USERNAME=postgres`
+- `DATABASE_PASSWORD=postgres`
+- `JWT_SECRET=your-super-secret-jwt-key-at-least-32-characters-long`
+- `CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080`
+
+The frontend uses its own environment file in [frontend/.env.example](frontend/.env.example).
+
+## Sample Data and Demo Accounts
+
+The repository includes a large sample dataset in [src/main/resources/data.sql](src/main/resources/data.sql) with:
+
+- 25 users
+- 7 futsal companies
+- 18 grounds
+- 150+ time slots
+- 45 bookings
+- 45 payments
+- 30 reviews
+
+Important note:
+
+- `data.sql` is available as sample seed data, but it may not load automatically in every environment because SQL initialization behavior depends on the active Spring configuration. If you want demo accounts locally, import it manually or enable SQL init for your setup.
+
+Default password in the sample dataset:
+
+```text
+password123
+```
+
+Example seeded accounts:
+
+- Admin: `admin@futsal.com`
+- Owner: `rajesh.owner@futsal.com`
+- User: `amit@example.com`
+
+## API Documentation
+
+Swagger/OpenAPI is enabled through Springdoc.
+
+- Swagger UI: `http://localhost:8090/swagger-ui.html`
+- API docs JSON: `http://localhost:8090/api-docs`
+
+A Postman collection is available at [docs/futsal_test_postman.json](docs/futsal_test_postman.json).
+
+## Engineering Notes
+
+### What's Implemented Well
+
+- clear separation between backend and frontend
+- role-based navigation and protected routes
+- modular service/controller/repository backend organization
+- Docker support for backend + database
+- admin and owner workflows beyond basic CRUD
+
+### Current Limitations
+
+- payment processing is currently simulated rather than integrated with a real gateway
+- automated test coverage is still minimal
+- some authorization and ownership checks need hardening
+- frontend production build succeeds, but there are still lint warnings to clean up
+- the project does not yet include a public deployment link
+
+### Current Improvement Focus
+
+The active roadmap prioritizes:
+
+1. portfolio packaging and documentation
+2. security and authorization hardening
+3. automated tests for core flows
+4. frontend quality cleanup
+5. CI/CD and deployment
+6. a standout feature such as team formation / join-a-game
+
+## Commands
+
+Backend test:
+
+```powershell
+.\mvnw.cmd test
+```
+
+Frontend production build:
+
+```bash
+cd frontend
+npm run build
+```
+
+## Interview Talking Points
+
+If you use this project in your portfolio, the strongest discussion areas are:
+
+- designing a multi-role booking platform
+- modeling bookings, slots, payments, and reviews
+- securing APIs with JWT and role-based authorization
+- building admin and owner workflows in addition to end-user flows
+- improving an existing project from feature-complete to portfolio-ready
+
+## Next Steps
+
+This repository is currently being improved phase by phase. The active plan lives here:
+
+- [docs/portfolio_improvement_roadmap.md](docs/portfolio_improvement_roadmap.md)
+
+The immediate focus is Phase 1:
+
+- README and project packaging
+- stronger demo/readability story
+- screenshots and polished documentation
