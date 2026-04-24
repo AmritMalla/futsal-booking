@@ -7,6 +7,9 @@ import com.amrit.futsal.exception.ResourceNotFoundException;
 import com.amrit.futsal.service.FutsalGroundService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -71,11 +74,9 @@ public class FutsalGroundController {
     }
 
     @GetMapping
-    public ResponseEntity<List<FutsalGroundResponse>> getAllFutsalGrounds() {
-        List<FutsalGroundResponse> grounds = futsalGroundService.getAllFutsalGrounds()
-                .stream()
-                .map(FutsalGroundResponse::fromEntity)
-                .collect(Collectors.toList());
+    public ResponseEntity<Page<FutsalGroundResponse>> getAllFutsalGrounds(@PageableDefault(size = 20) Pageable pageable) {
+        Page<FutsalGroundResponse> grounds = futsalGroundService.getAllFutsalGrounds(pageable)
+                .map(FutsalGroundResponse::fromEntity);
         return ResponseEntity.ok(grounds);
     }
 

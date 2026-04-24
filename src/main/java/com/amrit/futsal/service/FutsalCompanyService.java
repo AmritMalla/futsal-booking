@@ -5,13 +5,17 @@ import com.amrit.futsal.entity.FutsalCompany;
 import com.amrit.futsal.entity.User;
 import com.amrit.futsal.repository.FutsalCompanyRepository;
 import com.amrit.futsal.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class FutsalCompanyService {
 
@@ -25,8 +29,12 @@ public class FutsalCompanyService {
     }
 
     public FutsalCompany createFutsalCompany(FutsalCompanyRequest request) {
+        log.info("Creating futsal company with name: {}", request.getName());
         User owner = userRepository.findById(request.getOwnerId())
-                .orElseThrow(() -> new IllegalArgumentException("Owner not found: " + request.getOwnerId()));
+                .orElseThrow(() -> {
+                    log.error("Owner not found with ID: {}", request.getOwnerId());
+                    return new IllegalArgumentException("Owner not found: " + request.getOwnerId());
+                });
         FutsalCompany company = new FutsalCompany();
         company.setOwner(owner);
         company.setName(request.getName());
@@ -35,6 +43,7 @@ public class FutsalCompanyService {
     }
 
     public FutsalCompany createFutsalCompany(FutsalCompany futsalCompany) {
+        log.info("Creating futsal company with name: {}", futsalCompany.getName());
         return futsalCompanyRepository.save(futsalCompany);
     }
 
@@ -61,8 +70,8 @@ public class FutsalCompanyService {
         return futsalCompanyRepository.findByOwnerId(ownerId);
     }
 
-    public List<FutsalCompany> getAllFutsalCompanies() {
-        return futsalCompanyRepository.findAll();
+    public Page<FutsalCompany> getAllFutsalCompanies(Pageable pageable) {
+        return futsalCompanyRepository.findAll(pageable);
     }
 
     public void deleteFutsalCompany(UUID companyId) {
