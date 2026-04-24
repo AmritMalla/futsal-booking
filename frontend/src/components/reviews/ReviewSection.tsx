@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -56,11 +56,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ groundId, groundName }) =
     reviewId: '',
   });
 
-  useEffect(() => {
-    fetchReviews();
-  }, [groundId]);
-
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     try {
       setLoading(true);
       const [reviewsData, avgRating] = await Promise.all([
@@ -74,7 +70,11 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({ groundId, groundName }) =
     } finally {
       setLoading(false);
     }
-  };
+  }, [groundId]);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
 
   const handleSubmit = async () => {
     if (!user || !rating || rating === 0) {

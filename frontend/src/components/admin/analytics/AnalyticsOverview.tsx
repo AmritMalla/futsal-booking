@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Container,
   Typography,
   Grid,
-  TextField,
   Button,
   Alert,
 } from '@mui/material';
@@ -31,14 +30,14 @@ const AnalyticsOverview: React.FC = () => {
   const [startDate, setStartDate] = useState<Dayjs | null>(dayjs().subtract(1, 'month'));
   const [endDate, setEndDate] = useState<Dayjs | null>(dayjs());
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-    const params = {
-      startDate: startDate?.toISOString(),
-      endDate: endDate?.toISOString(),
-    };
+      const params = {
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+      };
 
       const [revenue, bookings, users] = await Promise.all([
         adminService.getRevenueAnalytics(params),
@@ -54,11 +53,11 @@ const AnalyticsOverview: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [endDate, startDate]);
 
   useEffect(() => {
     fetchAnalytics();
-  }, []);
+  }, [fetchAnalytics]);
 
   const handleApplyFilters = () => {
     fetchAnalytics();

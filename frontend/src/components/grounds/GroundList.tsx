@@ -24,7 +24,6 @@ import {
 } from '@mui/material';
 import {
   Search as SearchIcon,
-  FilterList as FilterIcon,
   LocationOn,
   Clear as ClearIcon,
   PlayArrow,
@@ -53,28 +52,6 @@ const GroundList: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    filterGrounds();
-  }, [searchTerm, surfaceFilter, priceRange, grounds]);
-
-  const fetchGrounds = async () => {
-    try {
-      setLoading(true);
-      const data = await groundService.getAllGrounds();
-      setGrounds(data);
-      setFilteredGrounds(data);
-
-      if (data.length > 0) {
-        const maxPrice = Math.max(...data.map(g => g.pricePerHour));
-        setPriceRange([0, maxPrice]);
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load grounds');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filterGrounds = () => {
     let filtered = [...grounds];
 
     if (searchTerm.trim()) {
@@ -99,6 +76,24 @@ const GroundList: React.FC = () => {
     );
 
     setFilteredGrounds(filtered);
+  }, [searchTerm, surfaceFilter, priceRange, grounds]);
+
+  const fetchGrounds = async () => {
+    try {
+      setLoading(true);
+      const data = await groundService.getAllGrounds();
+      setGrounds(data);
+      setFilteredGrounds(data);
+
+      if (data.length > 0) {
+        const maxPrice = Math.max(...data.map(g => g.pricePerHour));
+        setPriceRange([0, maxPrice]);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to load grounds');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearFilters = () => {

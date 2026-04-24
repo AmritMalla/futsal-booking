@@ -1,13 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   PieChart,
   Pie,

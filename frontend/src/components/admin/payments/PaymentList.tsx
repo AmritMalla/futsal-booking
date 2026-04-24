@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -30,7 +30,7 @@ const PaymentList: React.FC = () => {
     id: null,
   });
 
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -44,11 +44,11 @@ const PaymentList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [statusFilter]);
 
   useEffect(() => {
     fetchPayments();
-  }, [statusFilter]);
+  }, [fetchPayments]);
 
   const handleViewDetails = (payment: AdminPayment) => {
     setSelectedPayment(payment);

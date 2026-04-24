@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Container,
   Paper,
@@ -24,13 +24,7 @@ const PaymentHistory: React.FC = () => {
   const [error, setError] = useState('');
   const { user } = useAuth();
 
-  useEffect(() => {
-    if (user) {
-      fetchPayments();
-    }
-  }, [user]);
-
-  const fetchPayments = async () => {
+  const fetchPayments = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -42,7 +36,13 @@ const PaymentHistory: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchPayments();
+    }
+  }, [fetchPayments, user]);
 
   const getStatusColor = (status: PaymentStatus) => {
     switch (status) {

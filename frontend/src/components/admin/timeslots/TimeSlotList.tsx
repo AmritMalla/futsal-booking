@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -34,7 +34,7 @@ const TimeSlotList: React.FC = () => {
     id: null,
   });
 
-  const fetchTimeSlots = async () => {
+  const fetchTimeSlots = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -49,21 +49,21 @@ const TimeSlotList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [bookedFilter, groundFilter]);
 
-  const fetchGrounds = async () => {
+  const fetchGrounds = useCallback(async () => {
     try {
       const data = await adminService.getAllGrounds();
       setGrounds(data);
     } catch (err: any) {
       console.error('Failed to fetch grounds:', err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchTimeSlots();
     fetchGrounds();
-  }, [groundFilter, bookedFilter]);
+  }, [fetchGrounds, fetchTimeSlots]);
 
   const handleCreate = () => {
     setSelectedSlot(null);

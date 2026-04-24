@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import {
   LocationOn,
-  AttachMoney,
   CalendarMonth,
   ArrowBack,
   SportsSoccer,

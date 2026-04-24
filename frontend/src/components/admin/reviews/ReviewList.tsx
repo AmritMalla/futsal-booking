@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -32,7 +32,7 @@ const ReviewList: React.FC = () => {
     id: null,
   });
 
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -47,21 +47,21 @@ const ReviewList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [groundFilter, ratingFilter]);
 
-  const fetchGrounds = async () => {
+  const fetchGrounds = useCallback(async () => {
     try {
       const data = await adminService.getAllGrounds();
       setGrounds(data);
     } catch (err: any) {
       console.error('Failed to fetch grounds:', err);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchReviews();
     fetchGrounds();
-  }, [groundFilter, ratingFilter]);
+  }, [fetchGrounds, fetchReviews]);
 
   const handleViewDetails = (review: Review) => {
     setSelectedReview(review);

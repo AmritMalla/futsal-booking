@@ -23,14 +23,11 @@ import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
   Assessment as AnalyticsIcon,
-  People as PeopleIcon,
-  Business as BusinessIcon,
   Stadium as StadiumIcon,
   Schedule as ScheduleIcon,
   Event as EventIcon,
   Payment as PaymentIcon,
   RateReview as ReviewIcon,
-  Home as HomeIcon,
   ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
 

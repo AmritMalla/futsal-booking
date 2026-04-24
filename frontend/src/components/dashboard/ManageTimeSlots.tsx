@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Container,
   Paper,
@@ -59,32 +59,21 @@ const ManageTimeSlots: React.FC = () => {
   // Available dates (next 7 days)
   const availableDates = Array.from({ length: 7 }, (_, i) => dayjs().add(i, 'day'));
 
-  useEffect(() => {
-    if (groundId) {
-      fetchGroundDetails();
-      fetchSlots();
-    }
-  }, [groundId]);
-
-  useEffect(() => {
-    if (groundId) {
-      fetchSlots();
-    }
-  }, [selectedDate]);
-
-  const fetchGroundDetails = async () => {
+  const fetchGroundDetails = useCallback(async () => {
+    if (!groundId) return;
     try {
-      const ground = await groundService.getGroundById(groundId!);
+      const ground = await groundService.getGroundById(groundId);
       setGroundName(ground.name);
     } catch (err: any) {
       console.error('Failed to fetch ground:', err);
     }
-  };
+  }, [groundId]);
 
-  const fetchSlots = async () => {
+  const fetchSlots = useCallback(async () => {
+    if (!groundId) return;
     try {
       setLoading(true);
-      const allSlots = await slotService.getTimeSlotsByGround(groundId!);
+      const allSlots = await slotService.getTimeSlotsByGround(groundId);
       // Filter slots for selected date
       const filteredSlots = allSlots.filter(slot =>
         dayjs(slot.startTime).isSame(selectedDate, 'day')
@@ -97,7 +86,15 @@ const ManageTimeSlots: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [groundId, selectedDate]);
+
+  useEffect(() => {
+    fetchGroundDetails();
+  }, [fetchGroundDetails]);
+
+  useEffect(() => {
+    fetchSlots();
+  }, [fetchSlots]);
 
   const handleCreateSlots = async () => {
     try {
