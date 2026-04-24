@@ -9,8 +9,8 @@ import com.amrit.futsal.exception.PaymentException;
 import com.amrit.futsal.exception.ResourceNotFoundException;
 import com.amrit.futsal.repository.BookingRepository;
 import com.amrit.futsal.repository.PaymentRepository;
-import com.amrit.futsal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,24 +25,22 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final BookingRepository bookingRepository;
-    private final UserRepository userRepository;
 
     @Autowired
     public PaymentService(PaymentRepository paymentRepository,
-                          BookingRepository bookingRepository,
-                          UserRepository userRepository) {
+                          BookingRepository bookingRepository) {
         this.paymentRepository = paymentRepository;
         this.bookingRepository = bookingRepository;
-        this.userRepository = userRepository;
     }
 
     @Transactional
-    public Payment processPayment(PaymentRequest request) {
+    public Payment processPayment(User user, PaymentRequest request) {
         Booking booking = bookingRepository.findById(request.getBookingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", request.getBookingId()));
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
+        if (user.getRole() != User.Role.ADMIN && !booking.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You can only pay for your own bookings");
+        }
 
         // Check if booking already has a successful payment
         List<Payment> existingPayments = paymentRepository.findByBookingId(booking.getId());

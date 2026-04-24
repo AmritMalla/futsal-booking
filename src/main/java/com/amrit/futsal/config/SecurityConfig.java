@@ -1,5 +1,6 @@
 package com.amrit.futsal.config;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,15 +54,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/register",
-                                "/api/v1/users/register",
-                                "/api/v1/users/login",
                                 "/api/v1/files/**",
-                                "/api/v1/grounds/search",
                                 "/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/actuator/**"
+                                "/actuator/health"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/grounds", "/api/v1/grounds/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reviews/ground/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/reports/generate/**").hasAnyRole("OWNER", "ADMIN")
                         .anyRequest().authenticated()

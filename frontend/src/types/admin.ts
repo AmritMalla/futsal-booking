@@ -156,14 +156,12 @@ export interface TimeSlotRequest {
 }
 
 export interface BookingRequest {
-  userId: string;
   groundId: string;
   slotId: string;
 }
 
 export interface PaymentRequest {
   bookingId: string;
-  userId: string;
   amount: number;
   transactionId?: string;
 }

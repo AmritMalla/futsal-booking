@@ -12,9 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class BookingRequest {
 
-    @NotNull(message = "User ID is required")
-    private UUID userId;
-
     @NotNull(message = "Ground ID is required")
     private UUID groundId;
 

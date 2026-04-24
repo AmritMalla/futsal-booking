@@ -60,7 +60,6 @@ const PaymentForm: React.FC = () => {
 
       const paymentData = {
         bookingId: booking.id,
-        userId: user.id,
         amount: 500, // This should come from ground price calculation
         transactionId: txnId,
       };

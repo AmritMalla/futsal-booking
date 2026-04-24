@@ -66,7 +66,6 @@ const CreateBooking: React.FC = () => {
       // This is a simplified version
       // In a real implementation, you would select a time slot first
       const bookingData = {
-        userId: user.id,
         groundId: groundId,
         slotId: 'temp-slot-id', // Should come from time slot selection
       };

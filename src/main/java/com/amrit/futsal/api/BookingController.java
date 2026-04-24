@@ -4,6 +4,7 @@ import com.amrit.futsal.dto.BookingRequest;
 import com.amrit.futsal.dto.BookingResponse;
 import com.amrit.futsal.entity.Booking;
 import com.amrit.futsal.exception.ResourceNotFoundException;
+import com.amrit.futsal.service.AuthenticatedUserService;
 import com.amrit.futsal.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,20 +23,24 @@ import java.util.stream.Collectors;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Autowired
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingService bookingService,
+                             AuthenticatedUserService authenticatedUserService) {
         this.bookingService = bookingService;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     @PostMapping
     public ResponseEntity<BookingResponse> createBooking(@Valid @RequestBody BookingRequest request) {
-        Booking booking = bookingService.createBooking(request);
+        Booking booking = bookingService.createBooking(authenticatedUserService.getCurrentUser(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(BookingResponse.fromEntity(booking));
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<BookingResponse> getBookingById(@PathVariable UUID bookingId) {
+        authenticatedUserService.requireBookingAccess(bookingId);
         Booking booking = bookingService.getBookingById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
         return ResponseEntity.ok(BookingResponse.fromEntity(booking));
@@ -43,6 +48,7 @@ public class BookingController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<BookingResponse>> getBookingsByUserId(@PathVariable UUID userId) {
+        authenticatedUserService.requireCurrentUserOrAdmin(userId);
         List<BookingResponse> bookings = bookingService.getBookingsByUserId(userId)
                 .stream()
                 .map(BookingResponse::fromEntity)
@@ -52,6 +58,7 @@ public class BookingController {
 
     @GetMapping("/ground/{groundId}")
     public ResponseEntity<List<BookingResponse>> getBookingsByGroundId(@PathVariable UUID groundId) {
+        authenticatedUserService.requireGroundOwnerOrAdmin(groundId);
         List<BookingResponse> bookings = bookingService.getBookingsByGroundId(groundId)
                 .stream()
                 .map(BookingResponse::fromEntity)
@@ -61,6 +68,7 @@ public class BookingController {
 
     @GetMapping("/status/{status}")
     public ResponseEntity<List<BookingResponse>> getBookingsByStatus(@PathVariable Booking.BookingStatus status) {
+        authenticatedUserService.requireAdmin();
         List<BookingResponse> bookings = bookingService.getBookingsByStatus(status)
                 .stream()
                 .map(BookingResponse::fromEntity)
@@ -72,6 +80,7 @@ public class BookingController {
     public ResponseEntity<List<BookingResponse>> getBookingsByDateRange(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        authenticatedUserService.requireAdmin();
         List<BookingResponse> bookings = bookingService.getBookingsByDateRange(startDate, endDate)
                 .stream()
                 .map(BookingResponse::fromEntity)
@@ -83,18 +92,21 @@ public class BookingController {
     public ResponseEntity<BookingResponse> updateBookingStatus(
             @PathVariable UUID bookingId,
             @RequestParam Booking.BookingStatus status) {
+        authenticatedUserService.requireBookingManagementAccess(bookingId);
         Booking updatedBooking = bookingService.updateBookingStatus(bookingId, status);
         return ResponseEntity.ok(BookingResponse.fromEntity(updatedBooking));
     }
 
     @PostMapping("/{bookingId}/cancel")
     public ResponseEntity<BookingResponse> cancelBooking(@PathVariable UUID bookingId) {
+        authenticatedUserService.requireBookingOwnerOrAdmin(bookingId);
         Booking cancelledBooking = bookingService.cancelBooking(bookingId);
         return ResponseEntity.ok(BookingResponse.fromEntity(cancelledBooking));
     }
 
     @DeleteMapping("/{bookingId}")
     public ResponseEntity<Void> deleteBooking(@PathVariable UUID bookingId) {
+        authenticatedUserService.requireAdmin();
         bookingService.deleteBooking(bookingId);
         return ResponseEntity.noContent().build();
     }

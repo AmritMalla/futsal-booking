@@ -4,6 +4,7 @@ import com.amrit.futsal.dto.PaymentRequest;
 import com.amrit.futsal.dto.PaymentResponse;
 import com.amrit.futsal.entity.Payment;
 import com.amrit.futsal.exception.ResourceNotFoundException;
+import com.amrit.futsal.service.AuthenticatedUserService;
 import com.amrit.futsal.service.PaymentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,20 +21,24 @@ import java.util.stream.Collectors;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final AuthenticatedUserService authenticatedUserService;
 
     @Autowired
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService,
+                             AuthenticatedUserService authenticatedUserService) {
         this.paymentService = paymentService;
+        this.authenticatedUserService = authenticatedUserService;
     }
 
     @PostMapping
     public ResponseEntity<PaymentResponse> processPayment(@Valid @RequestBody PaymentRequest request) {
-        Payment payment = paymentService.processPayment(request);
+        Payment payment = paymentService.processPayment(authenticatedUserService.getCurrentUser(), request);
         return ResponseEntity.status(HttpStatus.CREATED).body(PaymentResponse.fromEntity(payment));
     }
 
     @GetMapping("/{paymentId}")
     public ResponseEntity<PaymentResponse> getPaymentById(@PathVariable UUID paymentId) {
+        authenticatedUserService.requirePaymentAccess(paymentId);
         Payment payment = paymentService.getPaymentById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
         return ResponseEntity.ok(PaymentResponse.fromEntity(payment));
@@ -43,11 +48,13 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> getPaymentByTransactionId(@PathVariable String transactionId) {
         Payment payment = paymentService.getPaymentByTransactionId(transactionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "transactionId", transactionId));
+        authenticatedUserService.requirePaymentAccess(payment.getId());
         return ResponseEntity.ok(PaymentResponse.fromEntity(payment));
     }
 
     @GetMapping("/booking/{bookingId}")
     public ResponseEntity<List<PaymentResponse>> getPaymentsByBookingId(@PathVariable UUID bookingId) {
+        authenticatedUserService.requireBookingAccess(bookingId);
         List<PaymentResponse> payments = paymentService.getPaymentsByBookingId(bookingId)
                 .stream()
                 .map(PaymentResponse::fromEntity)
@@ -57,6 +64,7 @@ public class PaymentController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PaymentResponse>> getPaymentsByUserId(@PathVariable UUID userId) {
+        authenticatedUserService.requireCurrentUserOrAdmin(userId);
         List<PaymentResponse> payments = paymentService.getPaymentsByUserId(userId)
                 .stream()
                 .map(PaymentResponse::fromEntity)
@@ -66,6 +74,7 @@ public class PaymentController {
 
     @GetMapping("/status/{status}")
     public ResponseEntity<List<PaymentResponse>> getPaymentsByStatus(@PathVariable Payment.PaymentStatus status) {
+        authenticatedUserService.requireAdmin();
         List<PaymentResponse> payments = paymentService.getPaymentsByStatus(status)
                 .stream()
                 .map(PaymentResponse::fromEntity)
@@ -77,12 +86,14 @@ public class PaymentController {
     public ResponseEntity<PaymentResponse> updatePaymentStatus(
             @PathVariable UUID paymentId,
             @RequestParam Payment.PaymentStatus status) {
+        authenticatedUserService.requirePaymentManagementAccess(paymentId);
         Payment payment = paymentService.updatePaymentStatus(paymentId, status);
         return ResponseEntity.ok(PaymentResponse.fromEntity(payment));
     }
 
     @PostMapping("/{paymentId}/refund")
     public ResponseEntity<PaymentResponse> refundPayment(@PathVariable UUID paymentId) {
+        authenticatedUserService.requirePaymentAccess(paymentId);
         Payment payment = paymentService.refundPayment(paymentId);
         return ResponseEntity.ok(PaymentResponse.fromEntity(payment));
     }

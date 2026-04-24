@@ -11,7 +11,6 @@ import com.amrit.futsal.exception.SlotNotAvailableException;
 import com.amrit.futsal.repository.BookingRepository;
 import com.amrit.futsal.repository.FutsalGroundRepository;
 import com.amrit.futsal.repository.TimeSlotRepository;
-import com.amrit.futsal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,26 +25,19 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final TimeSlotRepository timeSlotRepository;
-    private final UserRepository userRepository;
     private final FutsalGroundRepository groundRepository;
 
     @Autowired
     public BookingService(BookingRepository bookingRepository,
                           TimeSlotRepository timeSlotRepository,
-                          UserRepository userRepository,
                           FutsalGroundRepository groundRepository) {
         this.bookingRepository = bookingRepository;
         this.timeSlotRepository = timeSlotRepository;
-        this.userRepository = userRepository;
         this.groundRepository = groundRepository;
     }
 
     @Transactional
-    public Booking createBooking(BookingRequest request) {
-        // Fetch user
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
-
+    public Booking createBooking(User user, BookingRequest request) {
         // Fetch ground
         FutsalGround ground = groundRepository.findById(request.getGroundId())
                 .orElseThrow(() -> new ResourceNotFoundException("Ground", "id", request.getGroundId()));
@@ -107,13 +99,6 @@ public class BookingService {
     public Booking updateBooking(UUID bookingId, BookingRequest request) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
-
-        // Fetch updated references if IDs have changed
-        if (request.getUserId() != null && !booking.getUser().getId().equals(request.getUserId())) {
-            User user = userRepository.findById(request.getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", request.getUserId()));
-            booking.setUser(user);
-        }
 
         if (request.getGroundId() != null && !booking.getGround().getId().equals(request.getGroundId())) {
             FutsalGround ground = groundRepository.findById(request.getGroundId())

@@ -59,7 +59,6 @@ export const paymentService = {
    */
   async processStubPayment(data: {
     bookingId: string;
-    userId: string;
     amount: number;
     paymentMethod?: string;
   }): Promise<{
@@ -81,7 +80,6 @@ export const paymentService = {
       try {
         const paymentRequest: PaymentRequest = {
           bookingId: data.bookingId,
-          userId: data.userId,
           amount: data.amount,
           transactionId,
         };

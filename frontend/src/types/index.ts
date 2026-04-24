@@ -111,7 +111,6 @@ export interface Booking {
 }
 
 export interface BookingRequest {
-  userId: string;
   groundId: string;
   slotId: string;
 }
@@ -129,7 +128,6 @@ export interface Payment {
 
 export interface PaymentRequest {
   bookingId: string;
-  userId: string;
   amount: number;
   transactionId: string;
 }

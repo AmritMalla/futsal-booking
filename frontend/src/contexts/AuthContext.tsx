@@ -22,61 +22,70 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
     const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+    if (!storedToken) {
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+
+    setToken(storedToken);
+    const hydrateCurrentUser = async () => {
+      try {
+        const currentUser = await authService.getCurrentUser();
+        setUser(currentUser);
+        localStorage.setItem('user', JSON.stringify(currentUser));
+      } catch (error) {
+        authService.logout();
+        setToken(null);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void hydrateCurrentUser();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
+      setIsLoading(true);
       const response = await authService.login({ email, password });
       setToken(response.token);
+      authService.setToken(response.token);
 
-      // Create user object from login response
-      const userData: User = {
-        id: '', // Will be populated from backend if needed
-        name: email.split('@')[0], // Temporary name
-        email: response.email,
-        role: response.role,
-        createdAt: new Date().toISOString(),
-      };
-
-      setUser(userData);
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(userData));
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
+      localStorage.setItem('user', JSON.stringify(currentUser));
     } catch (error) {
+      authService.logout();
+      setToken(null);
+      setUser(null);
       console.error('Login failed:', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const register = async (data: RegisterRequest) => {
     try {
+      setIsLoading(true);
       const response = await authService.register(data);
       setToken(response.token);
+      authService.setToken(response.token);
 
-      // Create user object from register response
-      const userData: User = {
-        id: '', // Will be populated from backend if needed
-        name: data.name,
-        email: response.email,
-        phoneNumber: data.phoneNumber,
-        role: response.role,
-        createdAt: new Date().toISOString(),
-      };
-
-      setUser(userData);
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(userData));
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser);
+      localStorage.setItem('user', JSON.stringify(currentUser));
     } catch (error) {
+      authService.logout();
+      setToken(null);
+      setUser(null);
       console.error('Registration failed:', error);
       throw error;
+    } finally {
+      setIsLoading(false);
     }
   };
 
