@@ -80,6 +80,40 @@ class BookingServiceTest {
         assertThrows(BadRequestException.class, () -> bookingService.createBooking(authenticatedUser, request));
     }
 
+    @Test
+    void updateBookingRejectsChangingGroundWithoutMatchingSlot() {
+        FutsalGround currentGround = buildGround();
+        FutsalGround newGround = buildGround();
+        TimeSlot currentSlot = buildSlot(currentGround);
+        Booking booking = new Booking();
+        booking.setId(UUID.randomUUID());
+        booking.setGround(currentGround);
+        booking.setSlot(currentSlot);
+        booking.setStatus(Booking.BookingStatus.CONFIRMED);
+
+        BookingRequest request = new BookingRequest(newGround.getId(), currentSlot.getId());
+
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+        when(groundRepository.findById(newGround.getId())).thenReturn(Optional.of(newGround));
+
+        assertThrows(BadRequestException.class, () -> bookingService.updateBooking(booking.getId(), request));
+    }
+
+    @Test
+    void updateBookingStatusRejectsCancelledBookingTransition() {
+        Booking booking = new Booking();
+        booking.setId(UUID.randomUUID());
+        booking.setStatus(Booking.BookingStatus.CANCELLED);
+        booking.setSlot(buildSlot(buildGround()));
+
+        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
+
+        assertThrows(
+                BadRequestException.class,
+                () -> bookingService.updateBookingStatus(booking.getId(), Booking.BookingStatus.COMPLETED)
+        );
+    }
+
     private User buildUser() {
         User user = new User();
         user.setId(UUID.randomUUID());

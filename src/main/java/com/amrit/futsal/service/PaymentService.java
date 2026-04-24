@@ -41,6 +41,13 @@ public class PaymentService {
         if (user.getRole() != User.Role.ADMIN && !booking.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("You can only pay for your own bookings");
         }
+        if (booking.getStatus() == Booking.BookingStatus.CANCELLED
+                || booking.getStatus() == Booking.BookingStatus.COMPLETED) {
+            throw new BadRequestException("Payments can only be processed for active bookings");
+        }
+        if (request.getAmount() == null || request.getAmount().compareTo(booking.getGround().getPricePerHour()) != 0) {
+            throw new BadRequestException("Payment amount must match the booking price");
+        }
 
         // Check if booking already has a successful payment
         List<Payment> existingPayments = paymentRepository.findByBookingId(booking.getId());
@@ -101,7 +108,14 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
 
+        if (payment.getPaymentStatus() != Payment.PaymentStatus.PENDING) {
+            throw new BadRequestException("Only pending payments can be updated");
+        }
+
         if (request.getAmount() != null) {
+            if (request.getAmount().compareTo(payment.getBooking().getGround().getPricePerHour()) != 0) {
+                throw new BadRequestException("Payment amount must match the booking price");
+            }
             payment.setAmount(request.getAmount());
         }
 
@@ -133,6 +147,15 @@ public class PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", paymentId));
 
+        if (payment.getPaymentStatus() == status) {
+            return payment;
+        }
+        if (!isAllowedPaymentStatusTransition(payment.getPaymentStatus(), status)) {
+            throw new BadRequestException(
+                    "Cannot change payment status from " + payment.getPaymentStatus() + " to " + status
+            );
+        }
+
         payment.setPaymentStatus(status);
 
         // Update booking status based on payment status
@@ -141,6 +164,10 @@ public class PaymentService {
             booking.setStatus(Booking.BookingStatus.CONFIRMED);
         } else if (status == Payment.PaymentStatus.FAILED) {
             booking.setStatus(Booking.BookingStatus.CANCELLED);
+            booking.getSlot().setIsBooked(false);
+        } else if (status == Payment.PaymentStatus.REFUNDED) {
+            booking.setStatus(Booking.BookingStatus.CANCELLED);
+            booking.getSlot().setIsBooked(false);
         }
         bookingRepository.save(booking);
 
@@ -156,22 +183,18 @@ public class PaymentService {
             throw new PaymentException("Only successful payments can be refunded");
         }
 
-        // Simulate refund processing (in production, integrate with payment gateway)
-        payment.setPaymentStatus(Payment.PaymentStatus.REFUNDED);
-
-        // Cancel the associated booking
-        Booking booking = payment.getBooking();
-        booking.setStatus(Booking.BookingStatus.CANCELLED);
-
-        // Free up the time slot
-        booking.getSlot().setIsBooked(false);
-
-        bookingRepository.save(booking);
-
-        return paymentRepository.save(payment);
+        return updatePaymentStatus(paymentId, Payment.PaymentStatus.REFUNDED);
     }
 
     private String generateTransactionId() {
         return "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+    }
+
+    private boolean isAllowedPaymentStatusTransition(Payment.PaymentStatus currentStatus,
+                                                     Payment.PaymentStatus newStatus) {
+        if (currentStatus == Payment.PaymentStatus.PENDING) {
+            return newStatus == Payment.PaymentStatus.SUCCESS || newStatus == Payment.PaymentStatus.FAILED;
+        }
+        return currentStatus == Payment.PaymentStatus.SUCCESS && newStatus == Payment.PaymentStatus.REFUNDED;
     }
 }

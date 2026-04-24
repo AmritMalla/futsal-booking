@@ -100,32 +100,42 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
 
-        if (request.getGroundId() != null && !booking.getGround().getId().equals(request.getGroundId())) {
-            FutsalGround ground = groundRepository.findById(request.getGroundId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Ground", "id", request.getGroundId()));
-            booking.setGround(ground);
+        if (booking.getStatus() != Booking.BookingStatus.CONFIRMED) {
+            throw new BadRequestException("Only confirmed bookings can be updated");
         }
 
-        if (request.getSlotId() != null && !booking.getSlot().getId().equals(request.getSlotId())) {
-            TimeSlot newSlot = timeSlotRepository.findById(request.getSlotId())
+        FutsalGround requestedGround = booking.getGround();
+        if (request.getGroundId() != null && !booking.getGround().getId().equals(request.getGroundId())) {
+            requestedGround = groundRepository.findById(request.getGroundId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Ground", "id", request.getGroundId()));
+        }
+
+        TimeSlot requestedSlot = booking.getSlot();
+        boolean slotChanged = request.getSlotId() != null && !booking.getSlot().getId().equals(request.getSlotId());
+        if (slotChanged) {
+            requestedSlot = timeSlotRepository.findById(request.getSlotId())
                     .orElseThrow(() -> new ResourceNotFoundException("TimeSlot", "id", request.getSlotId()));
 
-            if (newSlot.getIsBooked()) {
+            if (requestedSlot.getIsBooked()) {
                 throw new SlotNotAvailableException("The selected time slot is already booked");
             }
+        }
 
-            // Free up old slot
+        if (!requestedSlot.getGround().getId().equals(requestedGround.getId())) {
+            throw new BadRequestException("The selected time slot does not belong to the specified ground");
+        }
+
+        if (slotChanged) {
             TimeSlot oldSlot = booking.getSlot();
             oldSlot.setIsBooked(false);
             timeSlotRepository.save(oldSlot);
 
-            // Mark new slot as booked
-            newSlot.setIsBooked(true);
-            timeSlotRepository.save(newSlot);
-
-            booking.setSlot(newSlot);
+            requestedSlot.setIsBooked(true);
+            timeSlotRepository.save(requestedSlot);
         }
 
+        booking.setGround(requestedGround);
+        booking.setSlot(requestedSlot);
         return bookingRepository.save(booking);
     }
 
@@ -134,10 +144,20 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
 
+        if (booking.getStatus() == status) {
+            return booking;
+        }
+
+        if (!isAllowedBookingStatusTransition(booking.getStatus(), status)) {
+            throw new BadRequestException(
+                    "Cannot change booking status from " + booking.getStatus() + " to " + status
+            );
+        }
+
         booking.setStatus(status);
 
         // If booking is cancelled, free up the time slot
-        if (status == Booking.BookingStatus.CANCELLED) {
+        if (status == Booking.BookingStatus.CANCELLED && Boolean.TRUE.equals(booking.getSlot().getIsBooked())) {
             TimeSlot slot = booking.getSlot();
             slot.setIsBooked(false);
             timeSlotRepository.save(slot);
@@ -148,25 +168,7 @@ public class BookingService {
 
     @Transactional
     public Booking cancelBooking(UUID bookingId) {
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", bookingId));
-
-        if (booking.getStatus() == Booking.BookingStatus.CANCELLED) {
-            throw new BadRequestException("Booking is already cancelled");
-        }
-
-        if (booking.getStatus() == Booking.BookingStatus.COMPLETED) {
-            throw new BadRequestException("Cannot cancel a completed booking");
-        }
-
-        // Free up the time slot
-        TimeSlot slot = booking.getSlot();
-        slot.setIsBooked(false);
-        timeSlotRepository.save(slot);
-
-        // Update booking status
-        booking.setStatus(Booking.BookingStatus.CANCELLED);
-        return bookingRepository.save(booking);
+        return updateBookingStatus(bookingId, Booking.BookingStatus.CANCELLED);
     }
 
     public void deleteBooking(UUID bookingId) {
@@ -174,5 +176,11 @@ public class BookingService {
             throw new ResourceNotFoundException("Booking", "id", bookingId);
         }
         bookingRepository.deleteById(bookingId);
+    }
+
+    private boolean isAllowedBookingStatusTransition(Booking.BookingStatus currentStatus,
+                                                     Booking.BookingStatus newStatus) {
+        return currentStatus == Booking.BookingStatus.CONFIRMED
+                && (newStatus == Booking.BookingStatus.CANCELLED || newStatus == Booking.BookingStatus.COMPLETED);
     }
 }

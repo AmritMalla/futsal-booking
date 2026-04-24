@@ -16,6 +16,8 @@ public interface ReportRepository extends JpaRepository<Report, UUID> {
     List<Report> findByReportType(Report.ReportType reportType);
     
     List<Report> findByGeneratedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    List<Report> findByOwnerIdAndGeneratedAtBetween(UUID ownerId, LocalDateTime start, LocalDateTime end);
     
     List<Report> findByOwnerIdAndReportType(UUID ownerId, Report.ReportType reportType);
 }

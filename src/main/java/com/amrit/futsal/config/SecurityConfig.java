@@ -54,16 +54,16 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/auth/login",
                                 "/api/v1/auth/register",
-                                "/api/v1/files/**",
                                 "/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/actuator/health"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/files/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/grounds", "/api/v1/grounds/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/ground/**").permitAll()
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/reports/generate/**").hasAnyRole("OWNER", "ADMIN")
+                        .requestMatchers("/api/v1/reports/**").hasAnyRole("OWNER", "ADMIN")
                         .anyRequest().authenticated()
                 );
 

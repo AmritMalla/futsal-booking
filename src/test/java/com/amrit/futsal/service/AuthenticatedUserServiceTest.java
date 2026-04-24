@@ -5,12 +5,14 @@ import com.amrit.futsal.entity.FutsalCompany;
 import com.amrit.futsal.entity.FutsalGround;
 import com.amrit.futsal.entity.Payment;
 import com.amrit.futsal.entity.Review;
+import com.amrit.futsal.entity.Report;
 import com.amrit.futsal.entity.TimeSlot;
 import com.amrit.futsal.entity.User;
 import com.amrit.futsal.repository.BookingRepository;
 import com.amrit.futsal.repository.FutsalCompanyRepository;
 import com.amrit.futsal.repository.FutsalGroundRepository;
 import com.amrit.futsal.repository.PaymentRepository;
+import com.amrit.futsal.repository.ReportRepository;
 import com.amrit.futsal.repository.ReviewRepository;
 import com.amrit.futsal.repository.TimeSlotRepository;
 import com.amrit.futsal.repository.UserRepository;
@@ -55,6 +57,9 @@ class AuthenticatedUserServiceTest {
     private TimeSlotRepository timeSlotRepository;
 
     @Mock
+    private ReportRepository reportRepository;
+
+    @Mock
     private ReviewRepository reviewRepository;
 
     private AuthenticatedUserService authenticatedUserService;
@@ -68,6 +73,7 @@ class AuthenticatedUserServiceTest {
                 companyRepository,
                 groundRepository,
                 timeSlotRepository,
+                reportRepository,
                 reviewRepository
         );
     }
@@ -193,6 +199,24 @@ class AuthenticatedUserServiceTest {
         when(timeSlotRepository.findById(timeSlot.getId())).thenReturn(Optional.of(timeSlot));
 
         assertDoesNotThrow(() -> authenticatedUserService.requireTimeSlotOwnerOrAdmin(timeSlot.getId()));
+    }
+
+    @Test
+    void requireReportOwnerOrAdminRejectsDifferentOwner() {
+        User owner = buildUser(User.Role.OWNER);
+        User anotherOwner = buildUser(User.Role.OWNER);
+        Report report = new Report();
+        report.setId(UUID.randomUUID());
+        report.setOwner(owner);
+
+        authenticateAs(anotherOwner);
+        when(userRepository.findByEmail(anotherOwner.getEmail())).thenReturn(Optional.of(anotherOwner));
+        when(reportRepository.findById(report.getId())).thenReturn(Optional.of(report));
+
+        assertThrows(
+                AccessDeniedException.class,
+                () -> authenticatedUserService.requireReportOwnerOrAdmin(report.getId())
+        );
     }
 
     private void authenticateAs(User user) {

@@ -61,6 +61,7 @@ public class FileStorageService {
     }
 
     public void deleteFile(String fileName) {
+        validateStoredFileName(fileName);
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             Files.deleteIfExists(filePath);
@@ -70,6 +71,7 @@ public class FileStorageService {
     }
 
     public Path getFilePath(String fileName) {
+        validateStoredFileName(fileName);
         return this.fileStorageLocation.resolve(fileName).normalize();
     }
 
@@ -101,5 +103,12 @@ public class FileStorageService {
             return "";
         }
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    private void validateStoredFileName(String fileName) {
+        String cleanedFileName = StringUtils.cleanPath(fileName);
+        if (!StringUtils.hasText(cleanedFileName) || cleanedFileName.contains("..")) {
+            throw new BadRequestException("Invalid file name");
+        }
     }
 }

@@ -7,6 +7,11 @@ export const reportService = {
     return response.data;
   },
 
+  async getMyReports(): Promise<Report[]> {
+    const response = await apiClient.get<Report[]>('/reports/me');
+    return response.data;
+  },
+
   async getReportsByOwner(ownerId: string): Promise<Report[]> {
     const response = await apiClient.get<Report[]>(`/reports/owner/${ownerId}`);
     return response.data;
@@ -25,33 +30,36 @@ export const reportService = {
   },
 
   async generateRevenueReport(
-    ownerId: string,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    ownerId?: string
   ): Promise<Report> {
-    const response = await apiClient.post<Report>(`/reports/generate/revenue/${ownerId}`, null, {
+    const endpoint = ownerId ? `/reports/generate/revenue/${ownerId}` : '/reports/generate/revenue';
+    const response = await apiClient.post<Report>(endpoint, null, {
       params: { startDate, endDate },
     });
     return response.data;
   },
 
   async generateBookingsReport(
-    ownerId: string,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    ownerId?: string
   ): Promise<Report> {
-    const response = await apiClient.post<Report>(`/reports/generate/bookings/${ownerId}`, null, {
+    const endpoint = ownerId ? `/reports/generate/bookings/${ownerId}` : '/reports/generate/bookings';
+    const response = await apiClient.post<Report>(endpoint, null, {
       params: { startDate, endDate },
     });
     return response.data;
   },
 
   async generateCustomersReport(
-    ownerId: string,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    ownerId?: string
   ): Promise<Report> {
-    const response = await apiClient.post<Report>(`/reports/generate/customers/${ownerId}`, null, {
+    const endpoint = ownerId ? `/reports/generate/customers/${ownerId}` : '/reports/generate/customers';
+    const response = await apiClient.post<Report>(endpoint, null, {
       params: { startDate, endDate },
     });
     return response.data;

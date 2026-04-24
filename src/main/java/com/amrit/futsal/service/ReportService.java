@@ -63,6 +63,10 @@ public class ReportService {
         return reportRepository.findByOwnerIdAndReportType(ownerId, reportType);
     }
 
+    public List<Report> getReportsByOwnerAndDateRange(UUID ownerId, LocalDateTime start, LocalDateTime end) {
+        return reportRepository.findByOwnerIdAndGeneratedAtBetween(ownerId, start, end);
+    }
+
     public Report generateRevenueReport(User owner) {
         return generateRevenueReport(owner, LocalDateTime.now().minusMonths(1), LocalDateTime.now());
     }

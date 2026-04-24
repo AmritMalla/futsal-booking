@@ -37,7 +37,7 @@ const OwnerDashboard: React.FC = () => {
       setLoading(true);
 
       // Fetch revenue report
-      const report = await reportService.generateRevenueReport(user.id);
+      const report = await reportService.generateRevenueReport();
       setRevenueData(report.reportData as RevenueReportData);
 
       const companies = await companyService.getMyCompanies();
@@ -64,11 +64,11 @@ const OwnerDashboard: React.FC = () => {
     try {
       setLoading(true);
       if (type === 'revenue') {
-        await reportService.generateRevenueReport(user.id);
+        await reportService.generateRevenueReport();
       } else if (type === 'bookings') {
-        await reportService.generateBookingsReport(user.id);
+        await reportService.generateBookingsReport();
       } else {
-        await reportService.generateCustomersReport(user.id);
+        await reportService.generateCustomersReport();
       }
       alert(`${type.charAt(0).toUpperCase() + type.slice(1)} report generated successfully!`);
     } catch (err: any) {

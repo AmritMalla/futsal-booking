@@ -5,6 +5,7 @@ import com.amrit.futsal.entity.FutsalCompany;
 import com.amrit.futsal.entity.FutsalGround;
 import com.amrit.futsal.entity.Payment;
 import com.amrit.futsal.entity.Review;
+import com.amrit.futsal.entity.Report;
 import com.amrit.futsal.entity.TimeSlot;
 import com.amrit.futsal.entity.User;
 import com.amrit.futsal.exception.ResourceNotFoundException;
@@ -12,6 +13,7 @@ import com.amrit.futsal.repository.BookingRepository;
 import com.amrit.futsal.repository.FutsalCompanyRepository;
 import com.amrit.futsal.repository.FutsalGroundRepository;
 import com.amrit.futsal.repository.PaymentRepository;
+import com.amrit.futsal.repository.ReportRepository;
 import com.amrit.futsal.repository.ReviewRepository;
 import com.amrit.futsal.repository.TimeSlotRepository;
 import com.amrit.futsal.repository.UserRepository;
@@ -33,6 +35,7 @@ public class AuthenticatedUserService {
     private final FutsalCompanyRepository companyRepository;
     private final FutsalGroundRepository groundRepository;
     private final TimeSlotRepository timeSlotRepository;
+    private final ReportRepository reportRepository;
     private final ReviewRepository reviewRepository;
 
     @Autowired
@@ -42,6 +45,7 @@ public class AuthenticatedUserService {
                                     FutsalCompanyRepository companyRepository,
                                     FutsalGroundRepository groundRepository,
                                     TimeSlotRepository timeSlotRepository,
+                                    ReportRepository reportRepository,
                                     ReviewRepository reviewRepository) {
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
@@ -49,6 +53,7 @@ public class AuthenticatedUserService {
         this.companyRepository = companyRepository;
         this.groundRepository = groundRepository;
         this.timeSlotRepository = timeSlotRepository;
+        this.reportRepository = reportRepository;
         this.reviewRepository = reviewRepository;
     }
 
@@ -186,6 +191,16 @@ public class AuthenticatedUserService {
         if (!isAdmin(currentUser)
                 && !timeSlot.getGround().getCompany().getOwner().getId().equals(currentUser.getId())) {
             throw new AccessDeniedException("You don't have permission to manage this time slot");
+        }
+    }
+
+    public void requireReportOwnerOrAdmin(UUID reportId) {
+        User currentUser = getCurrentUser();
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("Report", "id", reportId));
+
+        if (!isAdmin(currentUser) && !report.getOwner().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("You don't have permission to access this report");
         }
     }
 

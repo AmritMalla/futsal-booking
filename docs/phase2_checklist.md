@@ -8,22 +8,22 @@ This checklist tracks the remaining security, authorization, and domain-hardenin
 - [x] Restrict company management to the correct owner or admin
 - [x] Restrict ground management to the correct owner or admin
 - [x] Restrict time slot management to the correct owner or admin
-- [ ] Restrict report generation and access to the correct owner or admin
-- [ ] Restrict file upload/delete actions to the correct owner or admin
+- [x] Restrict report generation and access to the correct owner or admin
+- [x] Restrict file upload/delete actions to the correct owner or admin
 
 ## Domain Integrity
 
-- [ ] Tighten booking status transition rules
-- [ ] Tighten payment status transition rules
+- [x] Tighten booking status transition rules
+- [x] Tighten payment status transition rules
 - [x] Remove or restrict unsafe direct slot mutation flows
 
 ## Test Coverage
 
 - [x] Add review authorization tests
 - [x] Add company/ground/slot authorization tests
-- [ ] Add report authorization tests
-- [ ] Add file authorization tests
-- [ ] Add state-transition tests for booking/payment flows
+- [x] Add report authorization tests
+- [x] Add file authorization tests
+- [x] Add state-transition tests for booking/payment flows
 
 ## Notes
 
