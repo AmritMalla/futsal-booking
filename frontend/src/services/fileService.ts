@@ -14,7 +14,9 @@ export const fileService = {
   },
 
   getFileUrl(fileName: string): string {
-    return `${process.env.REACT_APP_API_BASE_URL}/files/${fileName}`;
+    const base = process.env.REACT_APP_API_BASE_URL || '';
+    const absoluteBase = base.startsWith('http') ? base : `${window.location.origin}${base}`;
+    return `${absoluteBase}/files/${fileName}`;
   },
 
   async deleteFile(fileName: string): Promise<void> {
