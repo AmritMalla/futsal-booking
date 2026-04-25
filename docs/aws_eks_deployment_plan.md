@@ -1,3 +1,7 @@
+> **Superseded.** This early planning note has been replaced by the full design at
+> [docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md](superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md)
+> and the implementation plan at [docs/superpowers/plans/2026-04-25-aws-eks-sandbox-deployment.md](superpowers/plans/2026-04-25-aws-eks-sandbox-deployment.md).
+
 # AWS EKS Deployment Plan
 
 This note captures the intended production deployment direction for the futsal booking project. The current application is ready for deployment planning, but the Kubernetes manifests and CI/CD pipeline still need to be added.
