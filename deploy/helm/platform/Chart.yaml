@@ -1,0 +1,26 @@
+apiVersion: v2
+name: platform
+description: Cluster add-ons for the futsal sandbox (ingress, cert-manager, ESO, postgres, observability).
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: ingress-nginx
+    version: 4.11.3
+    repository: https://kubernetes.github.io/ingress-nginx
+  - name: cert-manager
+    version: v1.15.3
+    repository: https://charts.jetstack.io
+  - name: external-secrets
+    version: 0.10.4
+    repository: https://charts.external-secrets.io
+  - name: postgresql
+    version: 15.5.38
+    repository: https://charts.bitnami.com/bitnami
+  - name: kube-prometheus-stack
+    version: 65.1.0
+    repository: https://prometheus-community.github.io/helm-charts
+  - name: loki-stack
+    version: 2.10.2
+    repository: https://grafana.github.io/helm-charts

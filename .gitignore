@@ -99,3 +99,7 @@ frontend/coverage/
 # frontend/pnpm-lock.yaml
 
 .qodo
+
+# Helm chart dependencies (pulled by `helm dependency update`)
+deploy/helm/platform/charts/
+deploy/helm/platform/Chart.lock

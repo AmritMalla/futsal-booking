@@ -1,0 +1,80 @@
+# Values passed from bootstrap.sh via --set or --set-file:
+#   esoRoleArn, lettsencryptEmail, region, grafanaAdminSecretExists (bool).
+
+ingress-nginx:
+  controller:
+    service:
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+        service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    admissionWebhooks:
+      enabled: true
+
+cert-manager:
+  installCRDs: true
+  prometheus:
+    enabled: false
+
+external-secrets:
+  installCRDs: true
+  # ESO's SA lands in the release namespace (platform). IRSA trust in Terraform
+  # is pinned to `system:serviceaccount:platform:external-secrets`.
+  serviceAccount:
+    name: external-secrets
+    annotations:
+      # Overridden at install time via --set, kept here for documentation only.
+      eks.amazonaws.com/role-arn: OVERRIDE_AT_INSTALL
+
+postgresql:
+  architecture: standalone
+  auth:
+    existingSecret: futsal-backend-db
+    secretKeys:
+      adminPasswordKey: SPRING_DATASOURCE_PASSWORD
+      userPasswordKey: SPRING_DATASOURCE_PASSWORD
+    username: postgres
+    database: futsal_booking
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+      storageClass: gp3
+    resources:
+      requests: { cpu: 250m, memory: 512Mi }
+      limits: { cpu: 1000m, memory: 1Gi }
+
+kube-prometheus-stack:
+  alertmanager:
+    enabled: true
+    alertmanagerSpec:
+      storage:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: gp3
+            accessModes: ["ReadWriteOnce"]
+            resources: { requests: { storage: 1Gi } }
+  prometheus:
+    prometheusSpec:
+      retention: 6h
+      storageSpec: {}   # emptyDir
+      serviceMonitorSelectorNilUsesHelmValues: false
+  grafana:
+    admin:
+      existingSecret: grafana-admin
+      userKey: admin-user
+      passwordKey: admin-password
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+    service:
+      type: ClusterIP
+
+loki-stack:
+  loki:
+    enabled: true
+    persistence:
+      enabled: false
+  promtail:
+    enabled: true
