@@ -1,13 +1,20 @@
-# Stage 1: Build the application using Maven
-FROM maven:3.9.5-eclipse-temurin-17 AS build
+# syntax=docker/dockerfile:1.7
+
+# Stage 1: build the JAR
+FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY pom.xml .
+RUN mvn -B -q -DskipTests dependency:go-offline
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn -B -q -DskipTests package
 
-# Stage 2: Create a lightweight runtime image
-FROM eclipse-temurin:17-jre-alpine
+# Stage 2: runtime
+FROM eclipse-temurin:17-jre-alpine AS runtime
+RUN addgroup -S app && adduser -S -G app app
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8090
-ENTRYPOINT ["java", "-jar", "app.jar"]
+RUN chown -R app:app /app && mkdir -p /var/app/uploads && chown -R app:app /var/app/uploads
+USER app
+EXPOSE 8080
+ENV SERVER_PORT=8080
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "/app/app.jar"]
