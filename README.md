@@ -291,3 +291,41 @@ The immediate focus is Phase 5:
 - prepare AWS EKS deployment assets and pipeline
 - document production environment variables and deployment flow
 - add screenshots and, later, a public demo link
+
+## Deployment
+
+The project deploys to **AWS EKS** via Terraform + Helm, driven by `scripts/bootstrap.sh`. It's designed for a 4-hour Pluralsight sandbox and reaches a running public HTTPS URL in ~30 min.
+
+- Design: [docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md](docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md)
+- Runbook: [deploy/README.md](deploy/README.md)
+- CI image build: [.github/workflows/image-build.yml](.github/workflows/image-build.yml)
+
+### Architecture (sandbox)
+
+```
+Browser ── HTTPS ──► NLB ──► ingress-nginx ──┬─► frontend (nginx + React build)
+                                              └─► backend (Spring Boot)
+                                                    │
+                                                    ├─► Postgres (in-cluster, PVC)
+                                                    ├─► PVC uploads
+                                                    └─► Secrets (ESO ◄─ AWS Secrets Manager)
+                                              Observability: Prometheus + Loki + Grafana (ops ns)
+```
+
+### Sandbox vs. Production
+
+Every compromise is documented. The application-side pattern is identical in both columns.
+
+| Concern | Sandbox | Real production |
+|---|---|---|
+| Terraform state | Local file | S3 + DynamoDB lock |
+| Database | In-cluster Postgres (PVC) | RDS Multi-AZ + snapshots |
+| TLS | Let's Encrypt via nip.io | ACM + Route53 on owned domain |
+| Ingress | NGINX + NLB | ALB Controller or NGINX |
+| Image push | GHCR → bootstrap mirrors to ECR | GitHub OIDC → ECR directly |
+| Secrets population | Bootstrap script generates + writes | Platform process / sealed CI approval |
+| Uploads | PVC-backed volume | S3 + presigned URLs |
+| Node group | 2× t3.large on-demand | Spot + on-demand mix, multi-AZ, autoscaler |
+| Observability | Prometheus/Loki emptyDir, 6h retention | Managed AMP/AMG, long retention, alerting wired |
+| Grafana access | `kubectl port-forward` | SSO-gated Ingress |
+| Tracing | Not installed | OTel SDK + Tempo/X-Ray |
