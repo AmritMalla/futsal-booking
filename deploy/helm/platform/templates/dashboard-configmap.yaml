@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: futsal-backend-dashboard
+  namespace: ops
+  labels:
+    grafana_dashboard: "1"
+data:
+  futsal-backend-overview.json: |-
+{{ .Files.Get "dashboards/futsal-backend-overview.json" | indent 4 }}

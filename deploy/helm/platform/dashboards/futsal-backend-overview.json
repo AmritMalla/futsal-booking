@@ -1,0 +1,42 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "panels": [
+    {
+      "title": "Request rate",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "sum by (uri) (rate(http_server_requests_seconds_count{namespace=\"futsal\",app=\"backend\"}[1m]))"}
+      ],
+      "gridPos": {"x": 0, "y": 0, "w": 12, "h": 8}
+    },
+    {
+      "title": "p95 latency",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "histogram_quantile(0.95, sum by (le, uri) (rate(http_server_requests_seconds_bucket{namespace=\"futsal\",app=\"backend\"}[5m])))"}
+      ],
+      "gridPos": {"x": 12, "y": 0, "w": 12, "h": 8}
+    },
+    {
+      "title": "JVM heap used",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "sum by (pod) (jvm_memory_used_bytes{namespace=\"futsal\",app=\"backend\",area=\"heap\"})"}
+      ],
+      "gridPos": {"x": 0, "y": 8, "w": 12, "h": 8}
+    },
+    {
+      "title": "DB pool active connections",
+      "type": "timeseries",
+      "targets": [
+        {"expr": "hikaricp_connections_active{namespace=\"futsal\",app=\"backend\"}"}
+      ],
+      "gridPos": {"x": 12, "y": 8, "w": 12, "h": 8}
+    }
+  ],
+  "schemaVersion": 38,
+  "title": "Futsal Backend Overview",
+  "uid": "futsal-backend",
+  "version": 1
+}
