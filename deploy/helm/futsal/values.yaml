@@ -1,0 +1,49 @@
+# Overridden at install time by bootstrap.sh:
+#   host, backend.image.repository, backend.image.tag,
+#   frontend.image.repository, frontend.image.tag,
+#   clusterIssuer, corsAllowedOrigins.
+
+host: "OVERRIDE-AT-INSTALL.nip.io"
+clusterIssuer: "letsencrypt-prod"
+corsAllowedOrigins: "https://OVERRIDE-AT-INSTALL.nip.io"
+
+backend:
+  replicaCount: 2
+  image:
+    repository: OVERRIDE
+    tag: OVERRIDE
+    pullPolicy: IfNotPresent
+  service:
+    port: 8080
+  resources:
+    requests: { cpu: 500m, memory: 1Gi }
+    limits: { cpu: 1000m, memory: 2Gi }
+  env:
+    SPRING_PROFILES_ACTIVE: kubernetes
+    SPRING_DATASOURCE_URL: "jdbc:postgresql://platform-postgresql.platform.svc.cluster.local:5432/futsal_booking"
+    JPA_DDL_AUTO: update
+    FILE_UPLOAD_DIR: /var/app/uploads
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 70
+
+frontend:
+  replicaCount: 2
+  image:
+    repository: OVERRIDE
+    tag: OVERRIDE
+    pullPolicy: IfNotPresent
+  service:
+    port: 8080
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { cpu: 200m, memory: 128Mi }
+
+uploads:
+  size: 2Gi
+  storageClass: gp3
+
+serviceMonitor:
+  enabled: true
