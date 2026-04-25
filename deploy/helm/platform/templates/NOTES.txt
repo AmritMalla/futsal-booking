@@ -1,0 +1,5 @@
+Platform chart installed. Next steps:
+  1. Verify ingress-nginx NLB is ready:   kubectl -n platform get svc
+  2. Verify cert-manager is ready:        kubectl -n platform get pods -l app.kubernetes.io/name=cert-manager
+  3. Verify ESO is ready:                 kubectl -n platform get pods -l app.kubernetes.io/name=external-secrets
+  4. Install the futsal app chart:        helm upgrade --install futsal ../futsal -n futsal
