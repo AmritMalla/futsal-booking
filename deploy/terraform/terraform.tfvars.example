@@ -1,5 +1,5 @@
 region             = "us-east-1"
-cluster_version    = "1.36"
+cluster_version    = "1.35"
 node_instance_type = "t3.large"
 node_desired_size  = 2
 owner_tag          = "Yam Malla"
