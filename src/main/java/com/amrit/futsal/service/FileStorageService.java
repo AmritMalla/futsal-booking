@@ -40,7 +40,9 @@ public class FileStorageService {
         try {
             Files.createDirectories(this.fileStorageLocation);
         } catch (IOException ex) {
-            throw new RuntimeException("Could not create the directory for file uploads", ex);
+            // Log warning but don't fail - directory might be read-only in test/k8s environments
+            System.err.println("Warning: Could not create upload directory at " + uploadDir + 
+                              ". File uploads will fail if directory doesn't exist. Error: " + ex.getMessage());
         }
     }
 
