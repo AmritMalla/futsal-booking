@@ -49,17 +49,18 @@ aws secretsmanager put-secret-value --secret-id "$SECRET_JWT" --secret-string "$
 aws secretsmanager put-secret-value --secret-id "$SECRET_SMTP" --secret-string '{"host":"","port":"587","username":"","password":""}' >/dev/null
 aws secretsmanager put-secret-value --secret-id "$SECRET_GRAFANA" --secret-string "$(jq -n --arg u admin --arg p "$GRAFANA_PASSWORD" '{username:$u,password:$p}')" >/dev/null
 
-log "helm dependency update (platform)..."
-(cd "$REPO_ROOT/deploy/helm/platform" && helm dependency update)
-
-log "helm install platform..."
-helm upgrade --install platform "$REPO_ROOT/deploy/helm/platform" \
-  --namespace platform \
-  --create-namespace \
-  --wait --timeout 10m \
-  --set region="$REGION" \
-  --set letsencryptEmail="$LETSENCRYPT_EMAIL" \
-  --set "external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=$ESO_ROLE_ARN"
+log "helm dependency update and install platform..."
+(
+  cd "$REPO_ROOT/deploy/helm/platform"
+  helm dependency build
+  helm upgrade --install platform . \
+    --namespace platform \
+    --create-namespace \
+    --wait --timeout 10m \
+    --set region="$REGION" \
+    --set letsencryptEmail="$LETSENCRYPT_EMAIL" \
+    --set "external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=$ESO_ROLE_ARN"
+)
 
 log "waiting for NLB hostname..."
 wait_for "ingress-nginx NLB hostname" 180 \
@@ -94,15 +95,18 @@ skopeo copy --all \
   "docker://${ECR_FRONTEND}:${SHA}"
 
 log "helm install futsal (app)..."
-helm upgrade --install futsal "$REPO_ROOT/deploy/helm/futsal" \
-  --namespace futsal \
-  --wait --timeout 5m \
-  --set host="$HOST" \
-  --set corsAllowedOrigins="https://$HOST" \
-  --set backend.image.repository="$ECR_BACKEND" \
-  --set backend.image.tag="$SHA" \
-  --set frontend.image.repository="$ECR_FRONTEND" \
-  --set frontend.image.tag="$SHA"
+(
+  cd "$REPO_ROOT/deploy/helm/futsal"
+  helm upgrade --install futsal . \
+    --namespace futsal \
+    --wait --timeout 5m \
+    --set host="$HOST" \
+    --set corsAllowedOrigins="https://$HOST" \
+    --set backend.image.repository="$ECR_BACKEND" \
+    --set backend.image.tag="$SHA" \
+    --set frontend.image.repository="$ECR_FRONTEND" \
+    --set frontend.image.tag="$SHA"
+)
 
 log "waiting for Let's Encrypt certificate..."
 wait_for "certificate ready" 300 \
