@@ -32,6 +32,8 @@ module "eks" {
       iam_role_additional_policies = {
         # Nodes need ECR pull; the managed policy covers it.
         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+        # EBS CSI driver needs permissions to manage volumes
+        AmazonEBSCSIDriverPolicy           = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
       }
     }
   }
