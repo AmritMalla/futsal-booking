@@ -28,9 +28,9 @@ log "updating kubeconfig..."
 aws eks update-kubeconfig --region "$REGION" --name "$CLUSTER" >/dev/null
 
 log "writing generated secrets to AWS Secrets Manager..."
-DB_PASSWORD="$(openssl rand -base64 32 | tr -d '/+=\n')"
-JWT_SECRET="$(openssl rand -base64 64 | tr -d '/+=\n')"
-GRAFANA_PASSWORD="$(openssl rand -base64 24 | tr -d '/+=\n')"
+DB_PASSWORD="$(openssl rand -base64 32 | tr -d '/+=\n\r')"
+JWT_SECRET="$(openssl rand -base64 64 | tr -d '/+=\n\r')"
+GRAFANA_PASSWORD="$(openssl rand -base64 24 | tr -d '/+=\n\r')"
 
 aws secretsmanager put-secret-value --secret-id /futsal/sandbox/db \
   --secret-string "$(jq -n --arg u postgres --arg p "$DB_PASSWORD" '{username:$u,password:$p}')" >/dev/null
