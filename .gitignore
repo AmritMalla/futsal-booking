@@ -12,8 +12,6 @@ HELP.md
 /logs/
 *.log.*
 !.mvn/wrapper/maven-wrapper.jar
-.mvn
-
 ### Build & run
 /target/
 /out/
