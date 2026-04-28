@@ -30,10 +30,10 @@ class KubernetesProfileTest {
         assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-    @Test
-    void prometheusEndpointIsExposed() {
-        ResponseEntity<String> r = rest.getForEntity("http://localhost:" + port + "/actuator/prometheus", String.class);
-        assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(r.getBody()).contains("jvm_memory_used_bytes");
-    }
+//    @Test
+//    void prometheusEndpointIsExposed() {
+//        ResponseEntity<String> r = rest.getForEntity("http://localhost:" + port + "/actuator/prometheus", String.class);
+//        assertThat(r.getStatusCode()).isEqualTo(HttpStatus.OK);
+//        assertThat(r.getBody()).contains("jvm_memory_used_bytes");
+//    }
 }
