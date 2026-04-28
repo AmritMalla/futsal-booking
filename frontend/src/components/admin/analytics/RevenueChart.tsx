@@ -84,8 +84,8 @@ const RevenueChart: React.FC<RevenueChartProps> = ({ data, loading }) => {
             <XAxis dataKey="name" />
             <YAxis />
             <Tooltip
-              formatter={(value: number | undefined) =>
-                `NPR ${value != null ? value.toLocaleString() : '0'}`
+              formatter={(value: any) =>
+                `NPR ${value != null ? Number(value).toLocaleString() : '0'}`
               }
             />
             <Legend />
