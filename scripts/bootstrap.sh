@@ -32,15 +32,22 @@ DB_PASSWORD="$(openssl rand -base64 32 | tr -d '/+=\n\r')"
 JWT_SECRET="$(openssl rand -base64 64 | tr -d '/+=\n\r')"
 GRAFANA_PASSWORD="$(openssl rand -base64 24 | tr -d '/+=\n\r')"
 
-aws secretsmanager put-secret-value --secret-id /futsal/sandbox/db \
-  --secret-string "$(jq -n --arg u postgres --arg p "$DB_PASSWORD" '{username:$u,password:$p}')" >/dev/null
-aws secretsmanager put-secret-value --secret-id /futsal/sandbox/jwt \
-  --secret-string "$(jq -n --arg s "$JWT_SECRET" '{secret:$s}')" >/dev/null
+SECRET_DB="$(tfout secret_arn_db)"
+SECRET_JWT="$(tfout secret_arn_jwt)"
+SECRET_SMTP="$(tfout secret_arn_smtp)"
+SECRET_GRAFANA="$(tfout secret_arn_grafana)"
+
+# Strip potential \r from Terraform outputs
+SECRET_DB="${SECRET_DB%$'\r'}"
+SECRET_JWT="${SECRET_JWT%$'\r'}"
+SECRET_SMTP="${SECRET_SMTP%$'\r'}"
+SECRET_GRAFANA="${SECRET_GRAFANA%$'\r'}"
+
+aws secretsmanager put-secret-value --secret-id "$SECRET_DB" --secret-string "$(jq -n --arg u postgres --arg p "$DB_PASSWORD" '{username:$u,password:$p}')" >/dev/null
+aws secretsmanager put-secret-value --secret-id "$SECRET_JWT" --secret-string "$(jq -n --arg s "$JWT_SECRET" '{secret:$s}')" >/dev/null
 # SMTP: leave as placeholder so MAIL_HOST is empty (backend already guards on empty).
-aws secretsmanager put-secret-value --secret-id /futsal/sandbox/smtp \
-  --secret-string '{"host":"","port":"587","username":"","password":""}' >/dev/null
-aws secretsmanager put-secret-value --secret-id /futsal/sandbox/grafana \
-  --secret-string "$(jq -n --arg u admin --arg p "$GRAFANA_PASSWORD" '{username:$u,password:$p}')" >/dev/null
+aws secretsmanager put-secret-value --secret-id "$SECRET_SMTP" --secret-string '{"host":"","port":"587","username":"","password":""}' >/dev/null
+aws secretsmanager put-secret-value --secret-id "$SECRET_GRAFANA" --secret-string "$(jq -n --arg u admin --arg p "$GRAFANA_PASSWORD" '{username:$u,password:$p}')" >/dev/null
 
 log "helm dependency update (platform)..."
 (cd "$REPO_ROOT/deploy/helm/platform" && helm dependency update)
