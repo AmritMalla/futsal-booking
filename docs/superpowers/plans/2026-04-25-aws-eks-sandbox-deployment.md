@@ -17,7 +17,7 @@
 - Shell scripts: `shellcheck`.
 - End-to-end: only runnable against a live sandbox via `scripts/verify.sh`.
 
-**Placeholder convention:** `<GHCR_USER>` = GitHub username/org of this repo (resolved at deploy time, configured in `deploy/terraform/terraform.tfvars`). `<REGION>` defaults to `us-west-2` but is a variable.
+**Placeholder convention:** `<GHCR_USER>` = GitHub username/org of this repo (resolved at deploy time, configured in `deploy/terraform/terraform.tfvars`). `<REGION>` defaults to `us-east-1` but is a variable.
 
 ---
 
@@ -662,7 +662,7 @@ locals {
 variable "region" {
   description = "AWS region for the sandbox deployment."
   type        = string
-  default     = "us-west-2"
+  default     = "us-east-1"
 }
 
 variable "cluster_version" {
@@ -698,7 +698,7 @@ variable "letsencrypt_email" {
 - [ ] **Step 4: Create `deploy/terraform/terraform.tfvars.example`**
 
 ```hcl
-region             = "us-west-2"
+region             = "us-east-1"
 cluster_version    = "1.30"
 node_instance_type = "t3.large"
 node_desired_size  = 2
@@ -1433,13 +1433,13 @@ Platform chart installed. Next steps:
 ```bash
 cd deploy/helm/platform
 helm lint . \
-  --set region=us-west-2 \
+  --set region=us-east-1 \
   --set letsencryptEmail=test@example.com \
   --set esoRoleArn=arn:aws:iam::123456789012:role/fake \
   --set 'external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=arn:aws:iam::123456789012:role/fake'
 
 helm template platform . \
-  --set region=us-west-2 \
+  --set region=us-east-1 \
   --set letsencryptEmail=test@example.com \
   --set 'external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=arn:aws:iam::123456789012:role/fake' \
   > /tmp/platform-render.yaml
@@ -1533,7 +1533,7 @@ data:
 ```bash
 cd deploy/helm/platform
 helm lint . \
-  --set region=us-west-2 --set letsencryptEmail=test@example.com \
+  --set region=us-east-1 --set letsencryptEmail=test@example.com \
   --set 'external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=arn:aws:iam::123456789012:role/fake'
 ```
 
@@ -2253,13 +2253,13 @@ require_cmd aws terraform kubectl helm skopeo jq gh
 log "precheck: verifying AWS caller identity..."
 aws sts get-caller-identity >/dev/null || fail "aws sts get-caller-identity failed — are sandbox credentials active?"
 
-EXPECTED_REGION="${AWS_REGION:-us-west-2}"
+EXPECTED_REGION="${AWS_REGION:-us-east-1}"
 CURRENT_REGION="$(aws configure get region 2>/dev/null || echo "$EXPECTED_REGION")"
 [ "$CURRENT_REGION" = "$EXPECTED_REGION" ] || warn "AWS region is '$CURRENT_REGION', expected '$EXPECTED_REGION'. Continuing anyway."
 
 log "precheck: verifying GHCR images exist for main..."
 GHCR_USER="${GHCR_USER:?GHCR_USER env var not set (export the GitHub owner/user)}"
-SHA="${SHA:-$(gh api "repos/${GHCR_USER}/$(basename "$REPO_ROOT")/commits/main" --jq .sha)}"
+SHA="${SHA:-$(gh api "repos/{owner}/{repo}/commits/master" --jq .sha)}"
 export SHA
 for image in "ghcr.io/${GHCR_USER}/futsal-backend:${SHA}" "ghcr.io/${GHCR_USER}/futsal-frontend:${SHA}"; do
   docker manifest inspect "$image" >/dev/null 2>&1 \
@@ -2300,7 +2300,7 @@ git commit -m "feat(scripts): precheck.sh — verify tools, AWS creds, region, G
 
 log "running precheck..."
 GHCR_USER="$GHCR_USER" "$(dirname "$0")/precheck.sh"
-SHA="$(gh api "repos/${GHCR_USER}/$(basename "$REPO_ROOT")/commits/main" --jq .sha)"
+SHA="$(gh api "repos/{owner}/{repo}/commits/master" --jq .sha)"
 
 log "terraform apply (VPC, EKS, ECR, Secrets Manager, IRSA)..."
 (

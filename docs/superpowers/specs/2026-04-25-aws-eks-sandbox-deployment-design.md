@@ -38,7 +38,7 @@ Browser
   │ HTTPS (Let's Encrypt via nip.io)
   ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  AWS Sandbox (us-west-2, one VPC, 2 public + 2 private AZs)│
+│  AWS Sandbox (us-east-1, one VPC, 2 public + 2 private AZs)│
 │                                                              │
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │  EKS Cluster (1.30)                                  │    │
@@ -115,7 +115,7 @@ deploy/terraform/
 
 ### Pluralsight sandbox accommodations
 
-- Default region: `us-west-2` (confirmed usable on Pluralsight). Configurable via variable.
+- Default region: `us-east-1` (confirmed usable on Pluralsight). Configurable via variable.
 - `precheck.sh` verifies `aws sts get-caller-identity` works and warns if not in the expected region.
 - Resource names are short and prefixed with `futsal-sandbox-` for identification in the shared console.
 
@@ -215,7 +215,7 @@ Images are public on GHCR so the sandbox does not need a pull secret for mirrori
 After Terraform creates the two ECR repos:
 
 ```bash
-SHA=$(gh api repos/<owner>/<repo>/commits/main --jq .sha)
+SHA=$(gh api repos/{owner}/{repo}/commits/master --jq .sha)
 
 aws ecr get-login-password --region "$REGION" \
   | skopeo login --username AWS --password-stdin "$ECR_REGISTRY"
@@ -357,7 +357,7 @@ Each script ≤ 200 lines, uses `set -euo pipefail`, sources the shared library.
 ### `precheck.sh` (~5 sec)
 
 - `aws sts get-caller-identity` succeeds.
-- Region is expected (`us-west-2` or configured).
+- Region is expected (`us-east-1` or configured).
 - Required CLI tools present: `terraform`, `kubectl`, `helm`, `skopeo`, `jq`, `gh`, `aws`. Fails loudly with install hints.
 - GHCR images for target SHA exist (`docker manifest inspect`).
 

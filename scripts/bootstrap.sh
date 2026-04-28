@@ -6,7 +6,7 @@
 
 log "running precheck..."
 GHCR_USER="$GHCR_USER" "$(dirname "$0")/precheck.sh"
-SHA="$(gh api "repos/${GHCR_USER}/$(basename "$REPO_ROOT")/commits/main" --jq .sha)"
+SHA="$(gh api "repos/{owner}/{repo}/commits/master" --jq .sha)"
 
 log "terraform apply (VPC, EKS, ECR, Secrets Manager, IRSA)..."
 (

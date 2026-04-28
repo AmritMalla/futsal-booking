@@ -1,7 +1,7 @@
 variable "region" {
   description = "AWS region for the sandbox deployment."
   type        = string
-  default     = "us-west-2"
+  default     = "us-east-1"
 }
 
 variable "cluster_version" {
@@ -25,7 +25,7 @@ variable "node_desired_size" {
 variable "owner_tag" {
   description = "Human-readable owner tag for created resources."
   type        = string
-  default     = "amrit"
+  default     = "amt"
 }
 
 variable "letsencrypt_email" {

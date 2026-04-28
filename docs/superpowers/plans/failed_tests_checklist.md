@@ -31,6 +31,22 @@ Tracks test failures and unresolved issues from the EKS deployment plan that we 
 - **Local build status:** Local `npm run build` PASSED before lock regen with the previous `recharts` version. Failure only appears in Docker build with regenerated lock.
 - **Image build verification deferred:** Backend image (`futsal-backend:local`) builds successfully. Frontend image build is blocked until this is resolved.
 
+### 3. Terraform `validate` not run locally
+
+- **Files:** `deploy/terraform/*.tf`
+- **Tasks:** 4.1–4.7
+- **Symptom:** `terraform` CLI not installed on the dev workstation, so per-task `terraform validate` and `terraform fmt -check` were skipped.
+- **Likely cause:** Tooling gap — not a code issue.
+- **Fix:** Install Terraform 1.6+, then from `deploy/terraform/`: `terraform init -backend=false && terraform validate && terraform fmt -check -recursive`. CI / `precheck.sh` (Task 7.2) will also catch this when run against the sandbox.
+
+### 4. Helm `lint` not run locally
+
+- **Files:** `deploy/helm/platform/**`, `deploy/helm/futsal/**`
+- **Tasks:** 5.1, 5.2, 5.3, 6.1–6.6
+- **Symptom:** `helm` CLI not installed on the dev workstation, so `helm dependency update` and `helm lint` were skipped per task.
+- **Likely cause:** Tooling gap — not a chart issue.
+- **Fix:** Install Helm 3.14+, then from each chart dir: `helm dependency update && helm lint . --set …`. `precheck.sh` (Task 7.2) requires `helm` on PATH and will catch this when run before bootstrap.
+
 ## Resolved (kept here as audit trail)
 
 _(none yet)_
