@@ -43,7 +43,7 @@ frontend:
 
 uploads:
   size: 2Gi
-  storageClass: gp3
+  storageClass: gp2
 
 serviceMonitor:
   enabled: true

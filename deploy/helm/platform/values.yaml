@@ -1,6 +1,9 @@
 # Values passed from bootstrap.sh via --set or --set-file:
 #   esoRoleArn, lettsencryptEmail, region, grafanaAdminSecretExists (bool).
 
+bootstrap:
+  createCustomResources: true
+
 ingress-nginx:
   controller:
     service:
@@ -12,11 +15,14 @@ ingress-nginx:
       enabled: true
 
 cert-manager:
-  installCRDs: true
+  enabled: false
+  crds:
+    enabled: true
   prometheus:
     enabled: false
 
 external-secrets:
+  enabled: false
   installCRDs: true
   # ESO's SA lands in the release namespace (platform). IRSA trust in Terraform
   # is pinned to `system:serviceaccount:platform:external-secrets`.
@@ -27,6 +33,10 @@ external-secrets:
       eks.amazonaws.com/role-arn: OVERRIDE_AT_INSTALL
 
 postgresql:
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: 16.4.0-debian-12-r14
   architecture: standalone
   auth:
     existingSecret: futsal-backend-db
@@ -39,19 +49,20 @@ postgresql:
     persistence:
       enabled: true
       size: 8Gi
-      storageClass: gp3
+      storageClass: gp2
     resources:
       requests: { cpu: 250m, memory: 512Mi }
       limits: { cpu: 1000m, memory: 1Gi }
 
 kube-prometheus-stack:
+  enabled: false
   alertmanager:
     enabled: true
     alertmanagerSpec:
       storage:
         volumeClaimTemplate:
           spec:
-            storageClassName: gp3
+            storageClassName: gp2
             accessModes: ["ReadWriteOnce"]
             resources: { requests: { storage: 1Gi } }
   prometheus:
@@ -74,6 +85,7 @@ kube-prometheus-stack:
 loki-stack:
   loki:
     enabled: true
+    isDefault: false
     persistence:
       enabled: false
   promtail:

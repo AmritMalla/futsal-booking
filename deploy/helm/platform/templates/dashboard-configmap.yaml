@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: futsal-backend-dashboard
-  namespace: ops
+  namespace: platform
   labels:
     grafana_dashboard: "1"
 data:

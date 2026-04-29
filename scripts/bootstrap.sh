@@ -49,18 +49,94 @@ aws secretsmanager put-secret-value --secret-id "$SECRET_JWT" --secret-string "$
 aws secretsmanager put-secret-value --secret-id "$SECRET_SMTP" --secret-string '{"host":"","port":"587","username":"","password":""}' >/dev/null
 aws secretsmanager put-secret-value --secret-id "$SECRET_GRAFANA" --secret-string "$(jq -n --arg u admin --arg p "$GRAFANA_PASSWORD" '{username:$u,password:$p}')" >/dev/null
 
-log "helm dependency update and install platform..."
-(
-  cd "$REPO_ROOT/deploy/helm/platform"
-  helm dependency build
-  helm upgrade --install platform . \
-    --namespace platform \
-    --create-namespace \
-    --wait --timeout 10m \
-    --set region="$REGION" \
-    --set letsencryptEmail="$LETSENCRYPT_EMAIL" \
-    --set "external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=$ESO_ROLE_ARN"
-)
+log "helm dependency build (platform)..."
+(cd "$REPO_ROOT/deploy/helm/platform" && helm dependency build)
+
+log "adding Helm repos for standalone operator installs..."
+helm repo add jetstack https://charts.jetstack.io >/dev/null 2>&1 || helm repo add jetstack https://charts.jetstack.io
+helm repo add external-secrets https://charts.external-secrets.io >/dev/null 2>&1 || helm repo add external-secrets https://charts.external-secrets.io
+helm repo update >/dev/null
+
+log "disabling cert-manager and external-secrets subcharts in platform release..."
+helm upgrade --install platform "$REPO_ROOT/deploy/helm/platform" \
+  --namespace platform \
+  --create-namespace \
+  --dependency-update \
+  --wait --timeout 10m \
+  --set bootstrap.createCustomResources=false \
+  --set cert-manager.enabled=false \
+  --set external-secrets.enabled=false \
+  --set kube-prometheus-stack.enabled=false \
+  --set region="$REGION" \
+  --set letsencryptEmail="$LETSENCRYPT_EMAIL" \
+  --set "external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=$ESO_ROLE_ARN"
+
+log "installing cert-manager as a standalone release..."
+helm upgrade --install platform-cert-manager jetstack/cert-manager \
+  --namespace platform \
+  --create-namespace \
+  --wait --timeout 10m \
+  --set crds.enabled=true \
+  --set prometheus.enabled=false
+
+log "installing external-secrets as a standalone release..."
+helm upgrade --install platform-external-secrets external-secrets/external-secrets \
+  --namespace platform \
+  --create-namespace \
+  --wait --timeout 10m \
+  --set installCRDs=true \
+  --set serviceAccount.name=external-secrets \
+  --set "serviceAccount.annotations.eks\.amazonaws\.com/role-arn=$ESO_ROLE_ARN"
+
+log "waiting for cert-manager and external-secrets CRDs..."
+wait_for "cert-manager ClusterIssuer CRD" 180 \
+  kubectl get crd clusterissuers.cert-manager.io
+wait_for "external-secrets CRDs" 180 \
+  bash -c 'kubectl get crd externalsecrets.external-secrets.io clustersecretstores.external-secrets.io >/dev/null'
+
+log "waiting for cert-manager and external-secrets controllers..."
+kubectl -n platform wait --for=condition=Available deployment -l app.kubernetes.io/name=cert-manager --timeout=5m
+kubectl -n platform wait --for=condition=Available deployment -l app.kubernetes.io/name=external-secrets --timeout=5m
+
+log "rebuilding platform chart dependencies before custom resources upgrade..."
+(cd "$REPO_ROOT/deploy/helm/platform" && helm dependency build)
+
+log "helm upgrade platform custom resources..."
+helm upgrade platform "$REPO_ROOT/deploy/helm/platform" \
+  --namespace platform \
+  --dependency-update \
+  --wait --timeout 10m \
+  --set bootstrap.createCustomResources=true \
+  --set cert-manager.enabled=false \
+  --set external-secrets.enabled=false \
+  --set kube-prometheus-stack.enabled=false \
+  --set region="$REGION" \
+  --set letsencryptEmail="$LETSENCRYPT_EMAIL" \
+  --set "external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=$ESO_ROLE_ARN"
+
+log "waiting for Grafana admin secret from External Secrets..."
+wait_for "grafana-admin secret" 180 \
+  kubectl -n platform get secret grafana-admin
+
+log "installing kube-prometheus-stack as a standalone release..."
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts >/dev/null 2>&1 || helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update >/dev/null
+helm upgrade --install platform-kube-prometheus-s prometheus-community/kube-prometheus-stack \
+  --namespace platform \
+  --create-namespace \
+  --wait --timeout 10m \
+  --set alertmanager.enabled=true \
+  --set "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.storageClassName=gp2" \
+  --set "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.accessModes[0]=ReadWriteOnce" \
+  --set "alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.resources.requests.storage=1Gi" \
+  --set prometheus.prometheusSpec.retention=6h \
+  --set prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues=false \
+  --set grafana.admin.existingSecret=grafana-admin \
+  --set grafana.admin.userKey=admin-user \
+  --set grafana.admin.passwordKey=admin-password \
+  --set grafana.sidecar.dashboards.enabled=true \
+  --set grafana.sidecar.dashboards.label=grafana_dashboard \
+  --set grafana.service.type=ClusterIP
 
 log "waiting for NLB hostname..."
 wait_for "ingress-nginx NLB hostname" 180 \
@@ -84,29 +160,25 @@ HOST="futsal-${NLB_IP//./-}.nip.io"
 log "public hostname: $HOST"
 
 log "mirroring images GHCR -> ECR via skopeo..."
-aws ecr get-login-password --region "$REGION" \
-  | skopeo login --username AWS --password-stdin "$ECR_REGISTRY"
+PASSWORD="$(aws ecr get-login-password --region "$REGION")"
 
-skopeo copy --all \
+skopeo copy --all --dest-creds "AWS:$PASSWORD" \
   "docker://ghcr.io/${GHCR_USER}/futsal-backend:${SHA}" \
   "docker://${ECR_BACKEND}:${SHA}"
-skopeo copy --all \
+skopeo copy --all --dest-creds "AWS:$PASSWORD" \
   "docker://ghcr.io/${GHCR_USER}/futsal-frontend:${SHA}" \
   "docker://${ECR_FRONTEND}:${SHA}"
 
 log "helm install futsal (app)..."
-(
-  cd "$REPO_ROOT/deploy/helm/futsal"
-  helm upgrade --install futsal . \
-    --namespace futsal \
-    --wait --timeout 5m \
-    --set host="$HOST" \
-    --set corsAllowedOrigins="https://$HOST" \
-    --set backend.image.repository="$ECR_BACKEND" \
-    --set backend.image.tag="$SHA" \
-    --set frontend.image.repository="$ECR_FRONTEND" \
-    --set frontend.image.tag="$SHA"
-)
+helm upgrade --install futsal "$REPO_ROOT/deploy/helm/futsal" \
+  --namespace futsal \
+  --wait --timeout 5m \
+  --set host="$HOST" \
+  --set corsAllowedOrigins="https://$HOST" \
+  --set backend.image.repository="$ECR_BACKEND" \
+  --set backend.image.tag="$SHA" \
+  --set frontend.image.repository="$ECR_FRONTEND" \
+  --set frontend.image.tag="$SHA"
 
 log "waiting for Let's Encrypt certificate..."
 wait_for "certificate ready" 300 \
