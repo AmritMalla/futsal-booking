@@ -17,7 +17,7 @@
 - Shell scripts: `shellcheck`.
 - End-to-end: only runnable against a live sandbox via `scripts/verify.sh`.
 
-**Placeholder convention:** `<GHCR_USER>` = GitHub username/org of this repo (resolved at deploy time, configured in `deploy/terraform/terraform.tfvars`). `<REGION>` defaults to `us-east-1` but is a variable.
+**Placeholder convention:** `<GHCR_USER>` = GitHub username/org of this repo (resolved at deploy time, configured in `infra/terraform/terraform.tfvars`). `<REGION>` defaults to `us-east-1` but is a variable.
 
 ---
 
@@ -600,18 +600,18 @@ This removes the need for an image-pull secret at skopeo time.
 
 ## Phase 4 — Terraform Infrastructure
 
-All files live under `deploy/terraform/`. Resource names are prefixed `futsal-sandbox-` for identification in a shared sandbox.
+All files live under `infra/terraform/`. Resource names are prefixed `futsal-sandbox-` for identification in a shared sandbox.
 
 ### Task 4.1: Terraform skeleton (providers, versions, variables)
 
 **Files:**
-- Create: `deploy/terraform/versions.tf`
-- Create: `deploy/terraform/main.tf`
-- Create: `deploy/terraform/variables.tf`
-- Create: `deploy/terraform/terraform.tfvars.example`
-- Create: `deploy/terraform/.gitignore`
+- Create: `infra/terraform/versions.tf`
+- Create: `infra/terraform/main.tf`
+- Create: `infra/terraform/variables.tf`
+- Create: `infra/terraform/terraform.tfvars.example`
+- Create: `infra/terraform/.gitignore`
 
-- [ ] **Step 1: Create `deploy/terraform/versions.tf`**
+- [ ] **Step 1: Create `infra/terraform/versions.tf`**
 
 ```hcl
 terraform {
@@ -630,7 +630,7 @@ terraform {
 }
 ```
 
-- [ ] **Step 2: Create `deploy/terraform/main.tf`**
+- [ ] **Step 2: Create `infra/terraform/main.tf`**
 
 ```hcl
 provider "aws" {
@@ -656,7 +656,7 @@ locals {
 }
 ```
 
-- [ ] **Step 3: Create `deploy/terraform/variables.tf`**
+- [ ] **Step 3: Create `infra/terraform/variables.tf`**
 
 ```hcl
 variable "region" {
@@ -695,7 +695,7 @@ variable "letsencrypt_email" {
 }
 ```
 
-- [ ] **Step 4: Create `deploy/terraform/terraform.tfvars.example`**
+- [ ] **Step 4: Create `infra/terraform/terraform.tfvars.example`**
 
 ```hcl
 region             = "us-east-1"
@@ -706,7 +706,7 @@ owner_tag          = "your-name"
 letsencrypt_email  = "you@example.com"
 ```
 
-- [ ] **Step 5: Create `deploy/terraform/.gitignore`**
+- [ ] **Step 5: Create `infra/terraform/.gitignore`**
 
 ```
 *.tfstate
@@ -720,7 +720,7 @@ crash.log
 - [ ] **Step 6: Validate**
 
 ```bash
-cd deploy/terraform
+cd infra/terraform
 terraform fmt -check -recursive
 terraform init -backend=false
 terraform validate
@@ -731,16 +731,16 @@ Expected: all three commands exit 0. `terraform validate` prints `Success! The c
 - [ ] **Step 7: Commit**
 
 ```bash
-git add deploy/terraform/versions.tf deploy/terraform/main.tf deploy/terraform/variables.tf deploy/terraform/terraform.tfvars.example deploy/terraform/.gitignore
+git add infra/terraform/versions.tf infra/terraform/main.tf infra/terraform/variables.tf infra/terraform/terraform.tfvars.example infra/terraform/.gitignore
 git commit -m "feat(infra): terraform skeleton (providers, versions, variables)"
 ```
 
 ### Task 4.2: VPC module
 
 **Files:**
-- Create: `deploy/terraform/vpc.tf`
+- Create: `infra/terraform/vpc.tf`
 
-- [ ] **Step 1: Write `deploy/terraform/vpc.tf`**
+- [ ] **Step 1: Write `infra/terraform/vpc.tf`**
 
 ```hcl
 module "vpc" {
@@ -771,7 +771,7 @@ module "vpc" {
 - [ ] **Step 2: Validate**
 
 ```bash
-cd deploy/terraform
+cd infra/terraform
 terraform init -backend=false -upgrade
 terraform validate
 terraform fmt -check
@@ -782,16 +782,16 @@ Expected: `Success!`
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/terraform/vpc.tf
+git add infra/terraform/vpc.tf
 git commit -m "feat(infra): VPC with public + private subnets across 2 AZs (single NAT)"
 ```
 
 ### Task 4.3: EKS cluster + managed node group
 
 **Files:**
-- Create: `deploy/terraform/eks.tf`
+- Create: `infra/terraform/eks.tf`
 
-- [ ] **Step 1: Write `deploy/terraform/eks.tf`**
+- [ ] **Step 1: Write `infra/terraform/eks.tf`**
 
 ```hcl
 module "eks" {
@@ -847,16 +847,16 @@ Expected: `Success!`
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/terraform/eks.tf
+git add infra/terraform/eks.tf
 git commit -m "feat(infra): EKS cluster + managed node group (2x t3.large, EBS CSI addon)"
 ```
 
 ### Task 4.4: ECR repositories
 
 **Files:**
-- Create: `deploy/terraform/ecr.tf`
+- Create: `infra/terraform/ecr.tf`
 
-- [ ] **Step 1: Write `deploy/terraform/ecr.tf`**
+- [ ] **Step 1: Write `infra/terraform/ecr.tf`**
 
 ```hcl
 locals {
@@ -908,16 +908,16 @@ terraform fmt -check
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/terraform/ecr.tf
+git add infra/terraform/ecr.tf
 git commit -m "feat(infra): ECR repos for backend + frontend (immutable tags, scan-on-push)"
 ```
 
 ### Task 4.5: Secrets Manager containers
 
 **Files:**
-- Create: `deploy/terraform/secrets.tf`
+- Create: `infra/terraform/secrets.tf`
 
-- [ ] **Step 1: Write `deploy/terraform/secrets.tf`**
+- [ ] **Step 1: Write `infra/terraform/secrets.tf`**
 
 Container-only — values are populated by `bootstrap.sh`. `recovery_window_in_days = 0` lets re-runs destroy-and-recreate instantly (sandbox is ephemeral; recovery windows are pointless).
 
@@ -957,16 +957,16 @@ terraform fmt -check
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/terraform/secrets.tf
+git add infra/terraform/secrets.tf
 git commit -m "feat(infra): Secrets Manager containers for db, jwt, smtp, grafana"
 ```
 
 ### Task 4.6: IRSA role for External Secrets Operator
 
 **Files:**
-- Create: `deploy/terraform/iam.tf`
+- Create: `infra/terraform/iam.tf`
 
-- [ ] **Step 1: Write `deploy/terraform/iam.tf`**
+- [ ] **Step 1: Write `infra/terraform/iam.tf`**
 
 ```hcl
 data "aws_caller_identity" "current" {}
@@ -1034,16 +1034,16 @@ terraform fmt -check
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/terraform/iam.tf
+git add infra/terraform/iam.tf
 git commit -m "feat(infra): IRSA role for External Secrets Operator with scoped SM read policy"
 ```
 
 ### Task 4.7: Outputs
 
 **Files:**
-- Create: `deploy/terraform/outputs.tf`
+- Create: `infra/terraform/outputs.tf`
 
-- [ ] **Step 1: Write `deploy/terraform/outputs.tf`**
+- [ ] **Step 1: Write `infra/terraform/outputs.tf`**
 
 ```hcl
 output "region" {
@@ -1117,7 +1117,7 @@ Expected: `Success!` (cannot `plan` without real AWS creds; validation is the gu
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/terraform/outputs.tf
+git add infra/terraform/outputs.tf
 git commit -m "feat(infra): terraform outputs (cluster, ecr, secrets, eso role)"
 ```
 
@@ -1128,11 +1128,11 @@ git commit -m "feat(infra): terraform outputs (cluster, ecr, secrets, eso role)"
 ### Task 5.1: Platform chart skeleton with dependencies
 
 **Files:**
-- Create: `deploy/helm/platform/Chart.yaml`
-- Create: `deploy/helm/platform/values.yaml`
-- Create: `deploy/helm/platform/.helmignore`
+- Create: `infra/helm/platform/Chart.yaml`
+- Create: `infra/helm/platform/values.yaml`
+- Create: `infra/helm/platform/.helmignore`
 
-- [ ] **Step 1: Create `deploy/helm/platform/.helmignore`**
+- [ ] **Step 1: Create `infra/helm/platform/.helmignore`**
 
 ```
 .DS_Store
@@ -1141,7 +1141,7 @@ git commit -m "feat(infra): terraform outputs (cluster, ecr, secrets, eso role)"
 *.swp
 ```
 
-- [ ] **Step 2: Create `deploy/helm/platform/Chart.yaml`**
+- [ ] **Step 2: Create `infra/helm/platform/Chart.yaml`**
 
 ```yaml
 apiVersion: v2
@@ -1172,7 +1172,7 @@ dependencies:
     repository: https://grafana.github.io/helm-charts
 ```
 
-- [ ] **Step 3: Create `deploy/helm/platform/values.yaml`**
+- [ ] **Step 3: Create `infra/helm/platform/values.yaml`**
 
 ```yaml
 # Values passed from bootstrap.sh via --set or --set-file:
@@ -1260,7 +1260,7 @@ loki-stack:
 - [ ] **Step 4: Pull chart dependencies and lint**
 
 ```bash
-cd deploy/helm/platform
+cd infra/helm/platform
 helm dependency update
 helm lint .
 ```
@@ -1272,28 +1272,28 @@ Expected: `1 chart(s) linted, 0 chart(s) failed`.
 ```bash
 # Note: charts/ directory is pulled, add to .gitignore
 cd ../../../
-cat >> deploy/helm/platform/.helmignore <<EOF
+cat >> infra/helm/platform/.helmignore <<EOF
 charts/
 Chart.lock
 EOF
-echo "deploy/helm/platform/charts/" >> .gitignore
-echo "deploy/helm/platform/Chart.lock" >> .gitignore
+echo "infra/helm/platform/charts/" >> .gitignore
+echo "infra/helm/platform/Chart.lock" >> .gitignore
 
-git add deploy/helm/platform/Chart.yaml deploy/helm/platform/values.yaml deploy/helm/platform/.helmignore .gitignore
+git add infra/helm/platform/Chart.yaml infra/helm/platform/values.yaml infra/helm/platform/.helmignore .gitignore
 git commit -m "feat(helm): platform chart skeleton with pinned upstream dependencies"
 ```
 
 ### Task 5.2: Platform templates — namespaces, ClusterIssuer, ClusterSecretStore, Grafana admin
 
 **Files:**
-- Create: `deploy/helm/platform/templates/namespaces.yaml`
-- Create: `deploy/helm/platform/templates/cluster-issuer.yaml`
-- Create: `deploy/helm/platform/templates/cluster-secret-store.yaml`
-- Create: `deploy/helm/platform/templates/grafana-admin-externalsecret.yaml`
-- Create: `deploy/helm/platform/templates/postgres-db-externalsecret.yaml`
-- Create: `deploy/helm/platform/templates/NOTES.txt`
+- Create: `infra/helm/platform/templates/namespaces.yaml`
+- Create: `infra/helm/platform/templates/cluster-issuer.yaml`
+- Create: `infra/helm/platform/templates/cluster-secret-store.yaml`
+- Create: `infra/helm/platform/templates/grafana-admin-externalsecret.yaml`
+- Create: `infra/helm/platform/templates/postgres-db-externalsecret.yaml`
+- Create: `infra/helm/platform/templates/NOTES.txt`
 
-- [ ] **Step 1: Create `deploy/helm/platform/templates/namespaces.yaml`**
+- [ ] **Step 1: Create `infra/helm/platform/templates/namespaces.yaml`**
 
 ```yaml
 apiVersion: v1
@@ -1307,7 +1307,7 @@ metadata:
   name: ops
 ```
 
-- [ ] **Step 2: Create `deploy/helm/platform/templates/cluster-issuer.yaml`**
+- [ ] **Step 2: Create `infra/helm/platform/templates/cluster-issuer.yaml`**
 
 ```yaml
 apiVersion: cert-manager.io/v1
@@ -1341,7 +1341,7 @@ spec:
             class: nginx
 ```
 
-- [ ] **Step 3: Create `deploy/helm/platform/templates/cluster-secret-store.yaml`**
+- [ ] **Step 3: Create `infra/helm/platform/templates/cluster-secret-store.yaml`**
 
 ```yaml
 apiVersion: external-secrets.io/v1beta1
@@ -1362,7 +1362,7 @@ spec:
 
 - [ ] **Step 4: Create the Postgres DB ExternalSecret**
 
-`deploy/helm/platform/templates/postgres-db-externalsecret.yaml`:
+`infra/helm/platform/templates/postgres-db-externalsecret.yaml`:
 
 ```yaml
 apiVersion: external-secrets.io/v1beta1
@@ -1391,7 +1391,7 @@ spec:
 
 - [ ] **Step 5: Create the Grafana admin ExternalSecret**
 
-`deploy/helm/platform/templates/grafana-admin-externalsecret.yaml`:
+`infra/helm/platform/templates/grafana-admin-externalsecret.yaml`:
 
 ```yaml
 apiVersion: external-secrets.io/v1beta1
@@ -1418,7 +1418,7 @@ spec:
         property: password
 ```
 
-- [ ] **Step 6: Create `deploy/helm/platform/templates/NOTES.txt`**
+- [ ] **Step 6: Create `infra/helm/platform/templates/NOTES.txt`**
 
 ```
 Platform chart installed. Next steps:
@@ -1431,7 +1431,7 @@ Platform chart installed. Next steps:
 - [ ] **Step 7: Lint and template-render**
 
 ```bash
-cd deploy/helm/platform
+cd infra/helm/platform
 helm lint . \
   --set region=us-east-1 \
   --set letsencryptEmail=test@example.com \
@@ -1452,19 +1452,19 @@ Expected: lint passes, render produces thousands of lines. (Full `kubectl --dry-
 - [ ] **Step 8: Commit**
 
 ```bash
-git add deploy/helm/platform/templates/
+git add infra/helm/platform/templates/
 git commit -m "feat(helm): platform templates (namespaces, ClusterIssuer, ClusterSecretStore, ExternalSecrets)"
 ```
 
 ### Task 5.3: Backend Grafana dashboard (JSON)
 
 **Files:**
-- Create: `deploy/helm/platform/dashboards/futsal-backend-overview.json`
-- Create: `deploy/helm/platform/templates/dashboard-configmap.yaml`
+- Create: `infra/helm/platform/dashboards/futsal-backend-overview.json`
+- Create: `infra/helm/platform/templates/dashboard-configmap.yaml`
 
 - [ ] **Step 1: Save the dashboard JSON**
 
-Create `deploy/helm/platform/dashboards/futsal-backend-overview.json`:
+Create `infra/helm/platform/dashboards/futsal-backend-overview.json`:
 
 ```json
 {
@@ -1513,7 +1513,7 @@ Create `deploy/helm/platform/dashboards/futsal-backend-overview.json`:
 
 - [ ] **Step 2: Wrap dashboard in a ConfigMap that the Grafana sidecar picks up**
 
-`deploy/helm/platform/templates/dashboard-configmap.yaml`:
+`infra/helm/platform/templates/dashboard-configmap.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -1531,7 +1531,7 @@ data:
 - [ ] **Step 3: Lint and render**
 
 ```bash
-cd deploy/helm/platform
+cd infra/helm/platform
 helm lint . \
   --set region=us-east-1 --set letsencryptEmail=test@example.com \
   --set 'external-secrets.serviceAccount.annotations.eks\.amazonaws\.com/role-arn=arn:aws:iam::123456789012:role/fake'
@@ -1542,7 +1542,7 @@ Expected: lint passes.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add deploy/helm/platform/dashboards/futsal-backend-overview.json deploy/helm/platform/templates/dashboard-configmap.yaml
+git add infra/helm/platform/dashboards/futsal-backend-overview.json infra/helm/platform/templates/dashboard-configmap.yaml
 git commit -m "feat(helm): Grafana dashboard for futsal backend (request rate, p95, heap, db pool)"
 ```
 
@@ -1555,12 +1555,12 @@ All templates apply labels per `app.kubernetes.io/*` convention via a `_helpers.
 ### Task 6.1: App chart skeleton + helpers
 
 **Files:**
-- Create: `deploy/helm/futsal/Chart.yaml`
-- Create: `deploy/helm/futsal/values.yaml`
-- Create: `deploy/helm/futsal/templates/_helpers.tpl`
-- Create: `deploy/helm/futsal/.helmignore`
+- Create: `infra/helm/futsal/Chart.yaml`
+- Create: `infra/helm/futsal/values.yaml`
+- Create: `infra/helm/futsal/templates/_helpers.tpl`
+- Create: `infra/helm/futsal/.helmignore`
 
-- [ ] **Step 1: Create `deploy/helm/futsal/Chart.yaml`**
+- [ ] **Step 1: Create `infra/helm/futsal/Chart.yaml`**
 
 ```yaml
 apiVersion: v2
@@ -1571,14 +1571,14 @@ version: 0.1.0
 appVersion: "0.0.1-SNAPSHOT"
 ```
 
-- [ ] **Step 2: Create `deploy/helm/futsal/.helmignore`**
+- [ ] **Step 2: Create `infra/helm/futsal/.helmignore`**
 
 ```
 .DS_Store
 .git/
 ```
 
-- [ ] **Step 3: Create `deploy/helm/futsal/values.yaml`**
+- [ ] **Step 3: Create `infra/helm/futsal/values.yaml`**
 
 ```yaml
 # Overridden at install time by bootstrap.sh:
@@ -1632,7 +1632,7 @@ serviceMonitor:
   enabled: true
 ```
 
-- [ ] **Step 4: Create `deploy/helm/futsal/templates/_helpers.tpl`**
+- [ ] **Step 4: Create `infra/helm/futsal/templates/_helpers.tpl`**
 
 ```tpl
 {{- define "futsal.labels" -}}
@@ -1670,7 +1670,7 @@ app.kubernetes.io/component: frontend
 - [ ] **Step 5: Lint**
 
 ```bash
-cd deploy/helm/futsal
+cd infra/helm/futsal
 helm lint . --set backend.image.repository=example --set backend.image.tag=abc --set frontend.image.repository=example --set frontend.image.tag=abc --set host=test.nip.io --set corsAllowedOrigins=https://test.nip.io
 ```
 
@@ -1679,14 +1679,14 @@ Expected: lint passes (warnings about OVERRIDE values are fine; overrides happen
 - [ ] **Step 6: Commit**
 
 ```bash
-git add deploy/helm/futsal/Chart.yaml deploy/helm/futsal/values.yaml deploy/helm/futsal/templates/_helpers.tpl deploy/helm/futsal/.helmignore
+git add infra/helm/futsal/Chart.yaml infra/helm/futsal/values.yaml infra/helm/futsal/templates/_helpers.tpl infra/helm/futsal/.helmignore
 git commit -m "feat(helm): futsal app chart skeleton with helpers"
 ```
 
 ### Task 6.2: Backend ExternalSecret (JWT + SMTP)
 
 **Files:**
-- Create: `deploy/helm/futsal/templates/backend-externalsecret.yaml`
+- Create: `infra/helm/futsal/templates/backend-externalsecret.yaml`
 
 - [ ] **Step 1: Write the template**
 
@@ -1721,7 +1721,7 @@ spec:
 - [ ] **Step 2: Lint**
 
 ```bash
-cd deploy/helm/futsal
+cd infra/helm/futsal
 helm lint . --set backend.image.repository=example --set backend.image.tag=abc --set frontend.image.repository=example --set frontend.image.tag=abc --set host=test.nip.io --set corsAllowedOrigins=https://test.nip.io
 ```
 
@@ -1730,14 +1730,14 @@ Expected: pass.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/helm/futsal/templates/backend-externalsecret.yaml
+git add infra/helm/futsal/templates/backend-externalsecret.yaml
 git commit -m "feat(helm): futsal backend ExternalSecret (jwt + smtp)"
 ```
 
 ### Task 6.3: Uploads PVC
 
 **Files:**
-- Create: `deploy/helm/futsal/templates/uploads-pvc.yaml`
+- Create: `infra/helm/futsal/templates/uploads-pvc.yaml`
 
 - [ ] **Step 1: Write the template**
 
@@ -1765,18 +1765,18 @@ helm lint . --set backend.image.repository=example --set backend.image.tag=abc -
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/helm/futsal/templates/uploads-pvc.yaml
+git add infra/helm/futsal/templates/uploads-pvc.yaml
 git commit -m "feat(helm): PVC for futsal uploads directory"
 ```
 
 ### Task 6.4: Backend Deployment + Service + HPA + PDB + ServiceMonitor
 
 **Files:**
-- Create: `deploy/helm/futsal/templates/backend-deployment.yaml`
-- Create: `deploy/helm/futsal/templates/backend-service.yaml`
-- Create: `deploy/helm/futsal/templates/backend-hpa.yaml`
-- Create: `deploy/helm/futsal/templates/backend-pdb.yaml`
-- Create: `deploy/helm/futsal/templates/backend-servicemonitor.yaml`
+- Create: `infra/helm/futsal/templates/backend-deployment.yaml`
+- Create: `infra/helm/futsal/templates/backend-service.yaml`
+- Create: `infra/helm/futsal/templates/backend-hpa.yaml`
+- Create: `infra/helm/futsal/templates/backend-pdb.yaml`
+- Create: `infra/helm/futsal/templates/backend-servicemonitor.yaml`
 
 - [ ] **Step 1: `backend-deployment.yaml`**
 
@@ -1952,7 +1952,7 @@ spec:
 - [ ] **Step 6: Lint and render**
 
 ```bash
-cd deploy/helm/futsal
+cd infra/helm/futsal
 helm lint . --set backend.image.repository=example --set backend.image.tag=abc --set frontend.image.repository=example --set frontend.image.tag=abc --set host=test.nip.io --set corsAllowedOrigins=https://test.nip.io
 
 helm template futsal . -n futsal \
@@ -1970,15 +1970,15 @@ Expected: lint passes; render shows Deployment/Service/HPA/PDB/ServiceMonitor wi
 - [ ] **Step 7: Commit**
 
 ```bash
-git add deploy/helm/futsal/templates/backend-deployment.yaml deploy/helm/futsal/templates/backend-service.yaml deploy/helm/futsal/templates/backend-hpa.yaml deploy/helm/futsal/templates/backend-pdb.yaml deploy/helm/futsal/templates/backend-servicemonitor.yaml
+git add infra/helm/futsal/templates/backend-deployment.yaml infra/helm/futsal/templates/backend-service.yaml infra/helm/futsal/templates/backend-hpa.yaml infra/helm/futsal/templates/backend-pdb.yaml infra/helm/futsal/templates/backend-servicemonitor.yaml
 git commit -m "feat(helm): backend Deployment, Service, HPA, PDB, ServiceMonitor"
 ```
 
 ### Task 6.5: Frontend Deployment + Service
 
 **Files:**
-- Create: `deploy/helm/futsal/templates/frontend-deployment.yaml`
-- Create: `deploy/helm/futsal/templates/frontend-service.yaml`
+- Create: `infra/helm/futsal/templates/frontend-deployment.yaml`
+- Create: `infra/helm/futsal/templates/frontend-service.yaml`
 
 - [ ] **Step 1: `frontend-deployment.yaml`**
 
@@ -2077,21 +2077,21 @@ spec:
 - [ ] **Step 3: Lint**
 
 ```bash
-cd deploy/helm/futsal
+cd infra/helm/futsal
 helm lint . --set backend.image.repository=example --set backend.image.tag=abc --set frontend.image.repository=example --set frontend.image.tag=abc --set host=test.nip.io --set corsAllowedOrigins=https://test.nip.io
 ```
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add deploy/helm/futsal/templates/frontend-deployment.yaml deploy/helm/futsal/templates/frontend-service.yaml
+git add infra/helm/futsal/templates/frontend-deployment.yaml infra/helm/futsal/templates/frontend-service.yaml
 git commit -m "feat(helm): frontend Deployment + Service (unprivileged nginx, read-only rootfs)"
 ```
 
 ### Task 6.6: Ingress (single host, TLS, path-routed)
 
 **Files:**
-- Create: `deploy/helm/futsal/templates/ingress.yaml`
+- Create: `infra/helm/futsal/templates/ingress.yaml`
 
 - [ ] **Step 1: Write the template**
 
@@ -2140,7 +2140,7 @@ spec:
 - [ ] **Step 2: Lint and render**
 
 ```bash
-cd deploy/helm/futsal
+cd infra/helm/futsal
 helm lint . --set backend.image.repository=example --set backend.image.tag=abc --set frontend.image.repository=example --set frontend.image.tag=abc --set host=test.nip.io --set corsAllowedOrigins=https://test.nip.io
 helm template futsal . -n futsal \
   --set backend.image.repository=example --set backend.image.tag=abc \
@@ -2154,7 +2154,7 @@ Expected: output contains `host: futsal-1-2-3-4.nip.io`.
 - [ ] **Step 3: Commit**
 
 ```bash
-git add deploy/helm/futsal/templates/ingress.yaml
+git add infra/helm/futsal/templates/ingress.yaml
 git commit -m "feat(helm): futsal Ingress with TLS + path routing (/ → frontend, /api + /actuator → backend)"
 ```
 
@@ -2199,9 +2199,9 @@ require_cmd() {
   done
 }
 
-# tfout <output_name>  — read a terraform output from deploy/terraform/.
+# tfout <output_name>  — read a terraform output from infra/terraform/.
 tfout() {
-  (cd "$REPO_ROOT/deploy/terraform" && terraform output -raw "$1")
+  (cd "$REPO_ROOT/infra/terraform" && terraform output -raw "$1")
 }
 
 # Wait for a kubectl condition with a timeout (seconds).
@@ -2304,8 +2304,8 @@ SHA="$(gh api "repos/{owner}/{repo}/commits/master" --jq .sha)"
 
 log "terraform apply (VPC, EKS, ECR, Secrets Manager, IRSA)..."
 (
-  cd "$REPO_ROOT/deploy/terraform"
-  [ -f terraform.tfvars ] || fail "deploy/terraform/terraform.tfvars missing — copy terraform.tfvars.example"
+  cd "$REPO_ROOT/infra/terraform"
+  [ -f terraform.tfvars ] || fail "infra/terraform/terraform.tfvars missing — copy terraform.tfvars.example"
   terraform init -upgrade
   terraform apply -auto-approve
 )
@@ -2316,7 +2316,7 @@ ECR_REGISTRY="$(tfout ecr_registry)"
 ECR_BACKEND="$(tfout ecr_backend_url)"
 ECR_FRONTEND="$(tfout ecr_frontend_url)"
 ESO_ROLE_ARN="$(tfout eso_role_arn)"
-LETSENCRYPT_EMAIL="$(grep -E '^letsencrypt_email' "$REPO_ROOT/deploy/terraform/terraform.tfvars" | awk -F'"' '{print $2}')"
+LETSENCRYPT_EMAIL="$(grep -E '^letsencrypt_email' "$REPO_ROOT/infra/terraform/terraform.tfvars" | awk -F'"' '{print $2}')"
 
 log "updating kubeconfig..."
 aws eks update-kubeconfig --region "$REGION" --name "$CLUSTER" >/dev/null
@@ -2337,10 +2337,10 @@ aws secretsmanager put-secret-value --secret-id /futsal/sandbox/grafana \
   --secret-string "$(jq -n --arg u admin --arg p "$GRAFANA_PASSWORD" '{username:$u,password:$p}')" >/dev/null
 
 log "helm dependency update (platform)..."
-(cd "$REPO_ROOT/deploy/helm/platform" && helm dependency update)
+(cd "$REPO_ROOT/infra/helm/platform" && helm dependency update)
 
 log "helm install platform..."
-helm upgrade --install platform "$REPO_ROOT/deploy/helm/platform" \
+helm upgrade --install platform "$REPO_ROOT/infra/helm/platform" \
   --namespace platform \
   --create-namespace \
   --wait --timeout 10m \
@@ -2381,7 +2381,7 @@ skopeo copy --all \
   "docker://${ECR_FRONTEND}:${SHA}"
 
 log "helm install futsal (app)..."
-helm upgrade --install futsal "$REPO_ROOT/deploy/helm/futsal" \
+helm upgrade --install futsal "$REPO_ROOT/infra/helm/futsal" \
   --namespace futsal \
   --wait --timeout 5m \
   --set host="$HOST" \
@@ -2504,7 +2504,7 @@ for _ in {1..24}; do
 done
 
 log "teardown: terraform destroy..."
-(cd "$REPO_ROOT/deploy/terraform" && terraform destroy -auto-approve)
+(cd "$REPO_ROOT/infra/terraform" && terraform destroy -auto-approve)
 
 log "teardown: done. (sandbox auto-cleanup will handle any leftovers.)"
 ```
@@ -2530,9 +2530,9 @@ git commit -m "feat(scripts): teardown.sh — helm uninstall + terraform destroy
 ### Task 8.1: Deployment-specific README
 
 **Files:**
-- Create: `deploy/README.md`
+- Create: `infra/README.md`
 
-- [ ] **Step 1: Write `deploy/README.md`**
+- [ ] **Step 1: Write `infra/README.md`**
 
 ```markdown
 # AWS EKS Sandbox Deployment
@@ -2549,8 +2549,8 @@ Script-driven deployment of the futsal arena app to AWS EKS, tuned for a 4-hour 
 ## Configuration
 
 ```bash
-cp deploy/terraform/terraform.tfvars.example deploy/terraform/terraform.tfvars
-$EDITOR deploy/terraform/terraform.tfvars   # set letsencrypt_email at minimum
+cp infra/terraform/terraform.tfvars.example infra/terraform/terraform.tfvars
+$EDITOR infra/terraform/terraform.tfvars   # set letsencrypt_email at minimum
 ```
 
 ## Running
@@ -2586,7 +2586,7 @@ See the root `README.md` for the Sandbox-vs-Production mapping table.
 - [ ] **Step 2: Commit**
 
 ```bash
-git add deploy/README.md
+git add infra/README.md
 git commit -m "docs(deploy): runbook for sandbox EKS deployment"
 ```
 
@@ -2605,7 +2605,7 @@ Append the following to the end of `README.md`:
 The project deploys to **AWS EKS** via Terraform + Helm, driven by `scripts/bootstrap.sh`. It's designed for a 4-hour Pluralsight sandbox and reaches a running public HTTPS URL in ~30 min.
 
 - Design: [docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md](docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md)
-- Runbook: [deploy/README.md](deploy/README.md)
+- Runbook: [infra/README.md](infra/README.md)
 - CI image build: [.github/workflows/image-build.yml](.github/workflows/image-build.yml)
 
 ### Architecture (sandbox)
@@ -2679,7 +2679,7 @@ This phase can only be run with an active Pluralsight sandbox. It is the real te
 
 - [ ] **Step 1: Open the Pluralsight sandbox and copy AWS credentials into the environment.**
 - [ ] **Step 2: `export GHCR_USER=<your-gh-user>`**
-- [ ] **Step 3: `cp deploy/terraform/terraform.tfvars.example deploy/terraform/terraform.tfvars` and set `letsencrypt_email`.**
+- [ ] **Step 3: `cp infra/terraform/terraform.tfvars.example infra/terraform/terraform.tfvars` and set `letsencrypt_email`.**
 - [ ] **Step 4: Run `./scripts/precheck.sh`. Expected: ok in < 10 s.**
 - [ ] **Step 5: Run `./scripts/bootstrap.sh`. Expected: completes in ≤ 35 min, prints public URL.**
 - [ ] **Step 6: Open the printed URL in a browser. Expected: frontend loads over HTTPS, login + signup work end-to-end.**

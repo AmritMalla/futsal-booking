@@ -12,8 +12,8 @@ Script-driven deployment of the futsal arena app to AWS EKS, tuned for a 4-hour 
 ## Configuration
 
 ```bash
-cp deploy/terraform/terraform.tfvars.example deploy/terraform/terraform.tfvars
-$EDITOR deploy/terraform/terraform.tfvars   # set letsencrypt_email at minimum
+cp infra/terraform/terraform.tfvars.example infra/terraform/terraform.tfvars
+$EDITOR infra/terraform/terraform.tfvars   # set letsencrypt_email at minimum
 ```
 
 ## Running

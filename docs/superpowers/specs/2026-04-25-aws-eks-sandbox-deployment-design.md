@@ -13,7 +13,7 @@
 
 - One-command bootstrap of a production-shaped stack on a fresh Pluralsight AWS sandbox in **≤ 30 min wall-clock**, leaving ≥ 3h 30m for demo, recording, and iteration.
 - Every architectural choice either *is* a production best practice or has an explicit one-line "swap to X for real prod" note.
-- Portfolio-legible: a reviewer reading `deploy/` + the README's deployment section can describe the production architecture without running anything.
+- Portfolio-legible: a reviewer reading `infra/` + the README's deployment section can describe the production architecture without running anything.
 
 ### Non-Goals
 
@@ -27,7 +27,7 @@
 1. `scripts/bootstrap.sh` on a fresh sandbox produces a working public HTTPS URL serving the frontend, with backend API reachable at `/api`.
 2. `scripts/verify.sh` runs the existing integration test suite against the deployed URL and passes.
 3. The architecture section of the README includes a diagram and a **"Sandbox vs Production" mapping table** that names every compromise.
-4. All IaC, manifests, and scripts live under `deploy/` and `scripts/`. No ad-hoc config lives only on the developer machine.
+4. All IaC, manifests, and scripts live under `infra/` and `scripts/`. No ad-hoc config lives only on the developer machine.
 
 ---
 
@@ -89,7 +89,7 @@ Browser
 ### Layout
 
 ```
-deploy/terraform/
+infra/terraform/
 ├── main.tf              # provider, backend (local state)
 ├── versions.tf          # terraform + provider version pins
 ├── variables.tf         # region, cluster_name, node_instance_type, tags
@@ -130,7 +130,7 @@ deploy/terraform/
 ### Layout
 
 ```
-deploy/helm/
+infra/helm/
 ├── platform/                  # umbrella chart for cluster-wide add-ons
 │   ├── Chart.yaml             # dependencies block lists community charts
 │   ├── values.yaml
@@ -228,7 +228,7 @@ skopeo copy --all \
   docker://ghcr.io/<user>/futsal-frontend:${SHA} \
   docker://${ECR_FRONTEND}:${SHA}
 
-helm upgrade --install futsal deploy/helm/futsal \
+helm upgrade --install futsal infra/helm/futsal \
   --set backend.image.repository=${ECR_BACKEND} \
   --set backend.image.tag=${SHA} \
   --set frontend.image.repository=${ECR_FRONTEND} \
@@ -324,7 +324,7 @@ Installed as part of the `platform` umbrella chart, in its own `ops` namespace.
 
 - Spring Boot Actuator exposes `/actuator/prometheus` (requires `micrometer-registry-prometheus` dependency).
 - A `ServiceMonitor` in the `futsal` chart tells Prometheus to scrape the backend Service at `/actuator/prometheus`.
-- One pre-provisioned Grafana dashboard: "Futsal Backend Overview" (request rate, p95 latency, JVM heap, DB pool active). Committed as JSON under `deploy/helm/platform/dashboards/` and loaded via the Grafana dashboard sidecar.
+- One pre-provisioned Grafana dashboard: "Futsal Backend Overview" (request rate, p95 latency, JVM heap, DB pool active). Committed as JSON under `infra/helm/platform/dashboards/` and loaded via the Grafana dashboard sidecar.
 
 ### Logs
 
@@ -413,7 +413,7 @@ Key properties:
 Only new/changed paths are shown:
 
 ```
-deploy/
+infra/
 ├── terraform/
 │   ├── main.tf  versions.tf  variables.tf  outputs.tf
 │   ├── vpc.tf  eks.tf  ecr.tf  secrets.tf  iam.tf  addons.tf
@@ -426,7 +426,7 @@ deploy/
 │   └── futsal/             # backend + frontend + ingress + PVC + ExternalSecret
 │       ├── Chart.yaml  values.yaml
 │       └── templates/
-└── README.md               # deploy-specific runbook
+└── README.md               # infra-specific runbook
 
 frontend/
 └── Dockerfile              # NEW: two-stage node:20 build + nginx:1.27 serve

@@ -27,9 +27,9 @@ require_cmd() {
   done
 }
 
-# tfout <output_name>  — read a terraform output from deploy/terraform/.
+# tfout <output_name>  — read a terraform output from infra/terraform/.
 tfout() {
-  (cd "$REPO_ROOT/deploy/terraform" && terraform output -raw "$1")
+  (cd "$REPO_ROOT/infra/terraform" && terraform output -raw "$1")
 }
 
 # Wait for a kubectl condition with a timeout (seconds).

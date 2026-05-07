@@ -33,15 +33,15 @@ Tracks test failures and unresolved issues from the EKS deployment plan that we 
 
 ### 3. Terraform `validate` not run locally
 
-- **Files:** `deploy/terraform/*.tf`
+- **Files:** `infra/terraform/*.tf`
 - **Tasks:** 4.1–4.7
 - **Symptom:** `terraform` CLI not installed on the dev workstation, so per-task `terraform validate` and `terraform fmt -check` were skipped.
 - **Likely cause:** Tooling gap — not a code issue.
-- **Fix:** Install Terraform 1.6+, then from `deploy/terraform/`: `terraform init -backend=false && terraform validate && terraform fmt -check -recursive`. CI / `precheck.sh` (Task 7.2) will also catch this when run against the sandbox.
+- **Fix:** Install Terraform 1.6+, then from `infra/terraform/`: `terraform init -backend=false && terraform validate && terraform fmt -check -recursive`. CI / `precheck.sh` (Task 7.2) will also catch this when run against the sandbox.
 
 ### 4. Helm `lint` not run locally
 
-- **Files:** `deploy/helm/platform/**`, `deploy/helm/futsal/**`
+- **Files:** `infra/helm/platform/**`, `infra/helm/futsal/**`
 - **Tasks:** 5.1, 5.2, 5.3, 6.1–6.6
 - **Symptom:** `helm` CLI not installed on the dev workstation, so `helm dependency update` and `helm lint` were skipped per task.
 - **Likely cause:** Tooling gap — not a chart issue.

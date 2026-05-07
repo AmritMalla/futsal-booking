@@ -188,7 +188,7 @@ The frontend uses its own environment file in [frontend/.env.example](frontend/.
 
 ## Sample Data and Demo Accounts
 
-The repository includes a large sample dataset in [src/main/resources/data.sql](src/main/resources/data.sql) with:
+The repository includes a large sample dataset in [backend/src/main/resources/data.sql](backend/src/main/resources/data.sql) with:
 
 - 25 users
 - 7 futsal companies

@@ -209,7 +209,7 @@ The project uses a **two-chart architecture**:
 ### Terraform Resources
 
 ```
-deploy/terraform/
+infra/terraform/
 ├── main.tf          → Provider config, availability zones, locals
 ├── vpc.tf           → VPC with public/private subnets across 2 AZs
 ├── eks.tf           → EKS cluster with managed node group

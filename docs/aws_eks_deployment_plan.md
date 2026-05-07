@@ -46,9 +46,9 @@ This note captures the intended production deployment direction for the futsal a
 
 ## Suggested Repo Additions
 
-- `deploy/eks/backend/`
-- `deploy/eks/frontend/`
-- `deploy/eks/base/`
+- `infra/kubernetes/backend/`
+- `infra/kubernetes/frontend/`
+- `infra/kubernetes/base/`
 - optional `helm/` chart if you prefer Helm over raw manifests
 - GitHub Actions workflow for build, push, and deploy
 
