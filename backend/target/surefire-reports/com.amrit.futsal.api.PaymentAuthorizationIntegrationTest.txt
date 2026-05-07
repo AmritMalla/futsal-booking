@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.amrit.futsal.api.PaymentAuthorizationIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.041 s -- in com.amrit.futsal.api.PaymentAuthorizationIntegrationTest

@@ -10,8 +10,8 @@ SHA="$(gh api "repos/{owner}/{repo}/commits/master" --jq .sha)"
 
 log "terraform apply (VPC, EKS, ECR, Secrets Manager, IRSA)..."
 (
-  cd "$REPO_ROOT/deploy/terraform"
-  [ -f terraform.tfvars ] || fail "deploy/terraform/terraform.tfvars missing — copy terraform.tfvars.example"
+  cd "$REPO_ROOT/infra/terraform"
+  [ -f terraform.tfvars ] || fail "infra/terraform/terraform.tfvars missing — copy terraform.tfvars.example"
   terraform init -upgrade
   terraform apply -auto-approve
 )
@@ -22,7 +22,7 @@ ECR_REGISTRY="$(tfout ecr_registry)"
 ECR_BACKEND="$(tfout ecr_backend_url)"
 ECR_FRONTEND="$(tfout ecr_frontend_url)"
 ESO_ROLE_ARN="$(tfout eso_role_arn)"
-LETSENCRYPT_EMAIL="$(grep -E '^letsencrypt_email' "$REPO_ROOT/deploy/terraform/terraform.tfvars" | awk -F'"' '{print $2}')"
+LETSENCRYPT_EMAIL="$(grep -E '^letsencrypt_email' "$REPO_ROOT/infra/terraform/terraform.tfvars" | awk -F'"' '{print $2}')"
 
 log "updating kubeconfig..."
 aws eks update-kubeconfig --region "$REGION" --name "$CLUSTER" >/dev/null
@@ -50,7 +50,7 @@ aws secretsmanager put-secret-value --secret-id "$SECRET_SMTP" --secret-string '
 aws secretsmanager put-secret-value --secret-id "$SECRET_GRAFANA" --secret-string "$(jq -n --arg u admin --arg p "$GRAFANA_PASSWORD" '{username:$u,password:$p}')" >/dev/null
 
 log "helm dependency build (platform)..."
-(cd "$REPO_ROOT/deploy/helm/platform" && helm dependency build)
+(cd "$REPO_ROOT/infra/helm/platform" && helm dependency build)
 
 log "adding Helm repos for standalone operator installs..."
 helm repo add jetstack https://charts.jetstack.io >/dev/null 2>&1 || helm repo add jetstack https://charts.jetstack.io
@@ -58,7 +58,7 @@ helm repo add external-secrets https://charts.external-secrets.io >/dev/null 2>&
 helm repo update >/dev/null
 
 log "disabling cert-manager and external-secrets subcharts in platform release..."
-helm upgrade --install platform "$REPO_ROOT/deploy/helm/platform" \
+helm upgrade --install platform "$REPO_ROOT/infra/helm/platform" \
   --namespace platform \
   --create-namespace \
   --dependency-update \
@@ -99,10 +99,10 @@ kubectl -n platform wait --for=condition=Available deployment -l app.kubernetes.
 kubectl -n platform wait --for=condition=Available deployment -l app.kubernetes.io/name=external-secrets --timeout=5m
 
 log "rebuilding platform chart dependencies before custom resources upgrade..."
-(cd "$REPO_ROOT/deploy/helm/platform" && helm dependency build)
+(cd "$REPO_ROOT/infra/helm/platform" && helm dependency build)
 
 log "helm upgrade platform custom resources..."
-helm upgrade platform "$REPO_ROOT/deploy/helm/platform" \
+helm upgrade platform "$REPO_ROOT/infra/helm/platform" \
   --namespace platform \
   --dependency-update \
   --wait --timeout 10m \
@@ -170,7 +170,7 @@ skopeo copy --all --dest-creds "AWS:$PASSWORD" \
   "docker://${ECR_FRONTEND}:${SHA}"
 
 log "helm install futsal (app)..."
-helm upgrade --install futsal "$REPO_ROOT/deploy/helm/futsal" \
+helm upgrade --install futsal "$REPO_ROOT/infra/helm/futsal" \
   --namespace futsal \
   --wait --timeout 5m \
   --set host="$HOST" \

@@ -1,0 +1,11 @@
+com\amrit\futsal\dto\OpenMatchRequest.class
+com\amrit\futsal\api\OpenMatchController.class
+com\amrit\futsal\entity\OpenMatch$SkillLevel.class
+com\amrit\futsal\dto\UpdateOpenMatchRequest.class
+com\amrit\futsal\service\AuthenticatedUserService.class
+com\amrit\futsal\service\OpenMatchService.class
+com\amrit\futsal\dto\OpenMatchResponse.class
+com\amrit\futsal\dto\ReportResponse$1.class
+com\amrit\futsal\entity\OpenMatch$OpenMatchStatus.class
+com\amrit\futsal\entity\OpenMatch.class
+com\amrit\futsal\repository\OpenMatchRepository.class

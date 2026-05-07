@@ -89,13 +89,13 @@ Existing project assets:
 
 ```text
 .
-|-- src/main/java/com/amrit/futsal      # Spring Boot backend
-|-- src/main/resources                  # application config + sample data
-|-- src/test/java                       # backend tests
-|-- frontend                            # React + TypeScript frontend
-|-- docs                                # diagrams, collection, planning docs
-|-- docker-compose.yml                  # backend + postgres local stack
-|-- Dockerfile                          # backend container image
+├── backend/            # Spring Boot backend, Dockerfile, tests
+├── frontend/           # React + TypeScript frontend
+├── infra/              # Terraform, Helm, and K8s assets
+├── docs/               # Architecture diagrams, API collections, planning docs
+├── observability/      # Grafana dashboards and monitoring configs
+├── scripts/            # Bootstrap, teardown, and utility scripts
+└── .github/workflows/  # CI/CD pipeline definitions
 ```
 
 ## Running Locally
@@ -112,6 +112,7 @@ Existing project assets:
 This starts the Spring Boot backend and PostgreSQL database.
 
 ```bash
+cd backend
 docker-compose up --build
 ```
 
@@ -129,9 +130,10 @@ http://localhost:8090/swagger-ui.html
 
 ### Option 2: Run Backend Manually
 
-1. Copy `.env.example` to `.env` and adjust values if needed.
-2. Make sure PostgreSQL is running and a database named `futsal_booking` exists.
-3. Start the backend:
+1. Go to the backend directory: `cd backend`
+2. Copy `.env.example` to `.env` and adjust values if needed.
+3. Make sure PostgreSQL is running and a database named `futsal_booking` exists.
+4. Start the backend:
 
 ```bash
 ./mvnw spring-boot:run
@@ -173,7 +175,7 @@ The frontend is configured to talk to the backend on `http://localhost:8090`.
 
 ## Environment Configuration
 
-The backend uses environment variables defined in [.env.example](.env.example).
+The backend uses environment variables defined in [backend/.env.example](backend/.env.example).
 
 Important values:
 
@@ -257,6 +259,7 @@ The active roadmap prioritizes:
 Backend test:
 
 ```powershell
+cd backend
 .\mvnw.cmd test
 ```
 
@@ -297,7 +300,7 @@ The immediate focus is Phase 5:
 The project deploys to **AWS EKS** via Terraform + Helm, driven by `scripts/bootstrap.sh`. It's designed for a 4-hour Pluralsight sandbox and reaches a running public HTTPS URL in ~30 min.
 
 - Design: [docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md](docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md)
-- Runbook: [deploy/README.md](deploy/README.md)
+- Runbook: [infra/README.md](infra/README.md)
 - CI image build: [.github/workflows/image-build.yml](.github/workflows/image-build.yml)
 
 ### Architecture (sandbox)

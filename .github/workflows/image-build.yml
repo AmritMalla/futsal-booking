@@ -30,11 +30,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Make Maven wrapper executable
-        run: chmod +x ./mvnw
-
       - name: Backend tests
-        run: ./mvnw -B test
+        working-directory: backend
+        run: |
+          chmod +x ./mvnw
+          ./mvnw -B test
 
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
@@ -69,8 +69,8 @@ jobs:
       - name: Build and push backend
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: Dockerfile
+          context: backend
+          file: backend/Dockerfile
           platforms: linux/amd64
           push: true
           tags: |

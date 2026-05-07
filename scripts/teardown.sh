@@ -15,6 +15,6 @@ for _ in {1..24}; do
 done
 
 log "teardown: terraform destroy..."
-(cd "$REPO_ROOT/deploy/terraform" && terraform destroy -auto-approve)
+(cd "$REPO_ROOT/infra/terraform" && terraform destroy -auto-approve)
 
 log "teardown: done. (sandbox auto-cleanup will handle any leftovers.)"

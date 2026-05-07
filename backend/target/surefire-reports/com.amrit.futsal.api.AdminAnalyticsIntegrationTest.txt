@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.amrit.futsal.api.AdminAnalyticsIntegrationTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 17.18 s -- in com.amrit.futsal.api.AdminAnalyticsIntegrationTest
