@@ -1,6 +1,6 @@
 # Technical Stack
 
-> A comprehensive breakdown of every technology used in the Futsal Booking System, from application code to cloud infrastructure.
+> A comprehensive breakdown of every technology used in the Futsal Arena, from application code to cloud infrastructure.
 
 ---
 

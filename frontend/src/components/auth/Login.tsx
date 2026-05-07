@@ -66,7 +66,7 @@ const Login: React.FC = () => {
             Sign In
           </Typography>
           <Typography variant="body2" align="center" color="text.secondary" sx={{ mb: 3 }}>
-            Welcome to Futsal Booking System
+            Welcome to Futsal Arena
           </Typography>
 
           {redirectReason === 'auth' && (

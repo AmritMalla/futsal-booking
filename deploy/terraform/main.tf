@@ -3,7 +3,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project     = "futsal-booking"
+      Project     = "futsal_arena"
       Environment = "sandbox"
       ManagedBy   = "terraform"
       Owner       = var.owner_tag

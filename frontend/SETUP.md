@@ -1,4 +1,4 @@
-# Futsal Booking System - Frontend Setup Guide
+# Futsal Arena - Frontend Setup Guide
 
 ## Prerequisites
 
@@ -225,4 +225,4 @@ For issues or questions:
 
 ## License
 
-This project is part of the Futsal Booking System.
+This project is part of the Futsal Arena.

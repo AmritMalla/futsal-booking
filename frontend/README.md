@@ -1,6 +1,6 @@
-# Futsal Booking System - Frontend
+# Futsal Arena - Frontend
 
-This is the React frontend for the Futsal Booking System.
+This is the React frontend for the Futsal Arena.
 
 ## Tech Stack
 

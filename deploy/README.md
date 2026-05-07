@@ -1,6 +1,6 @@
 # AWS EKS Sandbox Deployment
 
-Script-driven deployment of the futsal booking app to AWS EKS, tuned for a 4-hour Pluralsight sandbox. See the full design in [`docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md`](../docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md).
+Script-driven deployment of the futsal arena app to AWS EKS, tuned for a 4-hour Pluralsight sandbox. See the full design in [`docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md`](../docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md).
 
 ## Prerequisites
 

@@ -2,7 +2,7 @@
 
 ## Goal
 
-Turn the futsal booking system into a portfolio project that feels credible to recruiters, easy to evaluate, and strong enough to discuss in interviews as a real product rather than a classroom CRUD app.
+Turn the futsal arena system into a portfolio project that feels credible to recruiters, easy to evaluate, and strong enough to discuss in interviews as a real product rather than a classroom CRUD app.
 
 ## Current Status
 

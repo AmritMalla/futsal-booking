@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil {
 
-    @Value("${jwt.secret:futsal-booking-secret-key-should-be-very-long-for-security}")
+    @Value("${jwt.secret:futsal_arena_secret_key_should_be_very_long_for_security}")
     private String secret;
 
     @Value("${jwt.expiration:86400000}") // 24 hours

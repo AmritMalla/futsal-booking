@@ -157,7 +157,7 @@ public class EmailService {
                     </div>
                     <div class="content">
                         <p>Hi <strong>%s</strong>,</p>
-                        <p>Great news! Your futsal booking has been confirmed. Here are the details:</p>
+                        <p>Great news! Your futsal arena booking has been confirmed. Here are the details:</p>
 
                         <div class="booking-details">
                             <div class="detail-row">
@@ -265,7 +265,7 @@ public class EmailService {
                 <div class="container">
                     <div class="header">
                         <h1>⚽ Welcome to %s!</h1>
-                        <p>Your journey to easier futsal booking starts here</p>
+                        <p>Your journey to easier futsal arena booking starts here</p>
                     </div>
                     <div class="content">
                         <p>Hi <strong>%s</strong>,</p>
@@ -373,7 +373,7 @@ public class EmailService {
                     </div>
                     <div class="content">
                         <p>Hi <strong>%s</strong>,</p>
-                        <p>Just a friendly reminder that your futsal booking is coming up!</p>
+                        <p>Just a friendly reminder that your futsal arena booking is coming up!</p>
 
                         <div class="booking-details">
                             <p><strong>Ground:</strong> %s</p>

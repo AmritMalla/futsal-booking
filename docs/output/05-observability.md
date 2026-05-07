@@ -1,6 +1,6 @@
 # Observability Stack
 
-> Metrics, logging, dashboarding, and alerting infrastructure for the Futsal Booking System.
+> Metrics, logging, dashboarding, and alerting infrastructure for the Futsal Arena.
 
 ---
 

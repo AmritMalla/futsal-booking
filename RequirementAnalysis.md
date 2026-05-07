@@ -160,5 +160,5 @@ CREATE TABLE Futsal_Grounds (
 3. **Security**:
     - Encrypt sensitive data and use parameterized queries to avoid SQL injection.
 
-This schema provides flexibility, scalability, and maintainability for your futsal booking platform. 
+This schema provides flexibility, scalability, and maintainability for your futsal arena platform. 
 

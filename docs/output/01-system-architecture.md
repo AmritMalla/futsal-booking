@@ -1,16 +1,16 @@
 # System Architecture
 
-> High-level architecture of the Futsal Booking System deployed on AWS EKS with production-grade infrastructure patterns.
+> High-level architecture of the Futsal Arena deployed on AWS EKS with production-grade infrastructure patterns.
 
 **Live Deployment**: [https://futsal-32-193-89-70.nip.io](https://futsal-32-193-89-70.nip.io)
 
-![Futsal Booking App — Live on EKS](screenshots/app-homepage.png)
+![Futsal Arena App — Live on EKS](screenshots/app-homepage.png)
 
 ---
 
 ## Architecture Overview
 
-The Futsal Booking System is a full-stack web application that enables users to discover, book, and manage futsal court reservations. It is deployed as a cloud-native microservice on Amazon EKS with a fully automated infrastructure pipeline.
+The Futsal Arena is a full-stack web application that enables users to discover, book, and manage futsal court reservations. It is deployed as a cloud-native microservice on Amazon EKS with a fully automated infrastructure pipeline.
 
 ```mermaid
 flowchart TB

@@ -1,5 +1,5 @@
 -- ============================================================================
--- COMPREHENSIVE DUMMY DATA FOR FUTSAL BOOKING SYSTEM
+-- COMPREHENSIVE DUMMY DATA FOR FUTSAL ARENA SYSTEM
 -- ============================================================================
 -- This file contains realistic test data for all entities
 -- Total Records: 200+ across 7 entities

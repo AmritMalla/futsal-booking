@@ -1,6 +1,6 @@
 # Cloud Infrastructure
 
-> AWS infrastructure provisioned with Terraform for the Futsal Booking System sandbox environment.
+> AWS infrastructure provisioned with Terraform for the Futsal Arena sandbox environment.
 
 ---
 
@@ -256,7 +256,7 @@ All Terraform-managed resources receive consistent tags via the AWS provider's `
 ```hcl
 default_tags {
   tags = {
-    Project     = "futsal-booking"
+    Project     = "futsal_arena"
     Environment = "sandbox"
     ManagedBy   = "terraform"
     Owner       = "amt"

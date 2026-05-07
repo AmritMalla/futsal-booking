@@ -1,4 +1,4 @@
-Below is a suggested API design for the futsal booking company website. It adheres to RESTful principles and focuses on modularity and clarity. The API is organized by resources, supports CRUD operations, and includes typical endpoints needed for the platform's functionality.
+Below is a suggested API design for the futsal arena company website. It adheres to RESTful principles and focuses on modularity and clarity. The API is organized by resources, supports CRUD operations, and includes typical endpoints needed for the platform's functionality.
 
 ---
 

@@ -4,7 +4,7 @@
 
 # AWS EKS Deployment Plan
 
-This note captures the intended production deployment direction for the futsal booking project. The current application is ready for deployment planning, but the Kubernetes manifests and CI/CD pipeline still need to be added.
+This note captures the intended production deployment direction for the futsal arena project. The current application is ready for deployment planning, but the Kubernetes manifests and CI/CD pipeline still need to be added.
 
 ## Target Shape
 

@@ -3,7 +3,7 @@
 **Status:** Approved for implementation planning
 **Date:** 2026-04-25
 **Owner:** Amrit Malla
-**Scope:** Deploy the futsal booking project to AWS EKS in a Pluralsight 4-hour sandbox via scripts, using production-standard patterns.
+**Scope:** Deploy the futsal arena project to AWS EKS in a Pluralsight 4-hour sandbox via scripts, using production-standard patterns.
 
 ---
 

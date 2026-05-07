@@ -1,8 +1,8 @@
-# Futsal Booking System - Frontend Complete Guide
+# Futsal Arena - Frontend Complete Guide
 
 ## Overview
 
-This React + TypeScript frontend provides a complete booking system interface for the Futsal Booking backend API.
+This React + TypeScript frontend provides a complete booking system interface for the Futsal Arena backend API.
 
 ## Quick Start
 
@@ -447,7 +447,7 @@ When adding new features:
 
 ## Summary
 
-This frontend application provides a complete, production-ready interface for the Futsal Booking System with:
+This frontend application provides a complete, production-ready interface for the Futsal Arena with:
 - ✅ Full TypeScript support
 - ✅ Material-UI components
 - ✅ Role-based authentication

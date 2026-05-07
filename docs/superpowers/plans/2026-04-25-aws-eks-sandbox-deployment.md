@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Stand up the futsal booking app on AWS EKS in a Pluralsight 4-hour sandbox via `./scripts/bootstrap.sh`, using production-standard patterns (Terraform, Helm, ESO, cert-manager, ingress-nginx, observability, CI image build → ECR mirror).
+**Goal:** Stand up the futsal arena app on AWS EKS in a Pluralsight 4-hour sandbox via `./scripts/bootstrap.sh`, using production-standard patterns (Terraform, Helm, ESO, cert-manager, ingress-nginx, observability, CI image build → ECR mirror).
 
 **Architecture:** Terraform provisions VPC + EKS + ECR + Secrets Manager + IRSA in ~20 min. An umbrella `platform` Helm chart installs ingress-nginx, cert-manager, External Secrets Operator, Bitnami Postgres, and kube-prometheus-stack + Loki. The `futsal` Helm chart deploys backend + frontend + Ingress + PVC + ExternalSecrets. GitHub Actions builds images and pushes to GHCR; `bootstrap.sh` mirrors GHCR → ECR with skopeo (~90 s) and installs both charts. TLS is Let's Encrypt via a `nip.io` hostname derived from the NLB's IPv4. No RDS, no Route53, no ACM — documented sandbox compromises with a production-equivalence table.
 
@@ -638,7 +638,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project     = "futsal-booking"
+      Project     = "futsal_arena"
       Environment = "sandbox"
       ManagedBy   = "terraform"
       Owner       = var.owner_tag
@@ -1565,7 +1565,7 @@ All templates apply labels per `app.kubernetes.io/*` convention via a `_helpers.
 ```yaml
 apiVersion: v2
 name: futsal
-description: Futsal booking backend + frontend deployment for sandbox EKS.
+description: Futsal arena backend + frontend deployment for sandbox EKS.
 type: application
 version: 0.1.0
 appVersion: "0.0.1-SNAPSHOT"
@@ -2537,7 +2537,7 @@ git commit -m "feat(scripts): teardown.sh — helm uninstall + terraform destroy
 ```markdown
 # AWS EKS Sandbox Deployment
 
-Script-driven deployment of the futsal booking app to AWS EKS, tuned for a 4-hour Pluralsight sandbox. See the full design in [`docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md`](../docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md).
+Script-driven deployment of the futsal arena app to AWS EKS, tuned for a 4-hour Pluralsight sandbox. See the full design in [`docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md`](../docs/superpowers/specs/2026-04-25-aws-eks-sandbox-deployment-design.md).
 
 ## Prerequisites
 

@@ -188,7 +188,7 @@ const Home: React.FC = () => {
                 {/* Badge */}
                 <Chip
                   icon={<EmojiEvents sx={{ color: `${colors.accent.gold} !important` }} />}
-                  label="NEPAL'S #1 FUTSAL BOOKING PLATFORM"
+                  label="NEPAL'S #1 FUTSAL ARENA PLATFORM"
                   sx={{
                     bgcolor: alpha(colors.primary.main, 0.15),
                     color: colors.primary.main,

@@ -11,8 +11,8 @@
     <groupId>com.amrit</groupId>
     <artifactId>futsal</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>futsal</name>
-    <description>Futsal Booking System</description>
+    <name>futsal_arena</name>
+    <description>Futsal Arena</description>
 
     <properties>
         <java.version>17</java.version>

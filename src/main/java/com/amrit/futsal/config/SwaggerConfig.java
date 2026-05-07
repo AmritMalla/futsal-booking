@@ -39,7 +39,7 @@
 //                "This is my API description",
 //                "1.0",
 //                "Terms of service",
-//                new Contact("Futsal Booking Inc.", "www.futsal.com", "email@futsal.com"),
+//                new Contact("Futsal Arena Inc.", "www.futsal.com", "email@futsal.com"),
 //                "License",
 //                "www.license.com",
 //                Collections.emptyList()

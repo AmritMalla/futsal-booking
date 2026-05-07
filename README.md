@@ -1,6 +1,6 @@
-# Futsal Booking System
+# Futsal Arena
 
-A full-stack futsal booking platform built with Spring Boot and React for players, ground owners, and administrators. The project now covers the full booking lifecycle plus a standout social layer: players can publish confirmed bookings as open pickup games and let others discover and join them.
+A full-stack futsal arena platform built with Spring Boot and React for players, ground owners, and administrators. The project now covers the full booking lifecycle plus a standout social layer: players can publish confirmed bookings as open pickup games and let others discover and join them.
 
 This repository is being actively improved as a portfolio project. The current roadmap is documented in [docs/portfolio_improvement_roadmap.md](docs/portfolio_improvement_roadmap.md).
 

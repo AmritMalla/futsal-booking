@@ -6,7 +6,7 @@
 
 ## Pipeline Overview
 
-The Futsal Booking System uses a two-phase delivery model:
+The Futsal Arena uses a two-phase delivery model:
 
 1. **CI (Continuous Integration)** — GitHub Actions automatically tests, builds, scans, and pushes container images on every merge to `master`
 2. **CD (Continuous Deployment)** — The `bootstrap.sh` script orchestrates the full infrastructure and application deployment to EKS
