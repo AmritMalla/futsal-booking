@@ -265,8 +265,8 @@ Images are built and pushed to GHCR in CI, then mirrored to ECR during deploymen
 
 ```
 GHCR (source of truth)              ECR (EKS runtime)
-ghcr.io/amritmalla/futsal-backend   970597968483.dkr.ecr.us-east-1.amazonaws.com/futsal-backend
-ghcr.io/amritmalla/futsal-frontend  970597968483.dkr.ecr.us-east-1.amazonaws.com/futsal-frontend
+ghcr.io/amritmalla/futsal-backend   637423477178.dkr.ecr.us-east-1.amazonaws.com/futsal-backend
+ghcr.io/amritmalla/futsal-frontend  637423477178.dkr.ecr.us-east-1.amazonaws.com/futsal-frontend
 ```
 
 **Why mirror instead of pushing directly to ECR?**
