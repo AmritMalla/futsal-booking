@@ -27,26 +27,26 @@ The monitoring stack follows the three pillars of observability: **metrics**, **
 ```mermaid
 flowchart TB
     subgraph App["Application (futsal namespace)"]
-        BE["Backend Pods\n/actuator/prometheus"]
+        BE["Backend Pods<br>/actuator/prometheus"]
         FE["Frontend Pods"]
     end
 
     subgraph Platform["Observability Stack (platform namespace)"]
         subgraph Metrics["Metrics Pipeline"]
-            Prom["Prometheus\nServer"]
-            NE["node-exporter\n(DaemonSet)"]
+            Prom["Prometheus<br>Server"]
+            NE["node-exporter<br>(DaemonSet)"]
             KSM["kube-state-metrics"]
-            SM["ServiceMonitor\n(CRD)"]
+            SM["ServiceMonitor<br>(CRD)"]
         end
 
         subgraph Logs["Logging Pipeline"]
-            Promtail["Promtail\n(DaemonSet)"]
-            Loki["Loki\n(Log Aggregation)"]
+            Promtail["Promtail<br>(DaemonSet)"]
+            Loki["Loki<br>(Log Aggregation)"]
         end
 
         subgraph Viz["Visualization & Alerting"]
-            Grafana["Grafana\n(Dashboards)"]
-            AM["Alertmanager\n(1Gi persistent)"]
+            Grafana["Grafana<br>(Dashboards)"]
+            AM["Alertmanager<br>(1Gi persistent)"]
         end
     end
 
@@ -142,14 +142,14 @@ This is a **declarative** scrape configuration — no manual Prometheus config e
 ```mermaid
 flowchart LR
     subgraph Node["EKS Worker Node"]
-        Container["Container\n(stdout/stderr)"]
+        Container["Container<br>(stdout/stderr)"]
         Kubelet["kubelet"]
         LogFile["/var/log/containers/*.log"]
-        PT["Promtail\n(DaemonSet pod)"]
+        PT["Promtail<br>(DaemonSet pod)"]
     end
 
     subgraph Platform["platform namespace"]
-        L["Loki\n(port 3100)"]
+        L["Loki<br>(port 3100)"]
     end
 
     Container -->|"writes to"| Kubelet
@@ -188,21 +188,21 @@ Grafana uses the **sidecar pattern** for dashboard and datasource provisioning:
 ```mermaid
 flowchart LR
     subgraph GrafanaPod["Grafana Pod (3 containers)"]
-        DS["grafana-sc-datasources\n(sidecar)"]
-        DB["grafana-sc-dashboard\n(sidecar)"]
-        G["grafana\n(main)"]
+        DS["grafana-sc-datasources<br>(sidecar)"]
+        DB["grafana-sc-dashboard<br>(sidecar)"]
+        G["grafana<br>(main)"]
     end
 
     subgraph K8s["Kubernetes Resources"]
-        DSCM["ConfigMaps\nlabel: grafana_datasource=1"]
-        DBCM["ConfigMaps\nlabel: grafana_dashboard=1"]
+        DSCM["ConfigMaps<br>label: grafana_datasource=1"]
+        DBCM["ConfigMaps<br>label: grafana_dashboard=1"]
     end
 
     DSCM -->|"WATCH"| DS
-    DS -->|"write to\n/etc/grafana/provisioning/datasources"| G
+    DS -->|"write to<br>/etc/grafana/provisioning/datasources"| G
     DBCM -->|"WATCH"| DB
-    DB -->|"write to\n/tmp/dashboards"| G
-    DB -->|"POST /api/admin/provisioning/\ndashboards/reload"| G
+    DB -->|"write to<br>/tmp/dashboards"| G
+    DB -->|"POST /api/admin/provisioning/<br>dashboards/reload"| G
 ```
 
 ### Sidecar Containers
@@ -281,22 +281,22 @@ The kube-prometheus-stack installs 35+ PrometheusRule resources covering:
 ```mermaid
 flowchart TB
     subgraph Targets["Scrape Targets"]
-        BE["/actuator/prometheus\n(backend pods)"]
-        NE["node-exporter\n:9100/metrics"]
-        KSM["kube-state-metrics\n:8080/metrics"]
-        KL["kubelet\n:10250/metrics"]
-        CM["cert-manager\n(when enabled)"]
+        BE["/actuator/prometheus<br>(backend pods)"]
+        NE["node-exporter<br>:9100/metrics"]
+        KSM["kube-state-metrics<br>:8080/metrics"]
+        KL["kubelet<br>:10250/metrics"]
+        CM["cert-manager<br>(when enabled)"]
     end
 
     subgraph Prom["Prometheus Server"]
-        Scrape["Scrape Engine\n(interval: 30s)"]
-        TSDB["Time Series DB\n(retention: 6h)"]
-        Rules["Alert Rules\n(35+ rules)"]
+        Scrape["Scrape Engine<br>(interval: 30s)"]
+        TSDB["Time Series DB<br>(retention: 6h)"]
+        Rules["Alert Rules<br>(35+ rules)"]
     end
 
     subgraph Outputs["Outputs"]
-        Grafana["Grafana\n(PromQL queries)"]
-        AM["Alertmanager\n(alert routing)"]
+        Grafana["Grafana<br>(PromQL queries)"]
+        AM["Alertmanager<br>(alert routing)"]
     end
 
     BE & NE & KSM & KL & CM --> Scrape

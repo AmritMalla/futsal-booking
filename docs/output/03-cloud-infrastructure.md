@@ -13,28 +13,28 @@ flowchart TB
     subgraph AWS["AWS Account (us-east-1)"]
         subgraph VPC["VPC: futsal-sandbox-vpc (10.42.0.0/16)"]
             subgraph AZ1["Availability Zone 1"]
-                PubSub1["Public Subnet\n10.42.0.0/20"]
-                PriSub1["Private Subnet\n10.42.32.0/20"]
+                PubSub1["Public Subnet<br>10.42.0.0/20"]
+                PriSub1["Private Subnet<br>10.42.32.0/20"]
             end
 
             subgraph AZ2["Availability Zone 2"]
-                PubSub2["Public Subnet\n10.42.16.0/20"]
-                PriSub2["Private Subnet\n10.42.48.0/20"]
+                PubSub2["Public Subnet<br>10.42.16.0/20"]
+                PriSub2["Private Subnet<br>10.42.48.0/20"]
             end
 
-            IGW["Internet\nGateway"]
-            NAT["NAT Gateway\n(single, cost-optimized)"]
-            NLB["Network Load\nBalancer"]
+            IGW["Internet<br>Gateway"]
+            NAT["NAT Gateway<br>(single, cost-optimized)"]
+            NLB["Network Load<br>Balancer"]
         end
 
         subgraph EKS["EKS Cluster: futsal-sandbox"]
-            CP["Control Plane\n(AWS Managed)"]
-            NG["Managed Node Group\n2× t3.medium\n(AL2023 AMI)"]
+            CP["Control Plane<br>(AWS Managed)"]
+            NG["Managed Node Group<br>2× t3.medium<br>(AL2023 AMI)"]
         end
 
-        ECR["ECR\n• futsal-backend\n• futsal-frontend"]
-        SM["Secrets Manager\n• /futsal/sandbox/db\n• /futsal/sandbox/jwt\n• /futsal/sandbox/smtp\n• /futsal/sandbox/grafana"]
-        IAM["IAM\n• ESO IRSA Role"]
+        ECR["ECR<br>futsal-backend<br>futsal-frontend"]
+        SM["Secrets Manager<br>/futsal/sandbox/db<br>/futsal/sandbox/jwt<br>/futsal/sandbox/smtp<br>/futsal/sandbox/grafana"]
+        IAM["IAM<br>ESO IRSA Role"]
     end
 
     Internet["🌐 Internet"] --> IGW
@@ -55,14 +55,14 @@ flowchart TB
 ```mermaid
 flowchart LR
     subgraph Modules["Terraform Configuration"]
-        main["main.tf\nProvider & Locals"]
-        vpc["vpc.tf\nterraform-aws-modules/vpc/aws\n~5.13"]
-        eks["eks.tf\nterraform-aws-modules/eks/aws\n~20.24"]
-        ecr["ecr.tf\naws_ecr_repository"]
-        secrets["secrets.tf\naws_secretsmanager_secret"]
-        iam["iam.tf\nIRSA Role & Policy"]
-        vars["variables.tf\nInput Variables"]
-        outputs["outputs.tf\n→ bootstrap.sh"]
+        main["main.tf<br>Provider & Locals"]
+        vpc["vpc.tf<br>terraform-aws-modules/vpc/aws<br>~5.13"]
+        eks["eks.tf<br>terraform-aws-modules/eks/aws<br>~20.24"]
+        ecr["ecr.tf<br>aws_ecr_repository"]
+        secrets["secrets.tf<br>aws_secretsmanager_secret"]
+        iam["iam.tf<br>IRSA Role & Policy"]
+        vars["variables.tf<br>Input Variables"]
+        outputs["outputs.tf<br>→ bootstrap.sh"]
     end
 
     main --> vpc
@@ -191,14 +191,14 @@ IRSA allows Kubernetes pods to assume AWS IAM roles without static credentials.
 ```mermaid
 flowchart LR
     subgraph EKS["EKS Cluster"]
-        SA["ServiceAccount\nexternal-secrets\n(platform namespace)"]
-        ESO["External Secrets\nOperator Pod"]
+        SA["ServiceAccount<br>external-secrets<br>(platform namespace)"]
+        ESO["External Secrets<br>Operator Pod"]
     end
 
     subgraph AWS["AWS IAM"]
-        OIDC["OIDC Provider\n(EKS-issued)"]
-        Role["IAM Role\nfutsal-sandbox-eso"]
-        Policy["Policy:\nsecretsmanager:GetSecretValue\nsecretsmanager:DescribeSecret\nsecretsmanager:ListSecretVersionIds"]
+        OIDC["OIDC Provider<br>(EKS-issued)"]
+        Role["IAM Role<br>futsal-sandbox-eso"]
+        Policy["Policy:<br>secretsmanager:GetSecretValue<br>secretsmanager:DescribeSecret<br>secretsmanager:ListSecretVersionIds"]
     end
 
     subgraph Secrets["AWS Secrets Manager"]

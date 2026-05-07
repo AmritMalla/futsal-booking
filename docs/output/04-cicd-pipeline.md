@@ -14,25 +14,25 @@ The Futsal Booking System uses a two-phase delivery model:
 ```mermaid
 flowchart LR
     subgraph Dev["Development"]
-        Code["Developer\npushes code"]
+        Code["Developer<br>pushes code"]
     end
 
     subgraph CI["GitHub Actions (CI)"]
-        Test["Run Tests\n(Maven + npm)"]
-        Build["Build Docker\nImages"]
-        Scan["Trivy\nVulnerability Scan"]
+        Test["Run Tests<br>(Maven + npm)"]
+        Build["Build Docker<br>Images"]
+        Scan["Trivy<br>Vulnerability Scan"]
         Push["Push to GHCR"]
     end
 
     subgraph CD["bootstrap.sh (CD)"]
-        TF["Terraform\nApply"]
-        Helm1["Helm Install\nPlatform"]
-        Mirror["Skopeo\nGHCR → ECR"]
-        Helm2["Helm Install\nFutsal App"]
+        TF["Terraform<br>Apply"]
+        Helm1["Helm Install<br>Platform"]
+        Mirror["Skopeo<br>GHCR → ECR"]
+        Helm2["Helm Install<br>Futsal App"]
     end
 
     subgraph Runtime["AWS EKS"]
-        Pods["Running\nPods"]
+        Pods["Running<br>Pods"]
     end
 
     Code --> Test --> Build --> Scan --> Push
@@ -96,7 +96,7 @@ flowchart TD
     subgraph Build_BE["Job: build-backend"]
         BE1["Docker Buildx setup"]
         BE2["Login to GHCR"]
-        BE3["Build + Push\nghcr.io/.../futsal-backend:SHA"]
+        BE3["Build + Push<br>ghcr.io/.../futsal-backend:SHA"]
         BE4["Trivy scan (CRITICAL, HIGH)"]
         BE5["Upload SARIF to GitHub"]
     end
@@ -104,7 +104,7 @@ flowchart TD
     subgraph Build_FE["Job: build-frontend"]
         FE1["Docker Buildx setup"]
         FE2["Login to GHCR"]
-        FE3["Build + Push\nghcr.io/.../futsal-frontend:SHA"]
+        FE3["Build + Push<br>ghcr.io/.../futsal-frontend:SHA"]
         FE4["Trivy scan (CRITICAL, HIGH)"]
         FE5["Upload SARIF to GitHub"]
     end
@@ -173,35 +173,35 @@ The deployment script is a single, idempotent Bash script that takes a cluster f
 
 ```mermaid
 flowchart TD
-    Start["bootstrap.sh\n(requires: GHCR_USER env)"] --> Precheck
+    Start["bootstrap.sh<br>(requires: GHCR_USER env)"] --> Precheck
 
     subgraph Phase1["Phase 1: Infrastructure"]
-        Precheck["Precheck\n(verify tools + GHCR images)"]
-        TF["Terraform Apply\n(VPC, EKS, ECR, Secrets, IAM)"]
+        Precheck["Precheck<br>(verify tools + GHCR images)"]
+        TF["Terraform Apply<br>(VPC, EKS, ECR, Secrets, IAM)"]
         Kubeconfig["Update kubeconfig"]
-        WriteSecrets["Generate & write secrets\nto AWS Secrets Manager"]
+        WriteSecrets["Generate & write secrets<br>to AWS Secrets Manager"]
     end
 
     subgraph Phase2["Phase 2: Platform Services"]
         HelmDeps["Helm dependency build"]
-        PlatformBase["Helm install platform\n(Nginx, PostgreSQL, Loki)\ncert-manager=false, ESO=false"]
-        CertMgr["Install cert-manager\n(standalone release)"]
-        ESO["Install external-secrets\n(standalone release)"]
-        WaitCRDs["Wait for CRDs\n(ClusterIssuer, ExternalSecret)"]
-        WaitCtrl["Wait for controllers\n(deployment Available)"]
+        PlatformBase["Helm install platform<br>(Nginx, PostgreSQL, Loki)<br>cert-manager=false, ESO=false"]
+        CertMgr["Install cert-manager<br>(standalone release)"]
+        ESO["Install external-secrets<br>(standalone release)"]
+        WaitCRDs["Wait for CRDs<br>(ClusterIssuer, ExternalSecret)"]
+        WaitCtrl["Wait for controllers<br>(deployment Available)"]
     end
 
     subgraph Phase3["Phase 3: Custom Resources"]
-        PlatformCRs["Helm upgrade platform\n(createCustomResources=true)"]
+        PlatformCRs["Helm upgrade platform<br>(createCustomResources=true)"]
         WaitGrafana["Wait for grafana-admin secret"]
-        InstallKPS["Install kube-prometheus-stack\n(standalone release)"]
+        InstallKPS["Install kube-prometheus-stack<br>(standalone release)"]
     end
 
     subgraph Phase4["Phase 4: Application"]
         WaitNLB["Wait for NLB hostname"]
         ResolveIP["Resolve NLB → IPv4"]
         GenHost["Generate nip.io hostname"]
-        Mirror["Skopeo mirror\nGHCR → ECR"]
+        Mirror["Skopeo mirror<br>GHCR → ECR"]
         HelmApp["Helm install futsal app"]
         WaitCert["Wait for TLS certificate"]
         WaitBackend["Wait for backend readiness"]
@@ -214,7 +214,7 @@ flowchart TD
     InstallKPS --> WaitNLB --> ResolveIP --> GenHost --> Mirror
     Mirror --> HelmApp --> WaitCert --> WaitBackend
 
-    WaitBackend --> Done["✅ bootstrap done\nURL: https://futsal-x-x-x-x.nip.io"]
+    WaitBackend --> Done["✅ bootstrap done<br>URL: https://futsal-x-x-x-x.nip.io"]
 ```
 
 ### Bootstrap Stages Detail

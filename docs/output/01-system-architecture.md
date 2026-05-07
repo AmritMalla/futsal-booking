@@ -21,37 +21,37 @@ flowchart TB
     subgraph AWS["AWS Cloud (us-east-1)"]
         subgraph VPC["VPC 10.42.0.0/16"]
             subgraph Public["Public Subnets"]
-                NLB["Network Load Balancer\n(internet-facing)"]
+                NLB["Network Load Balancer<br>(internet-facing)"]
             end
 
             subgraph Private["Private Subnets (2 AZs)"]
                 subgraph EKS["EKS Cluster (futsal-sandbox)"]
                     subgraph NS_Platform["Namespace: platform"]
-                        Ingress["Ingress-Nginx\nController"]
-                        PG["PostgreSQL 16.4\n(Bitnami)"]
+                        Ingress["Ingress-Nginx<br>Controller"]
+                        PG["PostgreSQL 16.4<br>(Bitnami)"]
                         CertMgr["cert-manager"]
-                        ESO["External Secrets\nOperator"]
+                        ESO["External Secrets<br>Operator"]
                         Prom["Prometheus"]
                         Grafana["Grafana"]
                         Loki["Loki + Promtail"]
                     end
 
                     subgraph NS_Futsal["Namespace: futsal"]
-                        FE["Frontend\n(React + Nginx)\n× 2 replicas"]
-                        BE["Backend\n(Spring Boot)\n× 2 replicas"]
-                        ESApp["ExternalSecret\n(JWT, SMTP)"]
+                        FE["Frontend<br>(React + Nginx)<br>× 2 replicas"]
+                        BE["Backend<br>(Spring Boot)<br>× 2 replicas"]
+                        ESApp["ExternalSecret<br>(JWT, SMTP)"]
                     end
                 end
             end
         end
 
-        SM["AWS Secrets\nManager"]
+        SM["AWS Secrets<br>Manager"]
         ECR["Amazon ECR"]
     end
 
     subgraph GitHub["GitHub"]
-        GHCR["GHCR\n(Container Registry)"]
-        GHA["GitHub Actions\n(CI/CD)"]
+        GHCR["GHCR<br>(Container Registry)"]
+        GHA["GitHub Actions<br>(CI/CD)"]
     end
 
     User -->|HTTPS| NLB
@@ -90,7 +90,7 @@ flowchart LR
         P7["Loki + Promtail"]
         P8["Alertmanager"]
         P9["ClusterSecretStore"]
-        P10["ClusterIssuer\n(Let's Encrypt)"]
+        P10["ClusterIssuer<br>(Let's Encrypt)"]
     end
 
     subgraph futsal["📦 futsal namespace"]
@@ -101,11 +101,11 @@ flowchart LR
         F4["HPA (auto-scale 2→4)"]
         F5["PDB (minAvailable: 1)"]
         F6["ServiceMonitor"]
-        F7["ExternalSecrets\n(JWT, SMTP, DB)"]
+        F7["ExternalSecrets<br>(JWT, SMTP, DB)"]
         F8["Uploads PVC (2Gi)"]
     end
 
-    platform -.->|"DB connection\nSecret sync\nTLS issuance\nMetrics scrape"| futsal
+    platform -.->|"DB connection<br>Secret sync<br>TLS issuance<br>Metrics scrape"| futsal
 ```
 
 | Namespace | Purpose | Managed By |
@@ -214,12 +214,12 @@ sequenceDiagram
 flowchart TD
     subgraph Platform["platform chart (umbrella)"]
         direction TB
-        IngressNginx["ingress-nginx\nv4.11.3"]
-        CertManager["cert-manager\nv1.15.3\n(standalone install)"]
-        ExtSecrets["external-secrets\nv0.10.4\n(standalone install)"]
-        PostgreSQL["postgresql\n(Bitnami) v15.5.38"]
-        KPS["kube-prometheus-stack\nv65.1.0\n(standalone install)"]
-        LokiStack["loki-stack\nv2.10.2"]
+        IngressNginx["ingress-nginx<br>v4.11.3"]
+        CertManager["cert-manager<br>v1.15.3<br>(standalone install)"]
+        ExtSecrets["external-secrets<br>v0.10.4<br>(standalone install)"]
+        PostgreSQL["postgresql<br>(Bitnami) v15.5.38"]
+        KPS["kube-prometheus-stack<br>v65.1.0<br>(standalone install)"]
+        LokiStack["loki-stack<br>v2.10.2"]
     end
 
     subgraph Futsal["futsal chart"]

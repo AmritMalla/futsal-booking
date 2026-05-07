@@ -9,19 +9,19 @@
 ```mermaid
 flowchart TB
     subgraph L1["Layer 1: Transport Security"]
-        TLS["TLS 1.2/1.3\n(Let's Encrypt)"]
-        CertMgr["cert-manager\nAuto-renewal"]
+        TLS["TLS 1.2/1.3<br>(Let's Encrypt)"]
+        CertMgr["cert-manager<br>Auto-renewal"]
     end
 
     subgraph L2["Layer 2: Secret Management"]
-        SM["AWS Secrets Manager\n(encrypted at rest)"]
+        SM["AWS Secrets Manager<br>(encrypted at rest)"]
         ESO["External Secrets Operator"]
-        IRSA["IRSA\n(zero static credentials)"]
+        IRSA["IRSA<br>(zero static credentials)"]
     end
 
     subgraph L3["Layer 3: Application Security"]
         JWT["JWT Authentication"]
-        RBAC["Role-Based Access\n(Spring Security)"]
+        RBAC["Role-Based Access<br>(Spring Security)"]
         CORS["CORS Policy"]
     end
 
@@ -33,7 +33,7 @@ flowchart TB
     end
 
     subgraph L5["Layer 5: Supply Chain Security"]
-        Trivy["Trivy Vulnerability\nScanning"]
+        Trivy["Trivy Vulnerability<br>Scanning"]
         Immutable["Immutable Image Tags"]
         ECRScan["ECR Scan-on-Push"]
     end
@@ -99,24 +99,24 @@ No credentials, passwords, or keys exist in source code or Helm values. All secr
 ```mermaid
 flowchart LR
     subgraph Bootstrap["bootstrap.sh (one-time)"]
-        Gen["openssl rand\n(random generation)"]
+        Gen["openssl rand<br>(random generation)"]
     end
 
     subgraph AWS["AWS"]
-        SM["Secrets Manager\n(AES-256 encrypted)"]
+        SM["Secrets Manager<br>(AES-256 encrypted)"]
     end
 
     subgraph K8s["Kubernetes"]
-        CSS["ClusterSecretStore\n(AWS provider)"]
-        ES1["ExternalSecret\nfutsal-backend-db"]
-        ES2["ExternalSecret\nfutsal-backend-app"]
-        ES3["ExternalSecret\ngrafana-admin"]
-        S1["Secret\n(K8s native)"]
+        CSS["ClusterSecretStore<br>(AWS provider)"]
+        ES1["ExternalSecret<br>futsal-backend-db"]
+        ES2["ExternalSecret<br>futsal-backend-app"]
+        ES3["ExternalSecret<br>grafana-admin"]
+        S1["Secret<br>(K8s native)"]
     end
 
     subgraph Pods["Application Pods"]
-        BE["Backend\n(envFrom)"]
-        GR["Grafana\n(admin creds)"]
+        BE["Backend<br>(envFrom)"]
+        GR["Grafana<br>(admin creds)"]
     end
 
     Gen -->|"put-secret-value"| SM
@@ -148,14 +148,14 @@ The External Secrets Operator authenticates to AWS without any static access key
 ```mermaid
 flowchart TB
     subgraph Pod["ESO Pod"]
-        SA["ServiceAccount\n'external-secrets'\nannotated with IAM role ARN"]
-        Token["Projected OIDC JWT\n(auto-mounted by kubelet)"]
+        SA["ServiceAccount<br>'external-secrets'<br>annotated with IAM role ARN"]
+        Token["Projected OIDC JWT<br>(auto-mounted by kubelet)"]
     end
 
     subgraph AWS["AWS IAM"]
         OIDC["EKS OIDC Provider"]
         STS["AWS STS"]
-        Role["IAM Role\nfutsal-sandbox-eso"]
+        Role["IAM Role<br>futsal-sandbox-eso"]
     end
 
     subgraph Access["Authorized Resources"]
